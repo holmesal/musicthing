@@ -20,3 +20,7 @@ handlers:
 - url: /js
   static_dir: js
   
+libraries:
+- name: jinja2
+  version: latest
+  
