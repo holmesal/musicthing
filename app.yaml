@@ -8,7 +8,8 @@ default_expiration: "1m"
 handlers:
 - url: /
   script: landing.app
-  
+- url: /signup.*
+  script: artist_signup.app
 
 - url: /stats.*
   script: google.appengine.ext.appstats.ui.app
