@@ -1,4 +1,4 @@
 musicthing
 ==========
 
-a music thing
+a music thang
