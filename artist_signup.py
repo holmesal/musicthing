@@ -15,21 +15,21 @@ class ConnectSCHandler(utils.BaseHandler):
 		template_values = {
 		}
 		
-		template = jinja_environment.get_template('templates/connect_sc.html')
+		template = jinja_environment.get_template('templates/artist_signup/connect_sc.html')
 		self.response.out.write(template.render(template_values))
 	def post(self):
 		client = soundcloud.Client(
 								client_id = sc_creds.client_id,
 								client_secret = sc_creds.client_secret,
-								redirect_uri = '/signup/connect'
+								redirect_uri = 'http://local-music.appspot.com/signup/complete'
 								)
 		self.set_plaintext()
-		self.say(client.authorize_url())
+		self.redirect(client.authorize_url())
 class ConnectAccountHandler(utils.BaseHandler):
 	def get(self):
 		pass
 app = webapp2.WSGIApplication([
 							('/signup',ConnectSCHandler),
-							('/signup/connect',ConnectAccountHandler)
+							('/signup/complete',ConnectAccountHandler)
 							
 							])
