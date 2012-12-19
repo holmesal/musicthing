@@ -40,12 +40,9 @@ class ArtistHandler(BaseHandler):
 		@param artist_id: the artists ndb key
 		@type artist_id: str
 		'''
-		assert type(artist_id) == str, \
-			'Must pass artist_id as a string, not {}'.format(type(artist_id))
 		session = get_current_session()
 		session['logged_in'] = True
-		session['artist_id'] = artist_id
-		return
+		session['artist_id'] = str(artist_id)
 	def log_out(self):
 		'''
 		Changes the session to a logged out status, setting logged_in to false,
