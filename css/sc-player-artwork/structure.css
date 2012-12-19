@@ -47,19 +47,29 @@
 /* controls */
 
 .sc-player .sc-controls{
-	display: none;
   position: absolute;
   width: 40px;
   height: 40px;
-  top: 442px;
-  left: 0;
-  
+  top: 200px;
+  left: 50%;
+  margin-left: -20px;
+  margin-top: -20px;
 }
 
 .sc-player .sc-controls a{
   display: block;
   width: 40px;
   height: 40px;
+}
+
+.sc-player .sc-controls .sc-next{
+  margin-left: 160px;
+  margin-top: -40px;
+}
+
+.sc-player .sc-controls .sc-prev{
+  margin-left: -160px;
+  margin-top: -40px;
 }
 
 .sc-player .sc-controls a.sc-pause{
@@ -117,7 +127,7 @@
   position: absolute;
   float: left;
   width: 10000px;
-  top: 400px;
+  top: 0px;
   left:50%;
   margin-left: -200px;
 }
@@ -125,10 +135,11 @@
 .sc-player ol.sc-trackslist li{
   float: left;
   width: 390px;
-  height:100px;
+  height:500px;
   cursor: pointer;
   margin: 0px;
   padding: 20px 5px 5px 5px;
+  padding-top: 420px;
   list-style: none;
 }
 
