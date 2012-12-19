@@ -1,10 +1,8 @@
 .sc-player{
-  width: 100%;
-  height: 600px;
+  width: 1000px;
+  height: 300px;
   position: relative;
   margin-bottom: 20px;
-  margin-top: 200px;
-  overflow: hidden;
 }
 
 .sc-player ol, .sc-player li{
@@ -16,42 +14,37 @@
 /* Artworks */
 
 .sc-player .sc-artwork-list{
-  width: 10000px;
-/*   height: 50%; */
+  width: 100%;
+  height: 50%;
   background-color: #transparent;
   list-style-type: none;
   position: relative;
-  left:50%;
-  margin-left: -200px;
 }
 
 .sc-player .sc-artwork-list li{
   list-style-type: none;
   float: left;
-  width: 400px;
-  opacity: 0.2;
+  width: 200px;
 }
 
 .sc-player .sc-artwork-list li.active{
   list-style-type: none;
   display: block;
-  opacity: 1;
 }
 
 .sc-player .sc-artwork-list li img, .sc-player .sc-artwork-list li div{
   list-style-type: none;
-  width: 400px;
-  height: 400px;
+  width: 200px;
+  height: 200px;
 }
 
 /* controls */
 
 .sc-player .sc-controls{
-	display: none;
   position: absolute;
   width: 40px;
   height: 40px;
-  top: 442px;
+  top: 242px;
   left: 0;
   
 }
@@ -78,27 +71,26 @@
 
 .sc-scrubber {
   position: absolute;
-/*   left: 50px; */
-  top: 500px;
-  height: 200px;
-  width: 100%;
+  left: 50px;
+  top: 240px;
+  height: 40px;
+  width: 950px;
   display: block;
 }
 
 .sc-scrubber .sc-time-span{
-  height: 200px;
+  height: 30px;
   margin: 5px;
   position: relative;
 }
 
 .sc-scrubber .sc-time-span img {
-  height: 200px;
-  width: 100%;
-  overflow: visible;
+  height: 30px;
+  width: 940px;
 }
 
 .sc-scrubber .sc-buffer, .sc-scrubber .sc-played{
-  height: 200px;
+  height: 30px;
   position: absolute;
   top: 0;
 }
@@ -116,19 +108,17 @@
 .sc-player ol.sc-trackslist{
   position: absolute;
   float: left;
-  width: 10000px;
-  top: 400px;
-  left:50%;
-  margin-left: -200px;
+  width: 100%;
+  top: 0;
 }
 
 .sc-player ol.sc-trackslist li{
   float: left;
-  width: 390px;
-  height:100px;
+  width: 190px;
+  height: 60px;
   cursor: pointer;
   margin: 0px;
-  padding: 20px 5px 5px 5px;
+  padding: 150px 5px 5px 5px;
   list-style: none;
 }
 

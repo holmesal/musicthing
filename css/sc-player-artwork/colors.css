@@ -14,19 +14,19 @@
 /* scrubber */
 
 .sc-scrubber {
-  background-color: #e5e5e5;
-  border-top: 2px solid #000;
-  border-bottom: 2px solid #000;
+/*   background-color: #e5e5e5; */
+/*   border-top: 2px solid #000; */
+/*   border-bottom: 2px solid #000; */
 }
 
 .sc-scrubber .sc-time-span {
-  background-color: #fff;
+/*   background-color: #fff; */
 }
 
 .sc-scrubber .sc-time-span img {
-  background-color: #59C5C7;
-  background: -moz-linear-gradient(top, black, #96d8d9 0px, #59C5C7 90%);
-  background: -webkit-gradient(linear, left top, left 90%, from(black), color-stop(0%, #59C5C7), to(#96d8d9));
+  background-color: #a3a3a3;
+/*   background: -moz-linear-gradient(top, black, #96d8d9 0px, #59C5C7 90%); */
+/*   background: -webkit-gradient(linear, left top, left 90%, from(black), color-stop(0%, #59C5C7), to(#96d8d9)); */
 }
 
 .sc-scrubber .sc-buffer, .sc-scrubber .sc-played {
@@ -74,17 +74,18 @@
 /* Track listings*/
 
 .sc-player ol.sc-trackslist li, .sc-player ol.sc-trackslist a {
-  color: transparent;
+/*   color: transparent; */
+	color: #ebebeb;
 }
 
 .sc-player ol.sc-trackslist li.active, .sc-player ol.sc-trackslist li:hover {
-  background-color: #59C5C7;
+/*   background-color: #59C5C7; */
   color: #000;
-  background: -moz-linear-gradient(top, black, #96d8d9 0px, #59C5C7 90%);
-  background: -webkit-gradient(linear, left top, left 90%, from(black), color-stop(0%, #59C5C7), to(#96d8d9));
-  -moz-box-shadow: 1px 1px 4px #333;
-  -webkit-box-shadow: 1px 1px 4px #333;
-  opacity: 0.8;
+/*   background: -moz-linear-gradient(top, black, #96d8d9 0px, #59C5C7 90%); */
+/*   background: -webkit-gradient(linear, left top, left 90%, from(black), color-stop(0%, #59C5C7), to(#96d8d9)); */
+/*   -moz-box-shadow: 1px 1px 4px #333; */
+/*   -webkit-box-shadow: 1px 1px 4px #333; */
+/*   opacity: 0.8; */
 }
 
 .sc-player ol.sc-trackslist li.active a, .sc-player ol.sc-trackslist li:hover a {
