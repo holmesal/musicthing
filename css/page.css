@@ -1,3 +1,13 @@
 body{
 	width: 100%;
+	background: url('/img/gray_jean.png');
+}
+
+.top{
+	position: absolute;
+	background-color: gray;
+	left:0;
+	right:0;
+	top:0;
+	height: 100px;
 }
