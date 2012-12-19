@@ -28,3 +28,6 @@ class BaseHandler(webapp2.RequestHandler):
 			return True
 class UploadHandler(BaseHandler,blobstore_handlers.BlobstoreUploadHandler):
 	pass
+
+class DownloadHandler(BaseHandler,blobstore_handlers.BlobstoreDownloadHandler):
+	pass

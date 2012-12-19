@@ -5,7 +5,7 @@ BASEURL = 'http://local-music.appspot.com'
 class Artist(ndb.Model):
 	access_token = ndb.StringProperty()
 	username = ndb.StringProperty()
-	image = blobstore.BlobReferenceProperty()
+	image = ndb.BlobKeyProperty()
 	audio_url = ndb.StringProperty()
 	
 	@property

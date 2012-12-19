@@ -7,6 +7,7 @@ import os
 import utils
 import soundcloud
 import models
+from google.appengine.ext import blobstore
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
@@ -50,14 +51,16 @@ class ConnectAccountHandler(utils.BaseHandler):
 			logging.info('artist does not exist. creating.')
 			del existing_artist
 		# still here? An artist is creating an account with us
+		artist_key = str(current_user.id)
 		artist = models.Artist(
-							id = str(current_user.id),
+							id = artist_key,
 							access_token = access_token,
 							username = current_user.username,
 							)
+		
 		artist.put()
 		logging.info(artist)
-		self.redirect('/artist/{}/upload/image'.format(artist.strkey))
+		self.redirect('/artist/{}/upload/image'.format(artist_key))
 		return
 #		template_values = {
 #						'uid' : artist.key
@@ -87,51 +90,83 @@ class ManageArtistHandler(utils.BaseHandler):
 		
 class UploadImageHandler(utils.UploadHandler):
 	def get(self,uid):
+		'''View page to upload an image
+		'''
 		# make sure artist exists
 		artist = models.Artist.get_by_id(uid)
 		logging.info(uid)
 		logging.info(artist)
-		if not self.validate_artist(artist):
-			return
+#		if not self.validate_artist(artist):
+#			return
 		
 		signup = self.request.get('signup',0)
 		template_values = {
 						'signup' : signup,
-						'artist_key' : artist.strkey
+						'artist_key' : artist.strkey,
+						'upload_url' : blobstore.create_upload_url('/artist/{}/upload/image'.format(artist.strkey))
 		}
 		
 		template = jinja_environment.get_template('templates/artist/upload_image.html')
 		self.response.out.write(template.render(template_values))
 	def post(self,uid):
+		'''Store the image in blobstore and 
+		'''
 		artist = models.Artist.get_by_id(uid)
-		if not self.validate_artist(artist):
-			return
-		upload = self.get_uploads('image')
+#		if not self.validate_artist(artist):
+#			return
+		upload = self.get_uploads('image')[0]
+		logging.info(upload)
+		logging.info(type(upload))
 		img_key = upload.key()
+		logging.info(img_key)
+		logging.info(type(img_key))
 		artist.image = img_key
-		
+		logging.info(artist.image)
 		artist.put()
 		
 		# check that the artist exists
 		
 		
-		self.say(artist.properties())
+		self.say('done!')
 		
 class UploadAudioHandler(utils.UploadHandler):
 	def get(self,uid):
+		'''View the page to upload an audio track url
+		'''
 		artist = models.Artist.get_by_id(uid)
 		if not self.validate_artist(artist):
 			return
 		
 		self.say('audio upload {}'.format(uid))
 	def post(self,uid):
+		'''Store the soundcloud url to the artists audio track
+		'''
 		artist = models.Artist.get_by_id(uid)
 		if not self.validate_artist(artist):
 			return
 		self.say('audio upload post'.format(uid))
-	
-class SpoofArtistHandler(utils.BaseHandler):
+class ViewArtistImageHandler(utils.DownloadHandler):
+	def get(self,uid):
+		'''For serving up the artists image
+		'''
+		artist = models.Artist.get_by_id(uid)
+		if not self.validate_artist(artist):
+			return
+		
+		self.say('image view {}'.format(uid))
+class ArtistTrackHandler(utils.DownloadHandler):
+	def get(self,uid):
+		'''For serving up the artists audio
+		'''
+		artist = models.Artist.get_by_id(uid)
+		if not self.validate_artist(artist):
+			return
+		self.say('audio listen {}'.format(uid))
+class SpoofArtistHandler(utils.DownloadHandler):
 	def get(self):
+		'''
+		For creating an artist account without soundcloud handshake
+		'''
 		artist = models.Artist.get_or_insert('111',
 											username = 'pat'
 											)
@@ -144,5 +179,6 @@ app = webapp2.WSGIApplication([
 							('/artist/signup/get_data',GetDataHandler),
 							('/artist/(.*)/manage',ManageArtistHandler),
 							('/artist/(.*)/upload/image',UploadImageHandler),
-							('/artist/(.*)/upload/audio',UploadAudioHandler)
+							('/artist/(.*)/upload/audio',UploadAudioHandler),
+							('/artist/(.*)/image',)
 							])
