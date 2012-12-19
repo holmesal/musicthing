@@ -22,7 +22,7 @@ def default_hooks():
         hooks[event] = []
     return hooks
 
-# TODO: response is the only one
+# todo: response is the only one
 
 def dispatch_hook(key, hooks, hook_data):
     """Dispatches a hook dictionary on a given piece of data."""

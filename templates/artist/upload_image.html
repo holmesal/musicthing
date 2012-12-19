@@ -7,7 +7,7 @@
 		Remove this if you use the .htaccess -->
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
-		<title>Sign Up</title>
+		<title>upload_image</title>
 		<meta name="description" content="" />
 		<meta name="author" content="Patrick Walsh" />
 
@@ -21,21 +21,19 @@
 	<body>
 		<div>
 			<header>
-				<h1>connect_sc</h1>
+				<h1>upload_image</h1>
 			</header>
-			
 
 			<div>
-			<form action="/signup" method="POST">
+			<form method="POST" action="/artist/{% artist_key %}/upload/image">
+				<input type="file" name="image"/>
 				<input type="submit" />
-				
-				
 			</form>
 			</div>
 
 			<footer>
 				<p>
-					&copy; Copyright  by Levr Inc.
+					&copy; Copyright  by Patrick Walsh
 				</p>
 			</footer>
 		</div>

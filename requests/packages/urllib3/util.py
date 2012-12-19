@@ -291,10 +291,10 @@ if SSLContext is not None:  # Python 3.2+
             try:
                 context.load_verify_locations(ca_certs)
             except TypeError as e:  # Reraise as SSLError
-                # FIXME: This block needs a test.
+                # fixme: This block needs a test.
                 raise SSLError(e)
         if certfile:
-            # FIXME: This block needs a test.
+            # fixme: This block needs a test.
             context.load_cert_chain(certfile, keyfile)
         if HAS_SNI:  # Platform-specific: OpenSSL with enabled SNI
             return context.wrap_socket(sock, server_hostname=server_hostname)

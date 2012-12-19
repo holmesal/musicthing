@@ -82,14 +82,14 @@ class VerifiedHTTPSConnection(HTTPSConnection):
     def set_cert(self, key_file=None, cert_file=None,
                  cert_reqs='CERT_NONE', ca_certs=None):
         ssl_req_scheme = {
-            'CERT_NONE': ssl.CERT_NONE,
-            'CERT_OPTIONAL': ssl.CERT_OPTIONAL,
-            'CERT_REQUIRED': ssl.CERT_REQUIRED
+            'CERT_NONE': 0,#ssl.CERT_NONE,
+            'CERT_OPTIONAL': 1,#ssl.CERT_OPTIONAL,
+            'CERT_REQUIRED': 2,#ssl.CERT_REQUIRED
         }
 
         self.key_file = key_file
         self.cert_file = cert_file
-        self.cert_reqs = ssl_req_scheme.get(cert_reqs) or ssl.CERT_NONE
+        self.cert_reqs = ssl_req_scheme.get(cert_reqs) or 0#ssl.CERT_NONE
         self.ca_certs = ca_certs
 
     def connect(self):
@@ -314,7 +314,7 @@ class HTTPConnectionPool(ConnectionPool, RequestMethods):
         if url.startswith('/'):
             return True
 
-        # TODO: Add optional support for socket.gethostbyname checking.
+        # todo: Add optional support for socket.gethostbyname checking.
         scheme, host, port = get_host(url)
 
         if self.port and not port:
@@ -549,7 +549,7 @@ class HTTPSConnectionPool(HTTPConnectionPool):
                             cert_reqs=self.cert_reqs, ca_certs=self.ca_certs)
 
         if self.ssl_version is None:
-            connection.ssl_version = ssl.PROTOCOL_SSLv23
+            connection.ssl_version = 2#ssl.PROTOCOL_SSLv23
         else:
             connection.ssl_version = self.ssl_version
 

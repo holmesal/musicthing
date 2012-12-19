@@ -59,5 +59,8 @@ def wrapped_resource(response):
         result = Resource(content)
     result.raw_data = response.content
     for attr in ['url', 'status_code', 'error']:
-        setattr(result, attr, getattr(response, attr))
+        try:
+            setattr(result, attr, getattr(response, attr))
+        except:
+            pass
     return result

@@ -120,7 +120,7 @@ def test_method_dispatching_post_request(fake_post):
     """Test that calling client.post() results in a proper call
     to the post function in the requests module.
 
-    TODO: Revise once read/write support has been added.
+    todo: Revise once read/write support has been added.
     """
     client = soundcloud.Client(client_id='foo')
     expected_url = client._resolve_resource_name('tracks')
