@@ -8,11 +8,12 @@ import utils
 import soundcloud
 import models
 from google.appengine.ext import blobstore
+from gaesessions import get_current_session
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
 
-class ConnectSCHandler(utils.BaseHandler):
+class ConnectSCHandler(utils.ArtistHandler):
 	def get(self):
 		
 		template_values = {
@@ -24,7 +25,7 @@ class ConnectSCHandler(utils.BaseHandler):
 		client = soundcloud.Client(**sc_creds)
 		self.set_plaintext()
 		self.redirect(client.authorize_url())
-class ConnectAccountHandler(utils.BaseHandler):
+class ConnectAccountHandler(utils.ArtistHandler):
 	def get(self):
 		# get the oauth code
 		code = self.request.get('code')
@@ -45,7 +46,7 @@ class ConnectAccountHandler(utils.BaseHandler):
 		if existing_artist:
 			logging.info('artist exist. redirecting')
 			# redirect to their manage page. They already have an account
-			self.redirect('/artist/{}/manage'.format(existing_artist.strkey))
+			self.redirect('/artist/manage'.format(existing_artist.strkey))
 			return
 		else:
 			logging.info('artist does not exist. creating.')
@@ -59,8 +60,12 @@ class ConnectAccountHandler(utils.BaseHandler):
 							)
 		
 		artist.put()
+		
+		# create session 
+		self.log_in(artist.strkey)
+		
 		logging.info(artist)
-		self.redirect('/artist/{}/upload/image'.format(artist_key))
+		self.redirect('/artist/upload/image'.format(artist_key))
 		return
 #		template_values = {
 #						'uid' : artist.key
@@ -68,101 +73,120 @@ class ConnectAccountHandler(utils.BaseHandler):
 #		template = jinja_environment.get_template('templates/artist/new_signup.html')
 #		self.response.out.write(template.render(template_values))
 
-class GetDataHandler(utils.BaseHandler):
-	# test handler
+
+class ManageArtistHandler(utils.ArtistHandler):
 	def get(self):
-		access_token = '1-29375-30759062-700d24381a1af75'#artist.access_token
+		try:
+			artist = self.get_artist_from_session()
+		except AssertionError:
+			return self.redirect()
 		
-		client = soundcloud.Client(access_token=access_token)
-#		client.access_token = access_token
-		current_user = client.get('/me')
-		self.set_plaintext()
-		self.say(current_user.fields())
-class ManageArtistHandler(utils.BaseHandler):
-	def get(self,uid):
-		logging.info(uid)
-		artist = models.Artist.get_by_id(uid)
-		logging.info(artist)
-		if not self.validate_artist(artist):
-			return
 		# TODO: check gaesessions to make sure the artist is logged in. If not, redirect
-		self.say('manage page {}'.format(uid))
+		self.say('manage page {}'.format(artist.strkey))
 		
-class UploadImageHandler(utils.UploadHandler):
-	def get(self,uid):
+class UploadImageHandler(utils.ArtistHandler):
+	def get(self):
 		'''View page to upload an image
 		'''
-		# make sure artist exists
-		artist = models.Artist.get_by_id(uid)
-		logging.info(uid)
-		logging.info(artist)
-#		if not self.validate_artist(artist):
-#			return
+		try:
+			artist = self.get_artist_from_session()
+		except AssertionError:
+			return self.redirect(ARTIST_LOGIN)
 		
 		signup = self.request.get('signup',0)
 		template_values = {
 						'signup' : signup,
 						'artist_key' : artist.strkey,
-						'upload_url' : blobstore.create_upload_url('/artist/{}/upload/image'.format(artist.strkey))
+						'upload_url' : blobstore.create_upload_url('/artist/upload/image'.format(artist.strkey))
 		}
 		
 		template = jinja_environment.get_template('templates/artist/upload_image.html')
 		self.response.out.write(template.render(template_values))
-	def post(self,uid):
+	def post(self):
 		'''Store the image in blobstore and 
 		'''
-		artist = models.Artist.get_by_id(uid)
-#		if not self.validate_artist(artist):
-#			return
+		try:
+			artist = self.get_artist_from_session()
+		except AssertionError:
+			return self.redirect(ARTIST_LOGIN)
+		
 		upload = self.get_uploads('image')[0]
-		logging.info(upload)
-		logging.info(type(upload))
 		img_key = upload.key()
-		logging.info(img_key)
-		logging.info(type(img_key))
 		artist.image = img_key
-		logging.info(artist.image)
 		artist.put()
+		return self.redirect(ARTIST_MANAGE)
+class UploadExistingAudioHandler(utils.ArtistHandler):
+	def get(self):
+		'''For selecting an existing soundcloud track
+		'''
+		try:
+			artist = self.get_artist_from_session()
+		except AssertionError:
+			return self.redirect(ARTIST_LOGIN)
+		# fetch a list of all of the artists tracks from soundcloud
+		client = soundcloud.Client(**sc_creds)
 		
-		# check that the artist exists
 		
+		signup = self.request.get('signup',0)
+		template_values = {
+						'signup' : signup,
+						'artist_key' : artist.strkey,
+						'upload_url' : blobstore.create_upload_url('/artist/{}/upload/audio'.format(artist.strkey))
+		}
 		
-		self.say('done!')
+		template = jinja_environment.get_template('templates/artist/upload_image.html')
+		self.response.out.write(template.render(template_values))
 		
-class UploadAudioHandler(utils.UploadHandler):
-	def get(self,uid):
+class UploadNewAudioHandler(utils.ArtistHandler):
+	def get(self):
 		'''View the page to upload an audio track url
 		'''
-		artist = models.Artist.get_by_id(uid)
-		if not self.validate_artist(artist):
-			return
+		try:
+			artist = self.get_artist_from_session()
+		except AssertionError:
+			return self.redirect(ARTIST_LOGIN)
 		
-		self.say('audio upload {}'.format(uid))
-	def post(self,uid):
+		signup = self.request.get('signup',0)
+		
+		template_values = {
+						'signup' : signup,
+						'artist_key' : artist.strkey,
+						'upload_url' : blobstore.create_upload_url('/artist/{}/upload/audio'.format(artist.strkey))
+		}
+		
+		template = jinja_environment.get_template('templates/artist/upload_image.html')
+		self.response.out.write(template.render(template_values))
+		
+	def post(self):
 		'''Store the soundcloud url to the artists audio track
 		'''
-		artist = models.Artist.get_by_id(uid)
-		if not self.validate_artist(artist):
-			return
-		self.say('audio upload post'.format(uid))
-class ViewArtistImageHandler(utils.DownloadHandler):
-	def get(self,uid):
+		try:
+			artist = self.get_artist_from_session()
+		except AssertionError:
+			self.redirect(ARTIST_LOGIN)
+		self.say('audio upload post'.format(artist.strkey))
+class ArtistImageHandler(utils.BaseHandler):
+	def get(self,artist_id):
 		'''For serving up the artists image
 		'''
-		artist = models.Artist.get_by_id(uid)
-		if not self.validate_artist(artist):
-			return
-		
-		self.say('image view {}'.format(uid))
-class ArtistTrackHandler(utils.DownloadHandler):
-	def get(self,uid):
+		try:
+			artist = self.get_artist(artist_id)
+		except AssertionError:
+			raise Exception('Artist does not exist')
+		self.say('image view {}'.format(artist_id))
+class ArtistAudioHandler(utils.BaseHandler):
+	def get(self,artist_id):
 		'''For serving up the artists audio
 		'''
-		artist = models.Artist.get_by_id(uid)
-		if not self.validate_artist(artist):
-			return
-		self.say('audio listen {}'.format(uid))
-class SpoofArtistHandler(utils.DownloadHandler):
+		try:
+			artist = self.get_artist(artist_id)
+		except AssertionError:
+			raise Exception('Artist does not exist')
+		self.say('audio listen {}'.format(artist_id))
+#===============================================================================
+# Development handlers
+#===============================================================================
+class SpoofArtistHandler(utils.ArtistHandler):
 	def get(self):
 		'''
 		For creating an artist account without soundcloud handshake
@@ -172,13 +196,29 @@ class SpoofArtistHandler(utils.DownloadHandler):
 											)
 		artist.put()
 		self.say('Done!')
+class GetDataHandler(utils.ArtistHandler):
+	# test handler
+	def get(self):
+		access_token = '1-29375-30759062-700d24381a1af75'#artist.access_token
+		
+		client = soundcloud.Client(access_token=access_token)
+#		client.access_token = access_token
+		current_user = client.get('/me')
+		self.set_plaintext()
+		self.say(current_user.fields())
+
+ARTIST_LOGIN = '/artist/login'
+ARTIST_LOGIN_COMPLETE = '/artist/login/complete'
+ARTIST_MANAGE = '/artist/manage'
+UPLOAD_IMAGE = '/artist/upload/image'
+UPLOAD_AUDIO = '/artist/upload/audio'
 app = webapp2.WSGIApplication([
 							('/artist/spoof',SpoofArtistHandler),
-							('/artist/login',ConnectSCHandler),
-							('/artist/login/complete',ConnectAccountHandler),
-							('/artist/signup/get_data',GetDataHandler),
-							('/artist/(.*)/manage',ManageArtistHandler),
-							('/artist/(.*)/upload/image',UploadImageHandler),
-							('/artist/(.*)/upload/audio',UploadAudioHandler),
-							('/artist/(.*)/image',)
+							(ARTIST_LOGIN,ConnectSCHandler),
+							(ARTIST_LOGIN_COMPLETE,ConnectAccountHandler),
+							(ARTIST_MANAGE,ManageArtistHandler),
+							(UPLOAD_IMAGE,UploadImageHandler),
+							(UPLOAD_AUDIO,UploadNewAudioHandler),
+							('/artist/(.*)/image',ArtistImageHandler),
+							('/artist/(.*)/audio',ArtistAudioHandler)
 							])
