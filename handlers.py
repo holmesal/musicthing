@@ -5,6 +5,7 @@ import os
 import models
 import logging
 from gaesessions import get_current_session
+#from excepts import *
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
 class BaseHandler(webapp2.RequestHandler):
@@ -18,8 +19,8 @@ class BaseHandler(webapp2.RequestHandler):
 	def get_artist(self,artist_id):
 		'''
 		Fetches an artist from the ndb.
-		@raise AssertionError: 
-			artist_id does not yield an artist entity from the db
+		@raise SessionError: 
+			if artist_id does not yield an artist entity from the db
 		
 		@param artist_id: The soundcloud id of an artist
 		@type artist_id: str
@@ -27,11 +28,15 @@ class BaseHandler(webapp2.RequestHandler):
 		@return: The artist that corresponds to the provided artist_id
 		@rtype: models.Artist
 		'''
-		artist_id = str(artist_id)
-		artist = models.Artist.get_by_id(artist_id)
-		assert artist, 'Artist does not exist'
-		return artist
-		
+		try:
+			artist_id = str(artist_id)
+			artist = models.Artist.get_by_id(artist_id)
+			assert artist, 'Artist does not exist'
+			return artist
+		except AssertionError,e:
+			raise self.SessionError(e)
+	class SessionError(Exception):
+		'''Session is invalid'''
 class ArtistHandler(BaseHandler):
 	def log_in(self,artist_id):
 		'''
@@ -57,25 +62,29 @@ class ArtistHandler(BaseHandler):
 	def get_artist_from_session(self):
 		'''
 		Assures that the artist is logged in
-		@raise AssertionError: 
-			logged_in is False
-			either logged_in or artist_id do not exist as session keys
-			artist_id is invalid, i.e. no artist by that id exists in the db
+		@raise SessionError: 
+			if logged_in is False
+			if either logged_in or artist_id do not exist as session keys
+			if artist_id is invalid, i.e. no artist by that id exists in the db
 		@return: the artist entity
 		@rtype: models.Artist
 		'''
-		session = get_current_session()
-		# make sure they are logged in
-		assert session['logged_in'] == True, 'Not logged in.'
-		
-		# grab the artist by the session artist_id and make sure it exists in the db
-		artist_id =  session.get('artist_id',None)
-		assert artist_id, 'No artist_id'
-		artist = models.Artist.get_by_id(artist_id)
-		assert artist, 'Artist does not exist'
-		return artist
+		try:
+			session = get_current_session()
+			# make sure they are logged in
+			assert session['logged_in'] == True, 'Not logged in.'
+			
+			# grab the artist by the session artist_id and make sure it exists in the db
+			artist_id =  session['artist_id']
+			artist = models.Artist.get_by_id(artist_id)
+			assert artist, 'Artist does not exist'
+			return artist
+		except AssertionError,e:
+			raise self.SessionError(e)
+		except KeyError,e:
+			raise self.SessionError(e)
 class UserHandler(BaseHandler):
 	pass
-class UploadHandler(BaseHandler,blobstore_handlers.BlobstoreUploadHandler):
+class UploadHandler(ArtistHandler,blobstore_handlers.BlobstoreUploadHandler):
 	pass
 

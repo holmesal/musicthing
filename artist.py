@@ -7,7 +7,6 @@ import os
 import soundcloud
 import handlers
 import webapp2
-
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
 
@@ -18,7 +17,7 @@ class ConnectSCHandler(handlers.ArtistHandler):
 		try:
 			# check for an existing artist session
 			artist = self.get_artist_from_session()
-		except AssertionError:
+		except self.SessionError:
 			# artist is not already logged in
 			template_values = {
 			}
@@ -36,7 +35,9 @@ class ConnectSCHandler(handlers.ArtistHandler):
 class ConnectAccountHandler(handlers.ArtistHandler):
 	def get(self):
 		# get the oauth code
-		code = self.request.get('code')
+		code = self.request.get('code',None)
+		if code is None:
+			return self.redirect(ARTIST_LOGIN)
 		# init the cloudsound client
 		client = soundcloud.Client(**sc_creds)
 		# exchange the code for an access token
@@ -53,9 +54,9 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 		
 		# check for an existing user 
 		try:
-			# will raise AssertionError if artist doesnt exist in db
+			# will raise SessionError if artist doesnt exist in db
 			artist = self.get_artist(artist_id)
-		except AssertionError:
+		except self.SessionError:
 			# artist does not exist yet. Create one
 			logging.info('artist does not exist')
 			artist = models.Artist(
@@ -86,19 +87,28 @@ class ManageArtistHandler(handlers.ArtistHandler):
 	def get(self):
 		try:
 			artist = self.get_artist_from_session()
-		except AssertionError:
-			return self.redirect()
+		except self.SessionError:
+			return self.redirect(ARTIST_LOGIN)
 		
-		# TODO: check gaesessions to make sure the artist is logged in. If not, redirect
-		self.say('manage page {}'.format(artist.strkey))
 		
-class UploadImageHandler(handlers.ArtistHandler):
+		self.say('manage page {}   '.format(artist.strkey))
+		
+		template_values = {
+						'artist_key' : artist.strkey,
+						'image_url' : artist.image_url
+		}
+		
+		template = jinja_environment.get_template('templates/artist/manage.html')
+		self.response.out.write(template.render(template_values))
+		
+		
+class UploadImageHandler(handlers.UploadHandler):
 	def get(self):
 		'''View page to upload an image
 		'''
 		try:
 			artist = self.get_artist_from_session()
-		except AssertionError:
+		except self.SessionError:
 			return self.redirect(ARTIST_LOGIN)
 		
 		signup = self.request.get('signup',0)
@@ -115,54 +125,45 @@ class UploadImageHandler(handlers.ArtistHandler):
 		'''
 		try:
 			artist = self.get_artist_from_session()
-		except AssertionError:
+		except self.SessionError:
 			return self.redirect(ARTIST_LOGIN)
 		
 		upload = self.get_uploads('image')[0]
 		img_key = upload.key()
-		artist.image = img_key
+		artist.image_key = img_key
 		artist.put()
-		return self.redirect(ARTIST_MANAGE)
-class UploadExistingAudioHandler(handlers.ArtistHandler):
-	def get(self):
-		'''For selecting an existing soundcloud track
-		'''
-		try:
-			artist = self.get_artist_from_session()
-		except AssertionError:
-			return self.redirect(ARTIST_LOGIN)
-		# fetch a list of all of the artists tracks from soundcloud
-		client = soundcloud.Client(access_token = artist.access_token)
-		client.get('/tracks')
 		
+		# determine where to redirect the user
 		signup = self.request.get('signup',0)
-		template_values = {
-						'signup' : signup,
-						'artist_key' : artist.strkey,
-						'upload_url' : blobstore.create_upload_url('/artist/{}/upload/audio'.format(artist.strkey))
-		}
-		
-		template = jinja_environment.get_template('templates/artist/upload_image.html')
-		self.response.out.write(template.render(template_values))
-		
-class UploadNewAudioHandler(handlers.ArtistHandler):
+		if signup == 1:
+			# the user is creating an account. 
+			# redirect to the audio upload page instead of manage
+			return self.redirect(UPLOAD_AUDIO)
+		else:
+			return self.redirect(ARTIST_MANAGE)
+class UploadAudioHandler(handlers.ArtistHandler):
 	def get(self):
 		'''View the page to upload an audio track url
 		'''
+		
 		try:
 			artist = self.get_artist_from_session()
-		except AssertionError:
+		except self.SessionError:
 			return self.redirect(ARTIST_LOGIN)
+		# fetch a list of all of the artists tracks from soundcloud
+		client = soundcloud.Client(access_token = artist.access_token)
+		response = client.get('/users/{}/tracks'.format(artist.strkey))
+		
 		
 		signup = self.request.get('signup',0)
-		
 		template_values = {
 						'signup' : signup,
+						'artist' : artist,
 						'artist_key' : artist.strkey,
-						'upload_url' : blobstore.create_upload_url('/artist/{}/upload/audio'.format(artist.strkey))
+						'tracks' : response
 		}
 		
-		template = jinja_environment.get_template('templates/artist/upload_image.html')
+		template = jinja_environment.get_template('templates/artist/upload_audio.html')
 		self.response.out.write(template.render(template_values))
 		
 	def post(self):
@@ -170,10 +171,26 @@ class UploadNewAudioHandler(handlers.ArtistHandler):
 		'''
 		try:
 			artist = self.get_artist_from_session()
-		except AssertionError:
+		except self.SessionError:
 			self.redirect(ARTIST_LOGIN)
-		self.say('audio upload post'.format(artist.strkey))
-
+		track_url = self.request.get('track_url')
+		artist.audio_url = track_url
+		artist.put()
+		self.say('audio upload post {}'.format(artist.audio_url))
+class ViewArtistHandler(handlers.BaseHandler):
+	def get(self,artist_id):
+		'''For viewing an artists page as a user
+		'''
+		try:
+			artist = self.get_artist(artist_id)
+		except:
+			self.say('Artist {} does not exist'.format(artist_id))
+		template_values = {
+						'artist' : artist,
+		}
+		
+		template = jinja_environment.get_template('templates/artist/view.html')
+		self.response.out.write(template.render(template_values))
 #===============================================================================
 # Development handlers
 #===============================================================================
@@ -182,7 +199,7 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 		'''
 		For creating an artist account without soundcloud handshake
 		'''
-		artist = models.Artist.get_or_insert('111',
+		artist = models.Artist.get_or_insert('30759062',
 											username = 'pat',
 											access_token = '1-29375-30759062-700d24381a1af75'
 											)
@@ -204,5 +221,6 @@ app = webapp2.WSGIApplication([
 							(ARTIST_LOGOUT,LogOutHandler),
 							(ARTIST_MANAGE,ManageArtistHandler),
 							(UPLOAD_IMAGE,UploadImageHandler),
-							(UPLOAD_AUDIO,UploadNewAudioHandler)
+							(UPLOAD_AUDIO,UploadAudioHandler),
+							('/artist/(.*)/',ViewArtistHandler)
 							])

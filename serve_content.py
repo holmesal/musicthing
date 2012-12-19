@@ -18,6 +18,7 @@ class ArtistImageHandler(handlers.BaseHandler):
 			artist = self.get_artist(artist_id)
 		except AssertionError:
 			raise Exception('Artist does not exist')
+		
 		self.say('image view {}'.format(artist_id))
 app = webapp2.WSGIApplication([
 							('/image/(.*)',ArtistImageHandler),
