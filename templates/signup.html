@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
+	<link href="/css/signup.css" rel='stylesheet' />
+</head>
+<body>
+	<div class="logo">logo</div>
+	<div class="middle-box">
+		<form class="well" id="signup" action="/signup" method="post">
+			<h4>Grow a mustache</h4>
+			{%if error%}
+			<p class="error">{{error}}</p>
+			{%else%}
+			<p>We'll use your email to keep you updated on what's happening with your tracks</p>
+			{%endif%}
+			<input class="textin" type="text" name="email" placeholder="Email" value="{{email}}">
+			<input class="textin" type="password" name="pw1" placeholder="Password">
+			<input class="textin" type="password" name="pw2" placeholder="Repeat password">
+			<input type="submit" class="btn btn-info" value="Get Started">
+		</form>
+	</div>
+
+
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+
+
+</body>
+</html>

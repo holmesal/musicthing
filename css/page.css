@@ -5,7 +5,7 @@ body{
 
 .top{
 	position: absolute;
-	background-color: gray;
+/* 	background-color: gray; */
 	left:0;
 	right:0;
 	top:0;

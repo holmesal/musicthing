@@ -1,0 +1,39 @@
+body{
+	background: url(/img/gray_jean.png);
+}
+
+.logo{
+	width: 400px;
+	height: 200px;
+	margin-left: auto;
+	margin-right: auto;
+/* 	background-color: green; */
+}
+
+.middle-box{
+	width: 400px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+}
+
+.textin{
+	height: 30px !important;
+	font-size: 16pt !important;
+	font-weight: 200;
+	padding: 6px 6px !important;
+	line-height: 24px !important;
+	
+	width: 90%
+}
+
+#signup input[type="submit"]{
+	width: 93%;
+	font-size: 14pt;
+	line-height: 140%;
+}
+
+.error{
+	font-weight: 600;
+	color: red;
+}

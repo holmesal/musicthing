@@ -97,7 +97,7 @@
 
 .sc-player ol.sc-trackslist li, .sc-player ol.sc-trackslist a {
 /*   color: transparent; */
-	color: #ebebeb;
+	color: #d6d6d6;
 }
 
 .sc-player ol.sc-trackslist li.active, .sc-player ol.sc-trackslist li:hover {

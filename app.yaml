@@ -10,6 +10,8 @@ handlers:
   script: landing.app
 - url: /artist.*
   script: artist.app
+- url: /signup
+  script: signup.app
 
 - url: /stats.*
   script: google.appengine.ext.appstats.ui.app
