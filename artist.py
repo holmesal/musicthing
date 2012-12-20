@@ -70,7 +70,7 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 			# log in
 			self.log_in(artist_id)
 			# redirect to image upload page
-			return self.redirect(UPLOAD_IMAGE)
+			return self.redirect(UPLOAD_AUDIO)
 		else:
 			# artist already exists. Login and redirect to manage
 			logging.info('artist exists')
@@ -178,6 +178,21 @@ class UploadAudioHandler(handlers.ArtistHandler):
 		artist.audio_url = track_url
 		artist.put()
 		self.say('audio upload post {}'.format(artist.audio_url))
+class UploadUrlsHandler(handlers.ArtistHandler):
+	def get(self):
+		'''For uploading urls to the bands other websites
+		'''
+		defined_urls = {
+			'bandcamp_url' : self.request.get('bandcamp_url',None),
+			'facebook_url' : self.request.get('facebook_url',None),
+			'lastfm_url' : self.request.get('lastfm_url',None),
+			'myspace_url' : self.request.get('myspace_url',None),
+			'tumblr_url' : self.request.get('tumblr_url',None),
+			'twitter_url' : self.request.get('twitter_url',None),
+			'youtube_url' : self.request.get('youtube_url',None),
+			'website_url' : self.request.get('website_url',None)
+		}
+		other_urls = self.request.get_multi
 class ViewArtistHandler(handlers.BaseHandler):
 	def get(self,artist_id):
 		'''For viewing an artists page as a user
@@ -215,6 +230,7 @@ ARTIST_LOGOUT = '/artist/logout'
 ARTIST_MANAGE = '/artist/manage'
 UPLOAD_IMAGE = '/artist/upload/image'
 UPLOAD_AUDIO = '/artist/upload/audio'
+UPLOAD_URLS = '/artist/upload/urls'
 app = webapp2.WSGIApplication([
 							('/artist/spoof',SpoofArtistHandler),
 							(ARTIST_LOGIN,ConnectSCHandler),
