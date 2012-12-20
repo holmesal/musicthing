@@ -34,6 +34,8 @@ class ConnectSCHandler(handlers.ArtistHandler):
 		return self.redirect(client.authorize_url())
 class ConnectAccountHandler(handlers.ArtistHandler):
 	def get(self):
+		'''Complete oauth handshake with soundcloud
+		'''
 		# get the oauth code
 		code = self.request.get('code',None)
 		if code is None:
@@ -94,8 +96,7 @@ class ManageArtistHandler(handlers.ArtistHandler):
 		self.say('manage page {}   '.format(artist.strkey))
 		
 		template_values = {
-						'artist_key' : artist.strkey,
-						'image_url' : artist.image_url
+						'artist' : artist
 		}
 		
 		template = jinja_environment.get_template('templates/artist/manage.html')

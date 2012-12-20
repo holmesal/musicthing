@@ -9,6 +9,18 @@ class Artist(ndb.Model):
 	external_image_url = ndb.StringProperty()
 	audio_url = ndb.StringProperty()
 	description = ndb.StringProperty()
+	
+	# external urls
+	bandcamp_url = ndb.StringProperty()
+	facebook_url = ndb.StringProperty()
+	lastfm_url = ndb.StringProperty()
+	myspace_url = ndb.StringProperty()
+	tumblr_url = ndb.StringProperty()
+	twitter_url = ndb.StringProperty()
+	youtube_url = ndb.StringProperty()
+	website_url = ndb.StringProperty()
+	other_urls = ndb.StringProperty(repeated=True)
+	
 	@property
 	def image_url(self):
 		'''Returns a url for serving the artists artwork
