@@ -192,7 +192,7 @@ class UploadUrlsHandler(handlers.ArtistHandler):
 			'youtube_url' : self.request.get('youtube_url',None),
 			'website_url' : self.request.get('website_url',None)
 		}
-		other_urls = self.request.get_multi
+		other_urls = self.request.get_multi('')
 class ViewArtistHandler(handlers.BaseHandler):
 	def get(self,artist_id):
 		'''For viewing an artists page as a user
