@@ -306,13 +306,7 @@ app = webapp2.WSGIApplication([
 							(ARTIST_LOGOUT,LogOutHandler),
 							(ARTIST_MANAGE,ManageArtistHandler),
 							(UPLOAD_IMAGE,UploadImageHandler),
-<<<<<<< HEAD
-							(UPLOAD_AUDIO,UploadAudioHandler),
-							(UPLOAD_URLS,UploadUrlsHandler),
-							('/artist/(.*)/',ViewArtistHandler)
-=======
 							(CHOOSE_TRACK,ChooseTrackHandler),
 							('/artist/(.*)/',ViewArtistHandler),
 							('/artist/test',TestHandler)
->>>>>>> building the artist track fetch page
 							])
