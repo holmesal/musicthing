@@ -7,7 +7,8 @@ class Artist(ndb.Model):
 	username = ndb.StringProperty()
 	image_key = ndb.BlobKeyProperty()
 	external_image_url = ndb.StringProperty()
-	audio_url = ndb.StringProperty()
+	track_url = ndb.StringProperty()
+	track_id = ndb.StringProperty()
 	description = ndb.StringProperty()
 	
 	# external urls

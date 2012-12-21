@@ -171,7 +171,7 @@ class UploadImageHandler(handlers.UploadHandler):
 # 		self.response.out.write(template.render(template_values))
 # 		
 
-# 		self.say('audio upload post {}'.format(artist.audio_url))
+# 		self.say('audio upload post {}'.format(artist.track_url))
 
 class ChooseTrackHandler(handlers.ArtistHandler):
 	def get(self):
@@ -205,14 +205,16 @@ class ChooseTrackHandler(handlers.ArtistHandler):
 # 		self.response.out.write(template.render(template_values))
 class StoreTrackHandler(handlers.ArtistHandler):
 	def get(self):
-		'''Store the soundcloud url to the artists audio track
+		'''Store the soundcloud url to the artists audio track, also track_id
 		'''
 		try:
 			artist = self.get_artist_from_session()
 		except self.SessionError:
 			return self.redirect(ARTIST_LOGIN)
 		track_url = self.request.get('track_url')
-		artist.audio_url = track_url
+		track_id = self.request.get('track_id')
+		artist.tack_url = track_url
+		artist.track_id = str(track_id)
 		artist.put()
 		
 		self.redirect(ARTIST_MANAGE)
