@@ -14,7 +14,7 @@
 	</div>
 	<div class="span6 offset4">
 		<form class="well" method="post" action="/artist/upload/urls">
-			<input type="text" name="bandcamp_url" placeholder="Bandcamp" value="{{artist.bandcamp_url|default('')}}">
+			<input type="text" name="bandcamp_url" placeholder="Bandcamp" value="{%if artist.bandcamp_url%}{{artist.bandcamp_url}}{%endif%}">
 			<input type="text" name="facebook_url" placeholder="Facebook" value="{{artist.facebook_url}}">
 			<input type="text" name="myspace_url" placeholder="Myspace" value="{{artist.myspace_url}}">
 			<input type="text" name="twitter_url" placeholder="Twitter" value="{{artist.twitter_url}}">
