@@ -214,6 +214,8 @@ class StoreTrackHandler(handlers.ArtistHandler):
 		track_url = self.request.get('track_url')
 		artist.audio_url = track_url
 		artist.put()
+		
+		self.redirect(ARTIST_MANAGE)
 
 class UploadUrlsHandler(handlers.ArtistHandler):
 	def get(self):
