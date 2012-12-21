@@ -21,19 +21,20 @@ class ConnectSCHandler(handlers.ArtistHandler):
 			# artist is not already logged in
 			template_values = {
 			}
-			template = jinja_environment.get_template('templates/artist/login.html')
+			template = jinja_environment.get_template('templates/signup.html')
 			self.response.out.write(template.render(template_values))
 		else:
 			# artist is already logged in, redirect to manage page
 			return self.redirect(ARTIST_MANAGE)
 		
-	def post(self):
-		'''Initiate soundcloud handshake. Redirects to soundcloud for auth.
-		'''
+class SCAuthHandler(handlers.ArtistHandler):
+	def get(self):
 		# init soundcloud client
 		client = soundcloud.Client(**sc_creds)
 		# redirect to soundcloud page to perform oauth handshake
-		return self.redirect(client.authorize_url())
+		return self.redirect(client.authorize_url())	
+	
+
 class ConnectAccountHandler(handlers.ArtistHandler):
 	def get(self):
 		'''Complete oauth handshake with soundcloud
@@ -72,7 +73,7 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 			# log in
 			self.log_in(artist_id)
 			# redirect to image upload page
-			return self.redirect(UPLOAD_AUDIO)
+			return self.redirect(CHOOSE_TRACK)
 		else:
 			# artist already exists. Login and redirect to manage
 			logging.info('artist exists')
@@ -144,9 +145,46 @@ class UploadImageHandler(handlers.UploadHandler):
 			return self.redirect(UPLOAD_AUDIO)
 		else:
 			return self.redirect(ARTIST_MANAGE)
-class UploadAudioHandler(handlers.ArtistHandler):
+# class UploadAudioHandler(handlers.ArtistHandler):
+# 	def get(self):
+# 		'''View the page to upload an audio track url
+# 		'''
+# 		
+# 		try:
+# 			artist = self.get_artist_from_session()
+# 		except self.SessionError:
+# 			return self.redirect(ARTIST_LOGIN)
+# 		# fetch a list of all of the artists tracks from soundcloud
+# 		client = soundcloud.Client(access_token = artist.access_token)
+# 		response = client.get('/users/{}/tracks'.format(artist.strkey))
+# 		
+# 		
+# 		signup = self.request.get('signup',0)
+# 		template_values = {
+# 						'signup' : signup,
+# 						'artist' : artist,
+# 						'artist_key' : artist.strkey,
+# 						'tracks' : response
+# 		}
+# 		
+# 		template = jinja_environment.get_template('templates/artist/upload_audio.html')
+# 		self.response.out.write(template.render(template_values))
+# 		
+# 	def post(self):
+# 		'''Store the soundcloud url to the artists audio track
+# 		'''
+# 		try:
+# 			artist = self.get_artist_from_session()
+# 		except self.SessionError:
+# 			self.redirect(ARTIST_LOGIN)
+# 		track_url = self.request.get('track_url')
+# 		artist.audio_url = track_url
+# 		artist.put()
+# 		self.say('audio upload post {}'.format(artist.audio_url))
+
+class ChooseTrackHandler(handlers.ArtistHandler):
 	def get(self):
-		'''View the page to upload an audio track url
+		'''View the page to choose tracks from soundcloud
 		'''
 		
 		try:
@@ -168,18 +206,8 @@ class UploadAudioHandler(handlers.ArtistHandler):
 		
 		template = jinja_environment.get_template('templates/artist/upload_audio.html')
 		self.response.out.write(template.render(template_values))
-		
-	def post(self):
-		'''Store the soundcloud url to the artists audio track
-		'''
-		try:
-			artist = self.get_artist_from_session()
-		except self.SessionError:
-			self.redirect(ARTIST_LOGIN)
-		track_url = self.request.get('track_url')
-		artist.audio_url = track_url
-		artist.put()
-		self.say('audio upload post {}'.format(artist.audio_url))
+
+
 class UploadUrlsHandler(handlers.ArtistHandler):
 	def get(self):
 		'''Dev handler for testing the post.
@@ -253,22 +281,38 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 		self.log_in(artist.strkey)
 		
 		self.say('Done!')
+		
+class TestHandler(handlers.ArtistHandler):
+	def get(self):
+		
+		template = jinja_environment.get_template('templates/artist/choosetrack.html')
+		self.response.out.write(template.render())
+
 
 ARTIST_LOGIN = '/artist/login'
+SC_AUTH = '/artist/scauth'
 ARTIST_LOGIN_COMPLETE = '/artist/login/complete'
 ARTIST_LOGOUT = '/artist/logout'
 ARTIST_MANAGE = '/artist/manage'
 UPLOAD_IMAGE = '/artist/upload/image'
-UPLOAD_AUDIO = '/artist/upload/audio'
+# UPLOAD_AUDIO = '/artist/upload/audio'
+CHOOSE_TRACK = '/artist/choosetrack'
 UPLOAD_URLS = '/artist/upload/urls'
 app = webapp2.WSGIApplication([
 							('/artist/spoof',SpoofArtistHandler),
 							(ARTIST_LOGIN,ConnectSCHandler),
+							(SC_AUTH,SCAuthHandler),
 							(ARTIST_LOGIN_COMPLETE,ConnectAccountHandler),
 							(ARTIST_LOGOUT,LogOutHandler),
 							(ARTIST_MANAGE,ManageArtistHandler),
 							(UPLOAD_IMAGE,UploadImageHandler),
+<<<<<<< HEAD
 							(UPLOAD_AUDIO,UploadAudioHandler),
 							(UPLOAD_URLS,UploadUrlsHandler),
 							('/artist/(.*)/',ViewArtistHandler)
+=======
+							(CHOOSE_TRACK,ChooseTrackHandler),
+							('/artist/(.*)/',ViewArtistHandler),
+							('/artist/test',TestHandler)
+>>>>>>> building the artist track fetch page
 							])
