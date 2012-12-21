@@ -9,15 +9,15 @@
 	<div class="band_name">
 		<h1>Band Name</h1>
 	</div>
-	<div class="artwork"></div>
+	<a class="artwork" href="/artist/choosetrack"></a>
 	<div class="span6 offset4">
 		<form class="well" method="post" action="/artist/upload/urls">
-			<input type="text" name="bandcamp_url" placeholder="Bandcamp">
-			<input type="text" name="facebook_url" placeholder="Facebook">
-			<input type="text" name="myspace_url" placeholder="Myspace">
-			<input type="text" name="twitter_url" placeholder="Twitter">
-			<input type="text" name="youtube_url" placeholder="YouTube">
-			<input type="text" name="website_url" placeholder="Website">
+			<input type="text" name="bandcamp_url" placeholder="Bandcamp" value="{{artist.bandcamp_url}}">
+			<input type="text" name="facebook_url" placeholder="Facebook" value="{{artist.facebook_url}}">
+			<input type="text" name="myspace_url" placeholder="Myspace" value="{{artist.myspace_url}}">
+			<input type="text" name="twitter_url" placeholder="Twitter" value="{{artist.twitter_url}}">
+			<input type="text" name="youtube_url" placeholder="YouTube" value="{{artist.youtube_url}}">
+			<input type="text" name="website_url" placeholder="Website" value="{{artist.website_url}}">
 			<input type="submit" class="btn btn-info" value="Save Changes">
 		</form>
 	</div>
@@ -26,7 +26,7 @@
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <script type="text/javascript">
 /* 	72047558 */
-	$.get('https://api.soundcloud.com/tracks/{{track_id}}.json?client_id=d03ca49fb6764663d0992eadc69f8bf1', function(data) {
+	$.get('https://api.soundcloud.com/tracks/{{artist.track_id}}.json?client_id=d03ca49fb6764663d0992eadc69f8bf1', function(data) {
 		
 		var artwork = data.artwork_url
 		
@@ -42,7 +42,7 @@
 		
 		$('.artwork').css("background-image","url("+artwork+")")
 		
-		console.log(data)
+/* 		console.log(data) */
 /*
 	  for (var key in data){
 		  var track = data[key];

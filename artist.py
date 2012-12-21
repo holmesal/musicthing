@@ -96,7 +96,9 @@ class ManageArtistHandler(handlers.ArtistHandler):
 			return self.redirect(ARTIST_LOGIN)
 		
 		
-		self.say('manage page {}   '.format(artist.strkey))
+# 		self.say('manage page {}   '.format(artist.strkey))
+
+		logging.info(artist.bandcamp_url)
 		
 		template_values = {
 						'artist' : artist
@@ -238,9 +240,9 @@ class UploadUrlsHandler(handlers.ArtistHandler):
 		defined_urls = {
 			'bandcamp_url' : self.request.get('bandcamp_url',None),
 			'facebook_url' : self.request.get('facebook_url',None),
-			'lastfm_url' : self.request.get('lastfm_url',None),
+# 			'lastfm_url' : self.request.get('lastfm_url',None),
 			'myspace_url' : self.request.get('myspace_url',None),
-			'soundcloud_url' : self.request.get('soundcloud_url',None),
+# 			'soundcloud_url' : self.request.get('soundcloud_url',None),
 			'tumblr_url' : self.request.get('tumblr_url',None),
 			'twitter_url' : self.request.get('twitter_url',None),
 			'youtube_url' : self.request.get('youtube_url',None),
