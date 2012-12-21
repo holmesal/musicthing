@@ -197,6 +197,7 @@ class ChooseTrackHandler(handlers.ArtistHandler):
 		
 		template = jinja_environment.get_template('templates/artist/upload_audio.html')
 		self.response.out.write(template.render(template_values))
+class StoreTrackHandler(handlers.ArtistHandler):
 	def post(self):
 		'''Store the soundcloud url to the artists audio track
 		'''
@@ -297,6 +298,7 @@ ARTIST_MANAGE = '/artist/manage'
 UPLOAD_IMAGE = '/artist/upload/image'
 # UPLOAD_AUDIO = '/artist/upload/audio'
 CHOOSE_TRACK = '/artist/choosetrack'
+STORE_TRACK = '/artist/storetrack'
 UPLOAD_URLS = '/artist/upload/urls'
 app = webapp2.WSGIApplication([
 							('/artist/spoof',SpoofArtistHandler),
@@ -308,6 +310,7 @@ app = webapp2.WSGIApplication([
 							(UPLOAD_IMAGE,UploadImageHandler),
 							(UPLOAD_URLS,UploadUrlsHandler),
 							(CHOOSE_TRACK,ChooseTrackHandler),
+							(STORE_TRACK,StoreTrackHandler),
 							('/artist/(.*)/',ViewArtistHandler),
 							('/artist/test',TestHandler)
 							])
