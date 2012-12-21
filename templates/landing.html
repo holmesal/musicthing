@@ -4,7 +4,7 @@
   
   <head>
     
-    <title>Mustache</title>
+    <title>Le Mustache</title>
     <link rel="stylesheet" href="./css/page.css" type="text/css">
     <link rel="stylesheet" href="./css/sc-player-artwork.css" type="text/css">
   
@@ -18,7 +18,7 @@
         
         <div class="sc-player">
         	{% for track in tracks %}
-        		<a href="{{track}}" class="sc-player"></a>
+        		<a href="{{track.track_url}}" class="sc-player"></a>
         	{% endfor %}
 <!--
 
@@ -33,6 +33,14 @@
     <script type="text/javascript" src="../js/soundcloud.player.api.js"></script>
     <script type="text/javascript" src="../js/sc-player.js"></script>
     <script type="text/javascript" src="../js/player-custom.js"></script>
+    <script type="text/javascript">
+	    //enter sandman
+	    {% for track in tracks %}
+	    	
+	    	
+	    	
+	    {% endfor %}
+    </script>
 
   
   </body>

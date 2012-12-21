@@ -31,7 +31,7 @@ $(document).bind('onPlayerTrackSwitch.scPlayer', function(event, track){
 		
 		console.log(newtrack)
 		//update the select link
-		$('#btnSelect').attr('href','/artist/storetrack?track_url='+encodeURIComponent(newtrack.permalink_url))
+		$('#btnSelect').attr('href','/artist/storetrack?track_url='+encodeURIComponent(newtrack.permalink_url)+'&track_id='newtrack.id)
 		
 	}, 10)
 	
