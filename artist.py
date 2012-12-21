@@ -142,7 +142,7 @@ class UploadImageHandler(handlers.UploadHandler):
 		if signup == 1:
 			# the user is creating an account. 
 			# redirect to the audio upload page instead of manage
-			return self.redirect(UPLOAD_AUDIO)
+			return self.redirect(CHOOSE_TRACK)
 		else:
 			return self.redirect(ARTIST_MANAGE)
 # class UploadAudioHandler(handlers.ArtistHandler):
@@ -170,16 +170,7 @@ class UploadImageHandler(handlers.UploadHandler):
 # 		template = jinja_environment.get_template('templates/artist/upload_audio.html')
 # 		self.response.out.write(template.render(template_values))
 # 		
-# 	def post(self):
-# 		'''Store the soundcloud url to the artists audio track
-# 		'''
-# 		try:
-# 			artist = self.get_artist_from_session()
-# 		except self.SessionError:
-# 			self.redirect(ARTIST_LOGIN)
-# 		track_url = self.request.get('track_url')
-# 		artist.audio_url = track_url
-# 		artist.put()
+
 # 		self.say('audio upload post {}'.format(artist.audio_url))
 
 class ChooseTrackHandler(handlers.ArtistHandler):
@@ -206,7 +197,16 @@ class ChooseTrackHandler(handlers.ArtistHandler):
 		
 		template = jinja_environment.get_template('templates/artist/upload_audio.html')
 		self.response.out.write(template.render(template_values))
-
+	def post(self):
+		'''Store the soundcloud url to the artists audio track
+		'''
+		try:
+			artist = self.get_artist_from_session()
+		except self.SessionError:
+			self.redirect(ARTIST_LOGIN)
+		track_url = self.request.get('track_url')
+		artist.audio_url = track_url
+		artist.put()
 
 class UploadUrlsHandler(handlers.ArtistHandler):
 	def get(self):
@@ -306,6 +306,7 @@ app = webapp2.WSGIApplication([
 							(ARTIST_LOGOUT,LogOutHandler),
 							(ARTIST_MANAGE,ManageArtistHandler),
 							(UPLOAD_IMAGE,UploadImageHandler),
+							(UPLOAD_URLS,UploadUrlsHandler),
 							(CHOOSE_TRACK,ChooseTrackHandler),
 							('/artist/(.*)/',ViewArtistHandler),
 							('/artist/test',TestHandler)
