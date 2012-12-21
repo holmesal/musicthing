@@ -15,6 +15,7 @@ class Artist(ndb.Model):
 	facebook_url = ndb.StringProperty()
 	lastfm_url = ndb.StringProperty()
 	myspace_url = ndb.StringProperty()
+	soundcloud_url = ndb.StringProperty()
 	tumblr_url = ndb.StringProperty()
 	twitter_url = ndb.StringProperty()
 	youtube_url = ndb.StringProperty()

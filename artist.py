@@ -204,7 +204,7 @@ class StoreTrackHandler(handlers.ArtistHandler):
 		try:
 			artist = self.get_artist_from_session()
 		except self.SessionError:
-			self.redirect(ARTIST_LOGIN)
+			return self.redirect(ARTIST_LOGIN)
 		track_url = self.request.get('track_url')
 		artist.audio_url = track_url
 		artist.put()
@@ -230,6 +230,7 @@ class UploadUrlsHandler(handlers.ArtistHandler):
 			'facebook_url' : self.request.get('facebook_url',None),
 			'lastfm_url' : self.request.get('lastfm_url',None),
 			'myspace_url' : self.request.get('myspace_url',None),
+			'soundcloud_url' : self.request.get('soundcloud_url',None),
 			'tumblr_url' : self.request.get('tumblr_url',None),
 			'twitter_url' : self.request.get('twitter_url',None),
 			'youtube_url' : self.request.get('youtube_url',None),
