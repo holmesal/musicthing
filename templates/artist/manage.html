@@ -1,37 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
+<html>
+<head>
+	<link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
+	<link href="/css/manage.css" rel='stylesheet' />
+</head>
+<body>
+	<div class="band_name">
+		<h1>Band Name</h1>
+	</div>
+	<div class="artwork"></div>
+	<div class="span6 offset4">
+		<form class="well" method="post" action="/artist/upload/urls">
+			<input type="text" name="bandcamp_url" placeholder="Bandcamp">
+			<input type="text" name="facebook_url" placeholder="Facebook">
+			<input type="text" name="myspace_url" placeholder="Myspace">
+			<input type="text" name="twitter_url" placeholder="Twitter">
+			<input type="text" name="youtube_url" placeholder="YouTube">
+			<input type="text" name="website_url" placeholder="Website">
+			<input type="submit" class="btn btn-info" value="Save Changes">
+		</form>
+	</div>
 
-		<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
-		Remove this if you use the .htaccess -->
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
-		<title>manage</title>
-		<meta name="description" content="" />
-		<meta name="author" content="Patrick Walsh" />
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script type="text/javascript">
+/* 	72047558 */
+	$.get('https://api.soundcloud.com/tracks/{{track_id}}.json?client_id=d03ca49fb6764663d0992eadc69f8bf1', function(data) {
+		
+		var artwork = data.artwork_url
+		
+		if (artwork == null){
+			if (data.user.avatar_url != null){
+				artwork = data.user.avatar_url
+			} else{
+				artwork = "/img/no_artwork.png"
+			}
+		}
+		
+		artwork = artwork.replace("large","t300x300")
+		
+		$('.artwork').css("background-image","url("+artwork+")")
+		
+		console.log(data)
+/*
+	  for (var key in data){
+		  var track = data[key];
+		  console.log(track.artwork_url)
+		  $('div:.sc-player').append('<a href="'+track.permalink_url+'" class="sc-player"></a>')
+	  }
+*/
+	  
+	});
+</script>
 
-		<meta name="viewport" content="width=device-width; initial-scale=1.0" />
 
-		<!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
-		<link rel="shortcut icon" href="/favicon.ico" />
-		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-	</head>
-
-	<body>
-		<div>
-			<header>
-				<h1>manage</h1>
-			</header>
-
-			<div>
-			</div>
-
-			<footer>
-				<p>
-					&copy; Copyright  by Patrick Walsh
-				</p>
-			</footer>
-		</div>
-	</body>
+</body>
 </html>

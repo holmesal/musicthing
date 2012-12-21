@@ -296,9 +296,13 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 		
 class TestHandler(handlers.ArtistHandler):
 	def get(self):
+	
+		template_values = {
+			'track_id'	: '640341'
+		}
 		
-		template = jinja_environment.get_template('templates/artist/choosetrack.html')
-		self.response.out.write(template.render())
+		template = jinja_environment.get_template('templates/artist/manage.html')
+		self.response.out.write(template.render(template_values))
 
 
 ARTIST_LOGIN = '/artist/login'
