@@ -2,9 +2,9 @@ import webapp2
 import logging
 import jinja2
 import os
-import utils
+import handlers
 
-class LandingHandler(utils.BaseHandler):
+class LandingHandler(handlers.BaseHandler):
 	def get(self):
 	
 		template_values = {

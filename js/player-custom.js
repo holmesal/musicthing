@@ -10,7 +10,9 @@ function nextTrack(){
 $(document).bind('onPlayerTrackSwitch.scPlayer', function(event, track){
   console.log(event.target, 'it jumped to this track:', track);
 /* 	elem = $('a[href*="'+track.permalink+'"]') */
-
+	
+	var newtrack = track
+	
 	setTimeout(function(event,track){
 		idx = $('.sc-trackslist > .active').index()
 /* 		console.log(idx) */
@@ -28,7 +30,11 @@ $(document).bind('onPlayerTrackSwitch.scPlayer', function(event, track){
 		
 		}
 		
-	}, 0)
+		console.log(newtrack)
+		//update the select link
+		$('#btnSelect').attr('href','/artist/storetrack?track_url='+encodeURIComponent(newtrack.permalink_url))
+		
+	}, 10)
 	
 	
 });
