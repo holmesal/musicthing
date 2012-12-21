@@ -8,6 +8,13 @@
 }
 
 .select{
+	position: absolute;
+	left:50%;
+	width: 300px;
 	text-align: center;
 	margin-top: -150px;
+	margin-left: -150px;
+}
+
+#btnSelect{
 }
