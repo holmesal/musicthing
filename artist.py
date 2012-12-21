@@ -28,6 +28,8 @@ class ConnectSCHandler(handlers.ArtistHandler):
 			return self.redirect(ARTIST_MANAGE)
 		
 	def post(self):
+		'''Initiate soundcloud handshake. Redirects to soundcloud for auth.
+		'''
 		# init soundcloud client
 		client = soundcloud.Client(**sc_creds)
 		# redirect to soundcloud page to perform oauth handshake
@@ -180,8 +182,20 @@ class UploadAudioHandler(handlers.ArtistHandler):
 		self.say('audio upload post {}'.format(artist.audio_url))
 class UploadUrlsHandler(handlers.ArtistHandler):
 	def get(self):
+		'''Dev handler for testing the post.
+		'''
+		template_values = {}
+		template = jinja_environment.get_template('templates/artist/upload_urls.html')
+		self.response.out.write(template.render(template_values))
+	def post(self):
 		'''For uploading urls to the bands other websites
 		'''
+		logging.info('HI')
+		try:
+			artist = self.get_artist_from_session()
+		except self.SessionError:
+			return self.redirect(ARTIST_LOGIN)
+		# fuck bitches, accumulate urls
 		defined_urls = {
 			'bandcamp_url' : self.request.get('bandcamp_url',None),
 			'facebook_url' : self.request.get('facebook_url',None),
@@ -192,7 +206,23 @@ class UploadUrlsHandler(handlers.ArtistHandler):
 			'youtube_url' : self.request.get('youtube_url',None),
 			'website_url' : self.request.get('website_url',None)
 		}
-		other_urls = self.request.get_multi('')
+		# store urls
+		for url_id,url in defined_urls.iteritems():
+			setattr(artist, url_id, url)
+		
+		# store extraneous urls
+		other_urls = self.request.get_all('other_urls')
+		artist.other_urls = other_urls
+		
+		logging.info(other_urls)
+		logging.info(artist.other_urls)
+		logging.info(type(other_urls))
+		logging.info(type(artist.other_urls))
+		# store changes
+		artist.put()
+		
+		# return to the manage page
+		return self.redirect(ARTIST_MANAGE)
 class ViewArtistHandler(handlers.BaseHandler):
 	def get(self,artist_id):
 		'''For viewing an artists page as a user
@@ -239,5 +269,6 @@ app = webapp2.WSGIApplication([
 							(ARTIST_MANAGE,ManageArtistHandler),
 							(UPLOAD_IMAGE,UploadImageHandler),
 							(UPLOAD_AUDIO,UploadAudioHandler),
+							(UPLOAD_URLS,UploadUrlsHandler),
 							('/artist/(.*)/',ViewArtistHandler)
 							])
