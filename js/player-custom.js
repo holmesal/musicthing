@@ -5,17 +5,16 @@ function nextTrack(){
 	console.log(next)
 }
 
-
-
 $(document).bind('onPlayerTrackSwitch.scPlayer', function(event, track){
   console.log(event.target, 'it jumped to this track:', track);
 /* 	elem = $('a[href*="'+track.permalink+'"]') */
 	
 	var newtrack = track
 	
+	
 	setTimeout(function(event,track){
 		idx = $('.sc-trackslist > .active').index()
-/* 		console.log(idx) */
+		console.log(idx)
 		
 		if(idx > -1){
 		
@@ -37,4 +36,12 @@ $(document).bind('onPlayerTrackSwitch.scPlayer', function(event, track){
 	}, 10)
 	
 	
+});
+
+$(document).bind('onPlayerPause.scPlayer', function(event){
+	idx = $('.sc-trackslist > .active').index()
+	if (idx == $('.sc-trackslist > li').size()-1){
+		location.reload()
+	}
+  
 });
