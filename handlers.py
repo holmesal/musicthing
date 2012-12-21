@@ -76,7 +76,9 @@ class ArtistHandler(BaseHandler):
 			
 			# grab the artist by the session artist_id and make sure it exists in the db
 			artist_id =  session['artist_id']
+			logging.debug(artist_id)
 			artist = models.Artist.get_by_id(artist_id)
+			artist.artist_id = artist_id
 			assert artist, 'Artist does not exist'
 			return artist
 		except AssertionError,e:

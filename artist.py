@@ -184,10 +184,16 @@ class ChooseTrackHandler(handlers.ArtistHandler):
 			artist = self.get_artist_from_session()
 		except self.SessionError:
 			return self.redirect(ARTIST_LOGIN)
+			
+		template_values = {
+			"artist"	:	artist
+		}
+		
+		logging.info(artist.artist_id)
 		
 		#write out the choosetrack page
 		template = jinja_environment.get_template('templates/artist/choosetrack.html')
-		self.response.out.write(template.render())
+		self.response.out.write(template.render(template_values))
 		
 # 		
 # 		# fetch a list of all of the artists tracks from soundcloud

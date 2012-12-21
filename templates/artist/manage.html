@@ -9,10 +9,12 @@
 	<div class="band_name">
 		<h1>Band Name</h1>
 	</div>
-	<a class="artwork" href="/artist/choosetrack"></a>
+	<div class="artwork">
+		<a href="/artist/choosetrack" class="chooseLink"></a>
+	</div>
 	<div class="span6 offset4">
 		<form class="well" method="post" action="/artist/upload/urls">
-			<input type="text" name="bandcamp_url" placeholder="Bandcamp" value="{{artist.bandcamp_url}}">
+			<input type="text" name="bandcamp_url" placeholder="Bandcamp" value="{{artist.bandcamp_url|default('')}}">
 			<input type="text" name="facebook_url" placeholder="Facebook" value="{{artist.facebook_url}}">
 			<input type="text" name="myspace_url" placeholder="Myspace" value="{{artist.myspace_url}}">
 			<input type="text" name="twitter_url" placeholder="Twitter" value="{{artist.twitter_url}}">
@@ -26,9 +28,14 @@
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <script type="text/javascript">
 /* 	72047558 */
+	
+	console.log("{{artist.track_id}}")
+	
 	$.get('https://api.soundcloud.com/tracks/{{artist.track_id}}.json?client_id=d03ca49fb6764663d0992eadc69f8bf1', function(data) {
 		
 		var artwork = data.artwork_url
+		console.log(data)
+		console.log(artwork)
 		
 		if (artwork == null){
 			if (data.user.avatar_url != null){
@@ -38,7 +45,9 @@
 			}
 		}
 		
+		console.log(artwork)
 		artwork = artwork.replace("large","t300x300")
+		console.log(artwork)
 		
 		$('.artwork').css("background-image","url("+artwork+")")
 		
