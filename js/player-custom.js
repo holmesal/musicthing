@@ -18,6 +18,10 @@ $(document).bind('onPlayerTrackSwitch.scPlayer', function(event, track){
 /* 		console.log(idx) */
 		
 		if(idx > -1){
+			console.log($('.sc-trackslist').size())
+			if (idx == $('.sc-trackslist > .active').length-1){
+				alert("end")
+			}
 		
 			margin = -400*idx-200
 			console.log(margin)
