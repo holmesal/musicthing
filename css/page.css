@@ -11,3 +11,11 @@ body{
 	top:0;
 	height: 100px;
 }
+
+.sc-no-artwork{
+	background-color: #3e3e3e;
+}
+
+.sc-loading-artwork{
+	background-color: #3e3e3e;
+}

@@ -182,21 +182,27 @@ class ChooseTrackHandler(handlers.ArtistHandler):
 			artist = self.get_artist_from_session()
 		except self.SessionError:
 			return self.redirect(ARTIST_LOGIN)
-		# fetch a list of all of the artists tracks from soundcloud
-		client = soundcloud.Client(access_token = artist.access_token)
-		response = client.get('/users/{}/tracks'.format(artist.strkey))
 		
+		#write out the choosetrack page
+		template = jinja_environment.get_template('templates/artist/choosetrack.html')
+		self.response.out.write(template.render())
 		
-		signup = self.request.get('signup',0)
-		template_values = {
-						'signup' : signup,
-						'artist' : artist,
-						'artist_key' : artist.strkey,
-						'tracks' : response
-		}
-		
-		template = jinja_environment.get_template('templates/artist/upload_audio.html')
-		self.response.out.write(template.render(template_values))
+# 		
+# 		# fetch a list of all of the artists tracks from soundcloud
+# 		client = soundcloud.Client(access_token = artist.access_token)
+# 		response = client.get('/users/{}/tracks'.format(artist.strkey))
+# 		
+# 		
+# 		signup = self.request.get('signup',0)
+# 		template_values = {
+# 						'signup' : signup,
+# 						'artist' : artist,
+# 						'artist_key' : artist.strkey,
+# 						'tracks' : response
+# 		}
+# 		
+# 		template = jinja_environment.get_template('templates/artist/upload_audio.html')
+# 		self.response.out.write(template.render(template_values))
 class StoreTrackHandler(handlers.ArtistHandler):
 	def get(self):
 		'''Store the soundcloud url to the artists audio track
