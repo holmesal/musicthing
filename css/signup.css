@@ -1,6 +1,13 @@
 body{
-	background: url(/img/gray_jean.png);
-	text-align: center;
+	margin: 0;
+	background-image: url(/img/bgradio.jpg);
+	background-size: cover;
+	background-position: top center;
+	color: #202020;
+	
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", 'Open Sans', sans-serif;
+	-webkit-font-smoothing: antialiased;
+	font-weight: 300;
 }
 
 .logo{
@@ -12,9 +19,13 @@ body{
 }
 
 .explanation{
+	background-color: rgba(250,250,250,0.7);
 	width: 600px;
+	border-radius: 10px;
 	margin-left: auto;
 	margin-right: auto;
+	text-align: center;
+	padding: 20px;
 /* 	background-color: red; */
 }
 

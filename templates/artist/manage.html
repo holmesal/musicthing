@@ -14,12 +14,12 @@
 	</div>
 	<div class="span6 offset4">
 		<form class="well" method="post" action="/artist/upload/urls">
-			<input type="text" name="bandcamp_url" placeholder="Bandcamp" value="{%if artist.bandcamp_url%}{{artist.bandcamp_url}}{%endif%}">
-			<input type="text" name="facebook_url" placeholder="Facebook" value="{{artist.facebook_url}}">
-			<input type="text" name="myspace_url" placeholder="Myspace" value="{{artist.myspace_url}}">
-			<input type="text" name="twitter_url" placeholder="Twitter" value="{{artist.twitter_url}}">
-			<input type="text" name="youtube_url" placeholder="YouTube" value="{{artist.youtube_url}}">
-			<input type="text" name="website_url" placeholder="Website" value="{{artist.website_url}}">
+			<input type="text" name="bandcamp_url" placeholder="Bandcamp" value="{%if artist.bandcamp_url != 'None'%}{{artist.bandcamp_url}}{%endif%}">
+			<input type="text" name="facebook_url" placeholder="Facebook" value="{%if artist.bandcamp_url != 'None'%}{{artist.facebook_url}}{%endif%}">
+			<input type="text" name="myspace_url" placeholder="Myspace" value="{%if artist.bandcamp_url != 'None'%}{{artist.myspace_url}}{%endif%}">
+			<input type="text" name="twitter_url" placeholder="Twitter" value="{%if artist.bandcamp_url != 'None'%}{{artist.twitter_url}}{%endif%}">
+			<input type="text" name="youtube_url" placeholder="YouTube" value="{%if artist.bandcamp_url != 'None'%}{{artist.youtube_url}}{%endif%}">
+			<input type="text" name="website_url" placeholder="Website" value="{%if artist.bandcamp_url != 'None'%}{{artist.website_url}}{%endif%}">
 			<input type="submit" class="btn btn-info" value="Save Changes">
 		</form>
 	</div>
