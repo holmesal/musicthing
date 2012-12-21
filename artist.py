@@ -198,7 +198,7 @@ class ChooseTrackHandler(handlers.ArtistHandler):
 		template = jinja_environment.get_template('templates/artist/upload_audio.html')
 		self.response.out.write(template.render(template_values))
 class StoreTrackHandler(handlers.ArtistHandler):
-	def post(self):
+	def get(self):
 		'''Store the soundcloud url to the artists audio track
 		'''
 		try:
