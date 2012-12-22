@@ -17,8 +17,9 @@
 				<div class="artwork">
 					<a href="/artist/choosetrack" class="chooseLink"></a>
 				</div>
+			<p class="track_name"></p>
 			<a href="/artist/choosetrack" class="btn btn-info">Choose a new track</a>
-			<a href="http://www.soundcloud.com/upload" class="btn btn-warning">Upload via SoundCloud</a>
+			<a href="http://www.soundcloud.com/upload" target="_blank" class="btn btn-warning">Upload via SoundCloud</a>
 			</div>
 			
 			<div class="span6">
@@ -45,6 +46,7 @@
 	$.get('https://api.soundcloud.com/tracks/{{artist.track_id}}.json?client_id=d03ca49fb6764663d0992eadc69f8bf1', function(data) {
 		
 		$(".artist_name").text(data.user.username)
+		$(".track_name").text(data.title)
 		
 		var artwork = data.artwork_url
 		console.log(data)

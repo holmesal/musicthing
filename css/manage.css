@@ -18,9 +18,14 @@ h1{
 	height: 400px;
 	margin-left: auto;
 	margin-right: auto;
-	margin-bottom: 20px;
+	margin-bottom: 10px;
 	background-size: cover;
 	position: relative;
+}
+
+.track_name{
+	margin-bottom: 10px;
+	font-weight: 600;
 }
 
 .pane-left{
