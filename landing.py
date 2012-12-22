@@ -33,8 +33,11 @@ class LandingHandler(handlers.BaseHandler):
 		self.response.out.write(template.render())
 
 	def post(self):
+		email = self.request.get('email')
 		
-		
+		user = models.User.query().filter(models.User.email == email).get()
+		if not user:
+			models.User(email=email).put()
 		
 		template_values = {
 			"state"	:	"signedup"

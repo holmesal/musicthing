@@ -47,5 +47,8 @@ class Artist(ndb.Model):
 		@rtype: str
 		'''
 		return str(self.key.id())
+
+class User(ndb.Model):
+	email = ndb.StringProperty()
 #class Song(ndb.Model):
 #	audio = blobstore.blob
