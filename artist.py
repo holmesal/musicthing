@@ -1,4 +1,5 @@
 from google.appengine.ext import blobstore
+from google.appengine.api import taskqueue
 from sc_creds import sc_creds
 import handlers
 import jinja2
@@ -8,6 +9,7 @@ import models
 import os
 import soundcloud
 import webapp2
+import json
 from datetime import datetime as dt
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
@@ -99,6 +101,16 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 				mp_result = rpc.get_result()
 				assert mp_result.content == '1', \
 					'mixpanel rpc for user {} failed'.format(str(current_user.id))
+			except Exception,e:
+				logging.error(e)
+			
+			try:
+				#send a text notification
+				task_params = {
+					'artist_name'	:	artist.username
+				}
+				logging.debug(artist.username)
+				taskqueue.add(url='/tasks/textTask',payload=json.dumps(task_params))
 			except Exception,e:
 				logging.error(e)
 			

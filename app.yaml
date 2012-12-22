@@ -13,6 +13,11 @@ handlers:
 - url: /signup
   script: signup.app
 
+#tasks and cronjobs
+- url: /tasks.*
+  script: tasks.app
+  login: admin
+
 - url: /stats.*
   script: google.appengine.ext.appstats.ui.app
   
