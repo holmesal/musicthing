@@ -1,6 +1,6 @@
 body{
 	margin: 0;
-	background-image: url(/img/bgas1.jpg);
+	background-image: url(/img/bgas4.jpg);
 	-webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -10,8 +10,9 @@ body{
 	
 	font-family: /* "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", */ Helvetica, Arial, "Lucida Grande", 'Open Sans', sans-serif;
 	-webkit-font-smoothing: antialiased;
-	font-weight: 300;
+	font-weight: 400;
 	text-align: center;
+	line-height: 120%;
 }
 
 .container{
@@ -41,6 +42,7 @@ body{
 
 .banner-prompt{
 	font-size: 16pt;
+	color: #373737;
 }
 
 /*-------------------------------------*/
