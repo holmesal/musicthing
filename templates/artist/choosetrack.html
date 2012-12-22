@@ -25,23 +25,35 @@
         <div class="select">
         	<a id="btnSelect" class="btn btn-success btn-large" href="#">Select this track</a>
         </div>
+        
+        <div class="notracks">
+	        Oh no you don't have any tracks!
+        </div>
     
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
     <script type="text/javascript">
     
     $.get('https://api.soundcloud.com/users/{{artist.artist_id}}/tracks.json?client_id=d03ca49fb6764663d0992eadc69f8bf1', function(data) {
 	  console.log(data)
-	  for (var key in data){
-		  var track = data[key];
-		  console.log(track.artwork_url)
-		  $('div:.sc-player').append('<a href="'+track.permalink_url+'" class="sc-player"></a>')
-	  }
+	  console.log(data.length)
 	  
-	  var head= document.getElementsByTagName('head')[0];
-	   var script= document.createElement('script');
-	   script.type= 'text/javascript';
-	   script.src= '/js/sc-player.js';
-	   head.appendChild(script);
+	  if (data.length==0){
+		  $('.sc-player .select').hide()
+		  $('.notracks').show()
+	  } else{
+	  
+		  for (var key in data){
+			  var track = data[key];
+			  console.log(track.artwork_url)
+			  $('div:.sc-player').append('<a href="'+track.permalink_url+'" class="sc-player"></a>')
+		  }
+		  
+		  var head= document.getElementsByTagName('head')[0];
+		   var script= document.createElement('script');
+		   script.type= 'text/javascript';
+		   script.src= '/js/sc-player.js';
+		   head.appendChild(script);
+	}
 	  
 	});
 	
