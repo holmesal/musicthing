@@ -96,7 +96,7 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 			# finish mixpanel rpc call
 			try:
 				mp_result = rpc.get_result()
-				assert mp_result == 1, \
+				assert mp_result.content == '1', \
 					'mixpanel "create account" rpc for user {} failed'.format(str(current_user.id))
 			except Exception,e:
 				logging.error(e)
@@ -118,10 +118,13 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 				# set the first name for display purposes
 				properties['$first_name'] = \
 					current_user.full_name or current_user.username
+				logging.info(properties)
 				rpc = mixpanel.track_person(str(current_user.id), properties)
 				
 			except Exception,e:
 				logging.error(e)
+			else:
+				logging.info('Mixpanel rpc creation succeeded')
 			
 			# create a session for the artist
 			self.log_in(artist_id)
@@ -129,7 +132,7 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 			# complete mixpanel rpc
 			try:
 				mp_result = rpc.get_result()
-				assert mp_result == 1, \
+				assert mp_result == '1', \
 					'mixpanel "login" rpc for user {} failed'.format(str(current_user.id))
 			except Exception,e:
 				logging.error(e)
@@ -345,57 +348,38 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 class TestHandler(handlers.ArtistHandler):
 	def get(self):
 		self.set_plaintext()
+		artist = self.get_artist_from_session()
+		artist_id = artist.strkey
+		
 		client = soundcloud.Client(access_token = '1-29375-30759062-700d24381a1af75')
 		current_user = client.get('/me')
 		
 		self.say(current_user.fields())
-		signed_up = self.request.get('signed_up',0)
-		rpc = mixpanel.track_person(str(current_user.id), {
-														'$first_name' : current_user.username,
-														'$username' : current_user.username,
-														'city' : current_user.city,
-														'country' : current_user.country,
-														'track_count' : current_user.track_count,
-														'signed_up' : signed_up,
-														'$created' : str(dt.now())
-														})
-		result = rpc.get_result()
-		self.say(result.content)
-		self.say('Done!')
-#		return
+		logging.info('artist exists')
+			
+		# track login on mixpanel
+		properties = {
+					'$username' : current_user.username,
+					'city' : current_user.city,
+					'country' : current_user.country,
+					'$last_login' : str(dt.now())
+					}
+		# set the first name for display purposes
+		properties['$first_name'] = \
+			current_user.full_name or current_user.username
+		logging.info(properties)
+		rpc = mixpanel.track_person(str(current_user.id), properties)
+			
 		
-		t0 = dt.now()
-		rpc = mixpanel.track_event('Testicles',{
-										'PARAMS!':'1111111!',
-										'mp_name_tag' : str(current_user.id),
-										'distinct_id' : str(current_user.id)
-										})
-		result = rpc.get_result()
-		self.say(result.content)
-		self.say(dir(result))
-		self.say(result.headers)
-#		self.say(rpc.wait())
-		self.say('Done!')
-		self.say(dt.now()-t0)
-#		
-#		rpc = mixpanel.track_person(str(11111), {
-#										'$username' : current_user.username,
-#										'city' : current_user.city,
-#										'country' : current_user.country,
-#										'track_count' : current_user.track_count,
-#										'signed_up' : signed_up,
-#										'$created' : str(dt.now())
-#										})
-		rpc.get_result()
-		self.say(result.content)
+		# create a session for the artist
+		self.log_in(artist_id)
 		
-#		template_values = {
-#			'track_id'	: '640341'
-#		}
-#		
-#		template = jinja_environment.get_template('templates/artist/manage.html')
-#		self.response.out.write(template.render(template_values))
-
+		# complete mixpanel rpc
+		mp_result = rpc.get_result()
+		self.say(mp_result.content)
+		self.say(type(mp_result.content))
+		assert int(mp_result.content) == 1, \
+			'mixpanel "login" rpc for user {} failed'.format(str(current_user.id))
 
 ARTIST_LOGIN = '/artist/login'
 SC_AUTH = '/artist/scauth'
