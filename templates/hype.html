@@ -41,7 +41,7 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 	</div>
 	
 	<div class="banner">
-		<p class="banner-prompt">Local artist? Start broadcasting your tracks to local music lovers in your city. <a href="/signup">Right now</a></p>
+		<p class="banner-prompt">Local artist? Start broadcasting your tracks to local music lovers in your city. <a id="bands" href="/signup">Right now</a></p>
 	</div>
 	
 	<a id='mixpanel' href="https://mixpanel.com/f/partner"><img src="//cdn.mxpnl.com/site_media/images/partner/badge_light.png" alt="Mobile Analytics" /></a>
@@ -54,6 +54,7 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 			
 			//register signup
 			mixpanel.track_forms("#signup_form", "signup form submitted",{"signup_email":$("#emailinput").val()});
+			mixpanel.track_links("#bands","bands link clicked");
 		});
     </script>
   
