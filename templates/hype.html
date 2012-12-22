@@ -7,7 +7,22 @@
     <title>Radius</title>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,300' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="/css/hype.css" type="text/css">
-  
+    <style>
+	  .overlay{
+		  background-image: url(/img/overlaye.png);
+	  }
+	  </style>
+	  {% if state=="signedup" %}
+	  <style>
+		  .overlay{
+			  background-image: url(/img/overlaysignup.png);
+		  }
+		  
+		  form{
+			  display: none !important;
+		  }
+	  </style>
+	  {% endif %}
   </head>
   
 <body>
@@ -22,6 +37,8 @@
 	<div class="banner">
 		<p class="banner-prompt">Local artist? Start broadcasting your tracks to local music lovers in your city. <a href="/signup">Right now</a></p>
 	</div>
+	
+	<a id='mixpanel' href="https://mixpanel.com/f/partner"><img src="//cdn.mxpnl.com/site_media/images/partner/badge_light.png" alt="Mobile Analytics" /></a>
     
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   

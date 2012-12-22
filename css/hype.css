@@ -204,3 +204,9 @@ a{
 	padding: 0;
 	margin-left: -20px;
 }
+
+#mixpanel{
+	position: absolute;
+	right: 5px;
+	bottom: 5px;
+}
