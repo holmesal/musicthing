@@ -5,24 +5,9 @@
   <head>
     
     <title>Radius</title>
+    <link href="/img/favicon.png" rel="shortcut icon" />
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,300' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="/css/hype.css" type="text/css">
-    <style>
-	  .overlay{
-/* 		  background-image: url(/img/overlaye.png); */
-	  }
-	  </style>
-	  {% if state=="signedup" %}
-	  <style>
-		  .overlay{
-			  background-image: url(/img/overlaysignup.png);
-		  }
-		  
-		  form{
-			  display: none !important;
-		  }
-	  </style>
-	  {% endif %}
 	  
 	  <!-- start Mixpanel --><script type="text/javascript">(function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src=("https:"===e.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f);b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==
 typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.increment people.append people.track_charge".split(" ");for(g=0;g<i.length;g++)f(c,i[g]);b._i.push([a,e,d])};b.__SV=1.2}})(document,window.mixpanel||
@@ -34,14 +19,18 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 <body>
 	<p class="logotext"><img src="/img/logo.png"></p>
 	<div class="overlay">
-		<p class="setup">They practice in basements, and make albums in living rooms. They pack everything in a van and drive six hours to play an empty room.</p>
+		<p class="setup">They practice in basements, and make albums in living rooms. They pack everything in a van and drive six hours to play a show.</p>
 		<p class="punct">And they're making history.</p>
-		<p class="what">Radius is an online radio station that plays only local music. Find an artist, download a track, buy a ticket, see a show.</p>
+		<p class="what">Radius is an online radio station that plays only local music.</br>Find an artist, download a track, buy a ticket, see a show.</p>
+		{% if state=="signedup" %}
+		<p class="discover">YOU'VE BEEN SIGNED UP! STAY TUNED.</p>
+		{% else %}
 		<p class="discover">DISCOVER SOMETHING GREAT:</p>
 		<form id="signup_form" class="form-wrapper cf" method="post" action="/{{token}}">
 	        <input id="emailinput" name="email" type="text" placeholder="Your Email">
 	        <button type="submit">SIGNUP</button>
 	    </form>
+	    {% endif %}
 	</div>
 	
 	<div class="banner">
