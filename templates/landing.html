@@ -4,7 +4,7 @@
   
   <head>
     
-    <title>Le Mustache</title>
+    <title>Radius</title>
     <link rel="stylesheet" href="./css/page.css" type="text/css">
     <link rel="stylesheet" href="./css/sc-player-artwork.css" type="text/css">
   
@@ -28,7 +28,8 @@
           <a href="http://soundcloud.com/matas/frost-theme-0-1" class="sc-player">Oxxo</a>
 -->
         </div>
-    
+    <script type="text/javascript" src="/js/spin.js"></script>
+    <script type="text/javascript" src="/js/roundandround.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
     <script type="text/javascript" src="../js/soundcloud.player.api.js"></script>
     <script type="text/javascript" src="../js/sc-player.js"></script>
@@ -40,6 +41,10 @@
 				location.reload()
 			}
 		  
+		});
+		
+	    $(document).bind('onPlayerInit.scPlayer', function(event){
+		  spinner.stop()
 		});
     </script>
     <script type="text/javascript">

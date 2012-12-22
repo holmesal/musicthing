@@ -4,7 +4,7 @@
   
   <head>
     
-    <title>Mustache</title>
+    <title>Radius: Choose your track</title>
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/page.css" type="text/css">
     <link rel="stylesheet" href="/css/sc-player-artwork.css" type="text/css">
@@ -13,16 +13,18 @@
   </head>
   
   <body>
+  		<div id="loading"></div>
+  		
       
         <div class="instructions">
-	        <p>Select the track you would like featured on AwesomeName:</p>
+	        <p class="selectText">Select the track you would like featured on Radius:</p>
         </div>
         
         <div class="sc-player">
         
         </div>
         
-        <div class="select">
+        <div class="select" hidden>
         	<a id="btnSelect" class="btn btn-success btn-large" href="#">Select this track</a>
         </div>
         
@@ -32,7 +34,8 @@
 	        <p class="explain">Click the button below to be taken to SoundCloud to upload a new track.</br> When you're done, refresh this page - your tracks will show up.</p>
 	        <a href="http://www.soundcloud.com/upload" target="_blank" class="btn btn-warning btn-large">Upload via SoundCloud</a>
         </div>
-    
+    <script type="text/javascript" src="/js/spin.js"></script>
+    <script type="text/javascript" src="/js/roundandround.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
     <script type="text/javascript">
     
@@ -61,12 +64,20 @@
 	  
 	});
 	
+	
+	
 	</script>
     
     
     <script type="text/javascript" src="/js/soundcloud.player.api.js"></script>
 <!--     <script type="text/javascript" src="/js/sc-player.js"></script> -->
     <script type="text/javascript" src="/js/player-custom.js"></script>
+    <script type="text/javascript">
+	    $(document).bind('onPlayerInit.scPlayer', function(event){
+		  spinner.stop()
+		  $(".select").show()
+		});
+    </script>
     
   
   </body>
