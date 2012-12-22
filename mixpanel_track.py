@@ -61,7 +61,7 @@ def track_increment(distinct_id,to_increment):
 		"$token"	:	token,
 		"$distinct_id"	:	distinct_id
 	}
-	
+	logging.debug(params)
 	data = base64.b64encode(json.dumps(params))
 	request = "http://api.mixpanel.com/engage/?data="+data
 	

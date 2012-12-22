@@ -97,12 +97,7 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 			self.log_in(artist_id)
 			
 			# finish mixpanel rpc call
-			try:
-				mp_result = rpc.get_result()
-				assert mp_result.content == '1', \
-					'mixpanel rpc for user {} failed'.format(str(current_user.id))
-			except Exception,e:
-				logging.error(e)
+			self.complete_rpc(rpc)
 			
 			try:
 				#send a text notification
@@ -143,12 +138,7 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 			self.log_in(artist_id)
 			
 			# complete mixpanel rpc
-			try:
-				mp_result = rpc.get_result()
-				assert mp_result == '1', \
-					'mixpanel "login" rpc for user {} failed'.format(str(current_user.id))
-			except Exception,e:
-				logging.error(e)
+			self.complete_rpc(rpc)
 			
 			
 			return self.redirect(ARTIST_MANAGE)
@@ -278,7 +268,12 @@ class StoreTrackHandler(handlers.ArtistHandler):
 			return self.redirect(ARTIST_LOGIN)
 		# track login on mixpanel
 		try:
-			rpc = mixpanel.track_increment(artist.strkey, 'tracks_added')
+			properties = {
+						'tracks_added' : 1
+						}
+			logging.info(properties)
+			rpc = mixpanel.track_person(artist.strkey, properties)
+			
 		except Exception,e:
 			logging.error(e)
 		else:
@@ -299,15 +294,8 @@ class StoreTrackHandler(handlers.ArtistHandler):
 		
 		
 		
-		
 		# complete mixpanel rpc
-		try:
-			mp_result = rpc.get_result()
-			assert mp_result == '1', \
-				'mixpanel rpc for user {} failed'.format(artist.strkey)
-		except Exception,e:
-			logging.error(e)
-		
+		self.complete_rpc(rpc)
 		
 		self.redirect(ARTIST_MANAGE)
 class UploadUrlsHandler(handlers.ArtistHandler):
@@ -374,9 +362,9 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 		'''
 		For creating an artist account without soundcloud handshake
 		'''
-		artist = models.Artist.get_or_insert('30759062',
+		artist = models.Artist.get_or_insert('31035942',
 											username = 'pat',
-											access_token = '1-29375-30759062-700d24381a1af75'
+											access_token = '1-29375-31035942-4e37f11f60c2f90'
 											)
 		artist.put()
 		self.log_in(artist.strkey)
@@ -389,7 +377,7 @@ class TestHandler(handlers.ArtistHandler):
 		artist = self.get_artist_from_session()
 		artist_id = artist.strkey
 		
-		client = soundcloud.Client(access_token = '1-29375-30759062-700d24381a1af75')
+		client = soundcloud.Client(access_token = artist.access_token)
 		current_user = client.get('/me')
 		
 		self.say(current_user.fields())

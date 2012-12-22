@@ -36,6 +36,13 @@ class BaseHandler(webapp2.RequestHandler):
 			return artist
 		except AssertionError,e:
 			raise self.SessionError(e)
+	def complete_rpc(self,rpc):
+		try:
+			mp_result = rpc.get_result()
+			assert mp_result.content == '1', \
+				'mixpanel rpc failed'
+		except Exception,e:
+			logging.error(e)
 	class SessionError(Exception):
 		'''Session is invalid'''
 class ArtistHandler(BaseHandler):
