@@ -74,6 +74,7 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 								'city' : current_user.city,
 								'country' : current_user.country,
 								'signed_up' : self.request.get('signed_up',0),
+								'tracks_added' : 0,
 								'$created' : str(dt.now())
 								}
 				# set the first name for display purposes
@@ -97,7 +98,7 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 			try:
 				mp_result = rpc.get_result()
 				assert mp_result.content == '1', \
-					'mixpanel "create account" rpc for user {} failed'.format(str(current_user.id))
+					'mixpanel rpc for user {} failed'.format(str(current_user.id))
 			except Exception,e:
 				logging.error(e)
 			
@@ -263,6 +264,17 @@ class StoreTrackHandler(handlers.ArtistHandler):
 			artist = self.get_artist_from_session()
 		except self.SessionError:
 			return self.redirect(ARTIST_LOGIN)
+		# track login on mixpanel
+		try:
+			rpc = mixpanel.track_increment(artist.strkey, 'tracks_added')
+		except Exception,e:
+			logging.error(e)
+		else:
+			logging.info('Mixpanel rpc creation succeeded')
+		
+		
+		# do stuff
+		
 		track_url = self.request.get('track_url')
 		track_id = self.request.get('track_id')
 		genre = self.request.get('genre')
@@ -270,6 +282,20 @@ class StoreTrackHandler(handlers.ArtistHandler):
 		artist.track_id = str(track_id)
 		artist.genre = genre
 		artist.put()
+		
+		
+		
+		
+		
+		
+		# complete mixpanel rpc
+		try:
+			mp_result = rpc.get_result()
+			assert mp_result == '1', \
+				'mixpanel rpc for user {} failed'.format(artist.strkey)
+		except Exception,e:
+			logging.error(e)
+		
 		
 		self.redirect(ARTIST_MANAGE)
 class UploadUrlsHandler(handlers.ArtistHandler):

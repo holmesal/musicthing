@@ -55,7 +55,7 @@ def track_person(distinct_id,properties):
 	
 	return rpc
 	
-def track_increment(distinct_id,token,to_increment):
+def track_increment(distinct_id,to_increment):
 	params = {
 		"$add"		:	to_increment,
 		"$token"	:	token,
