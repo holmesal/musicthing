@@ -19,7 +19,7 @@ h1{
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: 10px;
-/* 	background-size: cover; */
+	background-size: cover;
 	position: relative;
 }
 
@@ -88,4 +88,8 @@ input[type=submit]{
 	line-height: 120%;
 	margin-bottom: 30px;
 	margin-top: 10px;
+}
+
+.banner{
+	
 }
