@@ -63,8 +63,8 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 		
 		var artwork = data.artwork_url
 		var artwork_src = "track"
-		console.log(data)
-		console.log(artwork)
+/* 		console.log(data) */
+/* 		console.log(artwork) */
 		
 		if (artwork == null){
 			if (data.user.avatar_url.indexOf("default_avatar") == -1){
@@ -73,15 +73,15 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 			}
 		}
 		
-		console.log(artwork)
+/* 		console.log(artwork) */
 		
 		if (artwork == null){
 			artwork = "/img/debut_dark.png"
 			artwork_src = "track"
 		}else{
-			console.log(artwork)
+/* 			console.log(artwork) */
 			artwork = artwork.replace("large","t300x300")
-			console.log(artwork)
+/* 			console.log(artwork) */
 		}
 		
 		mixpanel.track("manage track loaded",{"artwork source":artwork_src})

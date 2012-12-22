@@ -50,13 +50,17 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 		mixpanel.track_links("#btnSelect","band track selected");
 		mixpanel.track_links("#trackupload","band upload link clicked");
 		
+    $(window).focus(function(){
+	  location.reload(true)
+	});
+    
     
     $.get('https://api.soundcloud.com/users/{{artist.artist_id}}/tracks.json?client_id=d03ca49fb6764663d0992eadc69f8bf1', function(data) {
-	  console.log(data)
-	  console.log(data.length)
+/* 	  console.log(data) */
+/* 	  console.log(data.length) */
 	  
 	  if (data.length==0){
-	  	console.log('hiding!')
+/* 	  	console.log('hiding!') */
 		  $('.sc-player,.select').hide()
 		  $('.notracks').show()
 		  spinner.stop()
@@ -65,7 +69,7 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 	  
 		  for (var key in data){
 			  var track = data[key];
-			  console.log(track.artwork_url)
+/* 			  console.log(track.artwork_url) */
 			  $('div:.sc-player').append('<a href="'+track.permalink_url+'" class="sc-player"></a>')
 		  }
 		  
@@ -79,9 +83,6 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 	mixpanel.track("band tracks loaded",{"numtracks":data.length})
 	  
 	});
-	
-	
-	
 	</script>
     
     
