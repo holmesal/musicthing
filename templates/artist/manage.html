@@ -20,8 +20,8 @@
 					<a href="/artist/choosetrack" class="chooseLink"></a>
 				</div>
 			<p class="track_name"></p>
-			<a href="/artist/choosetrack" class="btn btn-info">Choose a new track</a>
-			<a href="http://www.soundcloud.com/upload" target="_blank" class="btn btn-warning">Upload via SoundCloud</a>
+			<a id="choosenew" href="/artist/choosetrack" class="btn btn-info">Choose a new track</a>
+			<a id="scupload" href="http://www.soundcloud.com/upload" target="_blank" class="btn btn-warning">Upload via SoundCloud</a>
 			</div>
 			
 			<div class="span6">
@@ -44,6 +44,11 @@
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <script type="text/javascript">
 /* 	72047558 */
+	mixpanel.track("band manage page loaded")
+	
+	//register signup
+	mixpanel.track_links("#choosenew","manage choose new button clicked");
+	mixpanel.track_links("#scupload","manage soundcloud upload button clicked");
 	
 	console.log("{{artist.track_id}}")
 	
@@ -53,12 +58,14 @@
 		$(".track_name").text(data.title)
 		
 		var artwork = data.artwork_url
+		var artwork_src = "track"
 		console.log(data)
 		console.log(artwork)
 		
 		if (artwork == null){
 			if (data.user.avatar_url.indexOf("default_avatar") == -1){
 				artwork = data.user.avatar_url
+				artwork_src = "avatar"
 			}
 		}
 		
@@ -66,11 +73,14 @@
 		
 		if (artwork == null){
 			artwork = "/img/debut_dark.png"
+			artwork_src = "track"
 		}else{
 			console.log(artwork)
 			artwork = artwork.replace("large","t300x300")
 			console.log(artwork)
 		}
+		
+		mixpanel.track("manage track loaded",{"artwork source":artwork_src})
 		
 		
 		
