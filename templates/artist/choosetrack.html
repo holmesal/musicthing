@@ -38,16 +38,18 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 	        <p class="sad">:(</p>
 	        <h4>It looks like you don't have any tracks yet...</h4>
 	        <p class="explain">Click the button below to be taken to SoundCloud to upload a new track.</br> When you're done, refresh this page - your tracks will show up.</p>
-	        <a href="http://www.soundcloud.com/upload" target="_blank" class="btn btn-warning btn-large">Upload via SoundCloud</a>
+	        <a id="trackupload" href="http://www.soundcloud.com/upload" target="_blank" class="btn btn-warning btn-large">Upload via SoundCloud</a>
         </div>
     <script type="text/javascript" src="/js/spin.js"></script>
     <script type="text/javascript" src="/js/roundandround.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
     <script type="text/javascript">
 		mixpanel.track("band track select page loaded")
-			
+		
 		//register signup
-		mixpanel.track_links("#connectlink","connect link clicked");
+		mixpanel.track_links("#btnSelect","band track selected");
+		mixpanel.track_links("#trackupload","band upload link clicked");
+		
     
     $.get('https://api.soundcloud.com/users/{{artist.artist_id}}/tracks.json?client_id=d03ca49fb6764663d0992eadc69f8bf1', function(data) {
 	  console.log(data)
@@ -73,6 +75,8 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 		   script.src= '/js/sc-player.js';
 		   head.appendChild(script);
 	}
+	
+	mixpanel.track("band tracks loaded",{"numtracks":data.length})
 	  
 	});
 	
