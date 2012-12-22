@@ -1,6 +1,9 @@
 body{
 	margin: 0;
 	background-image: url(/img/bgradio.jpg);
+	-webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
 	background-size: cover;
 	background-position: top center;
 	color: #f9f9f9;
