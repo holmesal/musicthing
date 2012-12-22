@@ -56,6 +56,8 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 	  	console.log('hiding!')
 		  $('.sc-player,.select').hide()
 		  $('.notracks').show()
+		  spinner.stop()
+		  $('#loading').hide()
 	  } else{
 	  
 		  for (var key in data){
@@ -84,6 +86,7 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
     <script type="text/javascript">
 	    $(document).bind('onPlayerInit.scPlayer', function(event){
 		  spinner.stop()
+		  $('#loading').hide()
 		  $(".select").show()
 		});
     </script>
