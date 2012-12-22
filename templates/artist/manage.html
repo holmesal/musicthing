@@ -6,24 +6,35 @@
 	<link href="/css/manage.css" rel='stylesheet' />
 </head>
 <body>
-	<div class="band_name">
-		<h1>Band Name</h1>
+	<div class="container">
+		<div class="band_name">
+			<h1 class="artist_name"></h1>
+			<p class="explain" style="margin-top:30px;">One of your tracks is currently in rotation on Radius:</p>
+		</div>
+		
+		<div class="row">
+			<div class="span6 pane-left">
+				<div class="artwork">
+					<a href="/artist/choosetrack" class="chooseLink"></a>
+				</div>
+			<a href="/artist/choosetrack" class="btn btn-info">Choose a new track</a>
+			<a href="http://www.soundcloud.com/upload" class="btn btn-warning">Upload via SoundCloud</a>
+			</div>
+			
+			<div class="span6">
+				<form class="well" method="post" action="/artist/upload/urls">
+					<p class="explain">If you have a profile page on any of these services, add the URL! We'll include a link when people listen to your track.</p>
+					<p class="arow"><img class="sicon" src="/img/bandcamp.png"><input type="text" name="bandcamp_url" placeholder="Bandcamp" value="{%if artist.bandcamp_url != 'None'%}{{artist.bandcamp_url}}{%endif%}"></p>
+					<p class="arow"><img class="sicon" src="/img/facebook.png"><input type="text" name="facebook_url" placeholder="Facebook" value="{%if artist.facebook != 'None'%}{{artist.facebook_url}}{%endif%}"></p>
+					<p class="arow"><img class="sicon" src="/img/myspace.png"><input type="text" name="myspace_url" placeholder="Myspace" value="{%if artist.myspace != 'None'%}{{artist.myspace_url}}{%endif%}"></p>
+					<p class="arow"><img class="sicon" src="/img/twitter.png"><input type="text" name="twitter_url" placeholder="Twitter" value="{%if artist.twitter_url != 'None'%}{{artist.twitter_url}}{%endif%}"></p>
+					<p class="arow"><img class="sicon" src="/img/youtube.png"><input type="text" name="youtube_url" placeholder="YouTube" value="{%if artist.youtube_url != 'None'%}{{artist.youtube_url}}{%endif%}"></p>
+					<p class="arow"><img class="sicon" src="/img/website.png"><input type="text" name="website_url" placeholder="Website" value="{%if artist.website_url != 'None'%}{{artist.website_url}}{%endif%}"></p>
+					<input type="submit" class="btn btn-info" value="Save Changes">
+				</form>
+			</div>
+		</div>
 	</div>
-	<div class="artwork">
-		<a href="/artist/choosetrack" class="chooseLink"></a>
-	</div>
-	<div class="span6 offset4">
-		<form class="well" method="post" action="/artist/upload/urls">
-			<input type="text" name="bandcamp_url" placeholder="Bandcamp" value="{%if artist.bandcamp_url != 'None'%}{{artist.bandcamp_url}}{%endif%}">
-			<input type="text" name="facebook_url" placeholder="Facebook" value="{%if artist.bandcamp_url != 'None'%}{{artist.facebook_url}}{%endif%}">
-			<input type="text" name="myspace_url" placeholder="Myspace" value="{%if artist.bandcamp_url != 'None'%}{{artist.myspace_url}}{%endif%}">
-			<input type="text" name="twitter_url" placeholder="Twitter" value="{%if artist.bandcamp_url != 'None'%}{{artist.twitter_url}}{%endif%}">
-			<input type="text" name="youtube_url" placeholder="YouTube" value="{%if artist.bandcamp_url != 'None'%}{{artist.youtube_url}}{%endif%}">
-			<input type="text" name="website_url" placeholder="Website" value="{%if artist.bandcamp_url != 'None'%}{{artist.website_url}}{%endif%}">
-			<input type="submit" class="btn btn-info" value="Save Changes">
-		</form>
-	</div>
-
 
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <script type="text/javascript">
@@ -33,21 +44,29 @@
 	
 	$.get('https://api.soundcloud.com/tracks/{{artist.track_id}}.json?client_id=d03ca49fb6764663d0992eadc69f8bf1', function(data) {
 		
+		$(".artist_name").text(data.user.username)
+		
 		var artwork = data.artwork_url
 		console.log(data)
 		console.log(artwork)
 		
 		if (artwork == null){
-			if (data.user.avatar_url != null){
+			if (data.user.avatar_url.indexOf("default_avatar") == -1){
 				artwork = data.user.avatar_url
-			} else{
-				artwork = "/img/no_artwork.png"
 			}
 		}
 		
 		console.log(artwork)
-		artwork = artwork.replace("large","t300x300")
-		console.log(artwork)
+		
+		if (artwork == null){
+			artwork = "/img/bgradio.jpg"
+		}else{
+			console.log(artwork)
+			artwork = artwork.replace("large","t300x300")
+			console.log(artwork)
+		}
+		
+		
 		
 		$('.artwork').css("background-image","url("+artwork+")")
 		

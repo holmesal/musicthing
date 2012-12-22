@@ -1,10 +1,16 @@
 body{
-	width: 100%;
+/* 	width: 100%; */
 	background: url('/img/gray_jean.png');
 }
 
 .band_name{
 	text-align: center;
+	margin-top: 50px;
+	margin-bottom: 50px;
+}
+
+h1{
+	color: #2a2a2a;
 }
 
 .artwork{
@@ -12,8 +18,14 @@ body{
 	height: 400px;
 	margin-left: auto;
 	margin-right: auto;
+	margin-bottom: 20px;
 	background-size: cover;
 	position: relative;
+}
+
+.pane-left{
+	text-align: center;
+/* 	padding: 0; */
 }
 
 .chooseLink{
@@ -22,4 +34,40 @@ body{
 	right: 0;
 	bottom: 0;
 	left: 0;
+}
+
+form{
+	text-align: center;
+	background-color: white !important;
+	overflow: auto;
+}
+
+input[type=text]{
+	float: right;
+}
+
+input[type=submit]{
+	float: right;
+}
+
+.sicon{
+	height: 20px;
+/* 	width: 150px; */
+	margin-top: 5px;
+	float: left;
+}
+
+.arow{
+/* 	background-color: red; */
+	width: 100%;
+	height: 30px;
+	margin-bottom: 15px;
+}
+
+.explain{
+	font-weight: 300;
+	font-size: 12pt;
+	line-height: 120%;
+	margin-bottom: 30px;
+	margin-top: 10px;
 }
