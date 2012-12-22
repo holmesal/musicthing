@@ -69,14 +69,18 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 			# artist does not exist yet. Create one
 			# log some mixpanel shiiiiit!
 			try:
-				signed_up = self.request.get('signed_up',0)
-				rpc = mixpanel.track_person(str(current_user.id), {
-															'$username' : current_user.username,
-															'city' : current_user.city,
-															'country' : current_user.country,
-															'signed_up' : signed_up,
-															'$created' : str(dt.now())
-															})
+				properties = {
+								'$username' : current_user.username,
+								'city' : current_user.city,
+								'country' : current_user.country,
+								'signed_up' : self.request.get('signed_up',0),
+								'$created' : str(dt.now())
+								}
+				# set the first name for display purposes
+				properties['$first_name'] = \
+					current_user.full_name or current_user.username
+				rpc = mixpanel.track_person(str(current_user.id), properties)
+				
 			except Exception,e:
 				logging.error(e)
 			logging.info('artist does not exist')
@@ -105,13 +109,17 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 			
 			# track login on mixpanel
 			try:
-				signed_up = self.request.get('signed_up',0)
-				rpc = mixpanel.track_person(str(current_user.id), {
-															'$username' : current_user.username,
-															'city' : current_user.city,
-															'country' : current_user.country,
-															'$last_login' : str(dt.now())
-															})
+				properties = {
+							'$username' : current_user.username,
+							'city' : current_user.city,
+							'country' : current_user.country,
+							'$last_login' : str(dt.now())
+							}
+				# set the first name for display purposes
+				properties['$first_name'] = \
+					current_user.full_name or current_user.username
+				rpc = mixpanel.track_person(str(current_user.id), properties)
+				
 			except Exception,e:
 				logging.error(e)
 			
