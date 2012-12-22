@@ -51,7 +51,7 @@ class LandingHandler(handlers.BaseHandler):
 				'email'	:	email
 			}
 			logging.debug(email)
-			taskqueue.add(url='/tasks/textTask',payload=json.dumps(task_params))
+			taskqueue.add(url='/tasks/userTask',payload=json.dumps(task_params))
 		except Exception,e:
 			logging.error(e)
 		
