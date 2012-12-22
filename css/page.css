@@ -13,7 +13,8 @@ body{
 }
 
 .sc-no-artwork{
-	background-color: #3e3e3e;
+	background-image: url(/img/debut_dark.png);
+	color: #ededed;
 }
 
 .sc-loading-artwork{

@@ -29,9 +29,9 @@ $(document).bind('onPlayerTrackSwitch.scPlayer', function(event, track){
 		
 		}
 		
-/* 		console.log(newtrack) */
+		console.log(newtrack)
 		//update the select link
-		$('#btnSelect').attr('href','/artist/storetrack?track_url='+encodeURIComponent(newtrack.permalink_url)+'&track_id='+newtrack.id)
+		$('#btnSelect').attr('href','/artist/storetrack?track_url='+encodeURIComponent(newtrack.permalink_url)+'&track_id='+newtrack.id+'&genre='+newtrack.genre)
 		
 		//update the next/prev visibility
 /* 		console.log($('.sc-trackslist > li').eq(idx)) */
