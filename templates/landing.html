@@ -34,6 +34,15 @@
     <script type="text/javascript" src="../js/sc-player.js"></script>
     <script type="text/javascript" src="../js/player-custom.js"></script>
     <script type="text/javascript">
+	    $(document).bind('onPlayerPause.scPlayer', function(event){
+			idx = $('.sc-trackslist > .active').index()
+			if (idx == $('.sc-trackslist > li').size()-1){
+				location.reload()
+			}
+		  
+		});
+    </script>
+    <script type="text/javascript">
 	    //enter sandman
 	    {% for track in tracks %}
 	    	

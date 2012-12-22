@@ -37,11 +37,3 @@ $(document).bind('onPlayerTrackSwitch.scPlayer', function(event, track){
 	
 	
 });
-
-$(document).bind('onPlayerPause.scPlayer', function(event){
-	idx = $('.sc-trackslist > .active').index()
-	if (idx == $('.sc-trackslist > li').size()-1){
-		location.reload()
-	}
-  
-});

@@ -15,3 +15,39 @@
 	margin-top: -150px;
 	margin-left: -150px;
 }
+
+.notracks{
+	background-color: rgba(250,250,250,0.9);
+	width: 600px;
+	border-radius: 10px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	padding: 20px;
+	margin-top: 100px;
+	box-shadow: 1px 1px 11px #959595;
+/* 	background-color: red; */
+}
+
+.explain{
+	font-weight: 300;
+	font-size: 12pt;
+	line-height: 120%;
+	margin-bottom: 20px;
+	margin-top: 20px;
+}
+
+.upload{
+	margin-top: 10px;
+}
+
+.sad{
+	color: #8c8c8c;
+	font-size: 50pt;
+	font-weight: 200;
+	line-height: 200%;
+}
+
+h4{
+	color: #4f4f4f;
+}

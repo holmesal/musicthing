@@ -26,8 +26,11 @@
         	<a id="btnSelect" class="btn btn-success btn-large" href="#">Select this track</a>
         </div>
         
-        <div class="notracks">
-	        Oh no you don't have any tracks!
+        <div class="notracks" hidden>
+	        <p class="sad">:(</p>
+	        <h4>It looks like you don't have any tracks yet...</h4>
+	        <p class="explain">Click the button below to be taken to SoundCloud to upload a new track.</br> When you're done, refresh this page - your tracks will show up.</p>
+	        <a href="http://www.soundcloud.com/upload" class="btn btn-warning btn-large">Upload via SoundCloud</a>
         </div>
     
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
@@ -38,7 +41,8 @@
 	  console.log(data.length)
 	  
 	  if (data.length==0){
-		  $('.sc-player .select').hide()
+	  	console.log('hiding!')
+		  $('.sc-player,.select').hide()
 		  $('.notracks').show()
 	  } else{
 	  
