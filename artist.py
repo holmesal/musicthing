@@ -1,12 +1,15 @@
 from google.appengine.ext import blobstore
 from sc_creds import sc_creds
+import handlers
 import jinja2
 import logging
+import mixpanel_track as mixpanel
 import models
 import os
 import soundcloud
-import handlers
 import webapp2
+from datetime import datetime as dt
+
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
 
@@ -54,6 +57,7 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 		del client
 		client = soundcloud.Client(access_token = access_token)
 		current_user = client.get('/me')
+		
 		# pull the artist_id from the response
 		artist_id = str(current_user.id)
 		
@@ -63,6 +67,18 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 			artist = self.get_artist(artist_id)
 		except self.SessionError:
 			# artist does not exist yet. Create one
+			# log some mixpanel shiiiiit!
+			try:
+				signed_up = self.request.get('signed_up',0)
+				rpc = mixpanel.track_person(str(current_user.id), {
+															'$username' : current_user.username,
+															'city' : current_user.city,
+															'country' : current_user.country,
+															'signed_up' : signed_up,
+															'$created' : str(dt.now())
+															})
+			except Exception,e:
+				logging.error(e)
 			logging.info('artist does not exist')
 			artist = models.Artist(
 							id = artist_id,
@@ -72,12 +88,45 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 			artist.put()
 			# log in
 			self.log_in(artist_id)
+			
+			# finish mixpanel rpc call
+			try:
+				mp_result = rpc.get_result()
+				assert mp_result == 1, \
+					'mixpanel "create account" rpc for user {} failed'.format(str(current_user.id))
+			except Exception,e:
+				logging.error(e)
+			
 			# redirect to image upload page
 			return self.redirect(CHOOSE_TRACK)
 		else:
 			# artist already exists. Login and redirect to manage
 			logging.info('artist exists')
+			
+			# track login on mixpanel
+			try:
+				signed_up = self.request.get('signed_up',0)
+				rpc = mixpanel.track_person(str(current_user.id), {
+															'$username' : current_user.username,
+															'city' : current_user.city,
+															'country' : current_user.country,
+															'$last_login' : str(dt.now())
+															})
+			except Exception,e:
+				logging.error(e)
+			
+			# create a session for the artist
 			self.log_in(artist_id)
+			
+			# complete mixpanel rpc
+			try:
+				mp_result = rpc.get_result()
+				assert mp_result == 1, \
+					'mixpanel "login" rpc for user {} failed'.format(str(current_user.id))
+			except Exception,e:
+				logging.error(e)
+			
+			
 			return self.redirect(ARTIST_MANAGE)
 class LogOutHandler(handlers.ArtistHandler):
 	def get(self):
@@ -195,22 +244,6 @@ class ChooseTrackHandler(handlers.ArtistHandler):
 		template = jinja_environment.get_template('templates/artist/choosetrack.html')
 		self.response.out.write(template.render(template_values))
 		
-# 		
-# 		# fetch a list of all of the artists tracks from soundcloud
-# 		client = soundcloud.Client(access_token = artist.access_token)
-# 		response = client.get('/users/{}/tracks'.format(artist.strkey))
-# 		
-# 		
-# 		signup = self.request.get('signup',0)
-# 		template_values = {
-# 						'signup' : signup,
-# 						'artist' : artist,
-# 						'artist_key' : artist.strkey,
-# 						'tracks' : response
-# 		}
-# 		
-# 		template = jinja_environment.get_template('templates/artist/upload_audio.html')
-# 		self.response.out.write(template.render(template_values))
 class StoreTrackHandler(handlers.ArtistHandler):
 	def get(self):
 		'''Store the soundcloud url to the artists audio track, also track_id
@@ -221,12 +254,13 @@ class StoreTrackHandler(handlers.ArtistHandler):
 			return self.redirect(ARTIST_LOGIN)
 		track_url = self.request.get('track_url')
 		track_id = self.request.get('track_id')
+		genre = self.request.get('genre')
 		artist.tack_url = track_url
 		artist.track_id = str(track_id)
+		artist.genre = genre
 		artist.put()
 		
 		self.redirect(ARTIST_MANAGE)
-
 class UploadUrlsHandler(handlers.ArtistHandler):
 	def get(self):
 		'''Dev handler for testing the post.
@@ -237,7 +271,6 @@ class UploadUrlsHandler(handlers.ArtistHandler):
 	def post(self):
 		'''For uploading urls to the bands other websites
 		'''
-		logging.info('HI')
 		try:
 			artist = self.get_artist_from_session()
 		except self.SessionError:
@@ -246,9 +279,7 @@ class UploadUrlsHandler(handlers.ArtistHandler):
 		defined_urls = {
 			'bandcamp_url' : self.request.get('bandcamp_url',None),
 			'facebook_url' : self.request.get('facebook_url',None),
-# 			'lastfm_url' : self.request.get('lastfm_url',None),
 			'myspace_url' : self.request.get('myspace_url',None),
-# 			'soundcloud_url' : self.request.get('soundcloud_url',None),
 			'tumblr_url' : self.request.get('tumblr_url',None),
 			'twitter_url' : self.request.get('twitter_url',None),
 			'youtube_url' : self.request.get('youtube_url',None),
@@ -262,10 +293,11 @@ class UploadUrlsHandler(handlers.ArtistHandler):
 		other_urls = self.request.get_all('other_urls')
 		artist.other_urls = other_urls
 		
-		logging.info(other_urls)
-		logging.info(artist.other_urls)
-		logging.info(type(other_urls))
-		logging.info(type(artist.other_urls))
+		# store the artists email
+		email = self.request.get('email',None)
+		if email is not None:
+			artist.email = email
+		
 		# store changes
 		artist.put()
 		
@@ -304,13 +336,57 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 		
 class TestHandler(handlers.ArtistHandler):
 	def get(self):
-	
-		template_values = {
-			'track_id'	: '640341'
-		}
+		self.set_plaintext()
+		client = soundcloud.Client(access_token = '1-29375-30759062-700d24381a1af75')
+		current_user = client.get('/me')
 		
-		template = jinja_environment.get_template('templates/artist/manage.html')
-		self.response.out.write(template.render(template_values))
+		self.say(current_user.fields())
+		signed_up = self.request.get('signed_up',0)
+		rpc = mixpanel.track_person(str(current_user.id), {
+														'$first_name' : current_user.username,
+														'$username' : current_user.username,
+														'city' : current_user.city,
+														'country' : current_user.country,
+														'track_count' : current_user.track_count,
+														'signed_up' : signed_up,
+														'$created' : str(dt.now())
+														})
+		result = rpc.get_result()
+		self.say(result.content)
+		self.say('Done!')
+#		return
+		
+		t0 = dt.now()
+		rpc = mixpanel.track_event('Testicles',{
+										'PARAMS!':'1111111!',
+										'mp_name_tag' : str(current_user.id),
+										'distinct_id' : str(current_user.id)
+										})
+		result = rpc.get_result()
+		self.say(result.content)
+		self.say(dir(result))
+		self.say(result.headers)
+#		self.say(rpc.wait())
+		self.say('Done!')
+		self.say(dt.now()-t0)
+#		
+#		rpc = mixpanel.track_person(str(11111), {
+#										'$username' : current_user.username,
+#										'city' : current_user.city,
+#										'country' : current_user.country,
+#										'track_count' : current_user.track_count,
+#										'signed_up' : signed_up,
+#										'$created' : str(dt.now())
+#										})
+		rpc.get_result()
+		self.say(result.content)
+		
+#		template_values = {
+#			'track_id'	: '640341'
+#		}
+#		
+#		template = jinja_environment.get_template('templates/artist/manage.html')
+#		self.response.out.write(template.render(template_values))
 
 
 ARTIST_LOGIN = '/artist/login'

@@ -5,6 +5,7 @@ import os
 import models
 import logging
 from gaesessions import get_current_session
+
 #from excepts import *
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 

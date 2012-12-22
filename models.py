@@ -10,11 +10,12 @@ class Artist(ndb.Model):
 	track_url = ndb.StringProperty()
 	track_id = ndb.StringProperty()
 	description = ndb.StringProperty()
+	genre = ndb.StringProperty()
+	email = ndb.StringProperty()
 	
 	# external urls
 	bandcamp_url = ndb.StringProperty()
 	facebook_url = ndb.StringProperty()
-	lastfm_url = ndb.StringProperty()
 	myspace_url = ndb.StringProperty()
 	soundcloud_url = ndb.StringProperty()
 	tumblr_url = ndb.StringProperty()
