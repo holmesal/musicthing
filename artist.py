@@ -1,6 +1,6 @@
 from google.appengine.ext import blobstore
 from google.appengine.api import taskqueue
-from sc_creds import sc_creds
+from sc_creds import sc_creds, sc_creds_test
 import handlers
 import jinja2
 import logging
@@ -13,6 +13,13 @@ import json
 from datetime import datetime as dt
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
+
+
+class ArtistFaqHandler(handlers.BaseHandler):
+	def get(self):
+		'''FAQ for artists'''
+		template = jinja_environment.get_template('templates/artistfaq.html')
+		self.response.out.write(template.render())
 
 
 class ConnectSCHandler(handlers.ArtistHandler):
@@ -44,7 +51,9 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 	def get(self):
 		'''Complete oauth handshake with soundcloud
 		'''
-		# get the oauth code
+		
+		logging.debug(self.request.url)
+# 		get the oauth code
 		code = self.request.get('code',None)
 		if code is None:
 			return self.redirect(ARTIST_LOGIN)
@@ -54,7 +63,16 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 		response = client.exchange_token(code)
 		# pull the access token from the response
 		access_token = response.access_token
+
+		# get the access token
+# 		access_token = self.request.get("access_token",None)
 		
+		logging.debug(access_token)
+		
+		
+# 		if access_token is None:
+# 			return self.redirect(ARTIST_LOGIN)
+
 		# create a new client with the access token
 		del client
 		client = soundcloud.Client(access_token = access_token)
@@ -62,6 +80,8 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 		
 		# pull the artist_id from the response
 		artist_id = str(current_user.id)
+		logging.debug(artist_id)
+		logging.debug(current_user)
 		
 		# check for an existing user 
 		try:
@@ -419,6 +439,7 @@ STORE_TRACK = '/artist/storetrack'
 UPLOAD_URLS = '/artist/upload/urls'
 app = webapp2.WSGIApplication([
 							('/artist/spoof',SpoofArtistHandler),
+							('/artist/faq',ArtistFaqHandler),
 							(ARTIST_LOGIN,ConnectSCHandler),
 							(SC_AUTH,SCAuthHandler),
 							(ARTIST_LOGIN_COMPLETE,ConnectAccountHandler),

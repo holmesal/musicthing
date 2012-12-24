@@ -1,0 +1,54 @@
+body{
+	background: url('/img/gray_jean.png');
+	width: 100%;
+	font-family: /* "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", */ Helvetica, Arial, "Lucida Grande", 'Open Sans', sans-serif;
+	line-height: 120%;
+}
+
+.faqcontent{
+	padding-top: 50px;
+	background-color: white;
+	height: 1000px;
+}
+
+.faqcontent>p{
+	margin-left: 50px;
+	margin-right: 50px;
+}
+
+.faqtitle{
+	font-size: 40pt;
+	line-height: 120%;
+	color: #a0a0a0;
+	margin-bottom: 50px;
+}
+
+.item{
+	margin-bottom: 70px;
+}
+
+.faqsymbol{
+	float: left;
+	width: 20px;
+	font-weight: 800;
+	font-size: 18pt;
+	line-height: 70%;
+	color: #fc7341;
+	margin-left: 70px;
+	margin-right: 20px;
+}
+
+.faqquestion{
+	font-size: 14pt;
+	line-height: 120%;
+	color: #606060;
+	margin-bottom: 30px;
+	margin-top: 50px;
+	padding-left: 110px;
+}
+
+.faqanswer{
+	font-size: 11pt;
+	line-height: 120%;
+	padding-left: 110px;
+}

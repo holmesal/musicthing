@@ -31,6 +31,7 @@ class BaseHandler(webapp2.RequestHandler):
 		'''
 		try:
 			artist_id = str(artist_id)
+			logging.info(artist_id)
 			artist = models.Artist.get_by_id(artist_id)
 			assert artist, 'Artist does not exist'
 			return artist
@@ -65,8 +66,8 @@ class ArtistHandler(BaseHandler):
 		session['logged_in'] = False
 		try:
 			del session['artist_id']
-		except:
-			pass
+		except Exception,e:
+			logging.error(e)
 	def get_artist_from_session(self):
 		'''
 		Assures that the artist is logged in

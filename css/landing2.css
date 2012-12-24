@@ -1,0 +1,19 @@
+.logo{
+	margin-left: 150px;
+	margin-top: 20px;
+	width: 120px;
+}
+
+.sc-player{
+	margin-top: 60px;
+	height: 440px;
+}
+
+.trackinfo{
+	background-color: white;
+	height: 200px;
+	width: 800px;
+	margin-left: auto;
+	margin-right: auto;
+	border-radius: 5px;
+}

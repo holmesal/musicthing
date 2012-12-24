@@ -1,5 +1,5 @@
 application: radius-levr
-version: 1
+version: live
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -12,6 +12,8 @@ handlers:
   script: artist.app
 - url: /signup
   script: signup.app
+- url: /test
+  script: test.app
 
 #tasks and cronjobs
 - url: /tasks.*
