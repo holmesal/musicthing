@@ -67,7 +67,7 @@ class UserTaskHandler(webapp2.RequestHandler):
 			for number in numbers:
 				request = {'From':'+16173608582',
 							'To':number,
-							'Body':'Woohoo! New user signup! '+payload['email']}
+							'Body':'Woohoo! New (Radius) user signup! '+payload['email']}
 			
 				result = urlfetch.fetch(url=twiliourl,
 									payload=urllib.urlencode(request),

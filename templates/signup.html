@@ -28,13 +28,15 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 		<h4 class="how">Here's how it works:</h4>
 		<p class="explain">We know you don't need another account to manage, so we use SoundCloud to store your tracks. If you have an account, great! If you don't, it only takes a few seconds to set one up and upload a track.</p>
 		<h4 class="start">Get started:</h4>
-		<a id="connectlink" href="/artist/scauth"><img  class="connect" src="/img/connect.png"></a>
+<!-- 		<a id="connectlink" href="/artist/scauth"><img  class="connect" src="/img/connect.png"></a> -->
+		<a id="connectlink" href="#"><img  class="connect" src="/img/connect.png"></a>
 		<p class="already">(already using Radius? Clicking the button above will log you in.)</p>
 	</div>
 
 
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <script src="/js/bootstrap.min.js"></script>
+<script src="http://connect.soundcloud.com/sdk.js"></script>
 <script type="text/javascript">
 	    $(document).ready(function() {
 			mixpanel.track("band signup page loaded")
@@ -42,7 +44,25 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 			//register signup
 			mixpanel.track_links("#connectlink","connect link clicked");
 		});
-    </script>
+		
+		// initialize client with app credentials
+		SC.initialize({
+		  client_id: 'd03ca49fb6764663d0992eadc69f8bf1',
+		  redirect_uri: 'http://getradi.us/artist/login/complete'
+		});
+		
+		$('#connectlink').click(function(){
+			SC.connect(function() {
+			  SC.get('/me', function(me) { 
+			    console.log(me)
+			  });
+			});
+		})
+		
+		
+		
+</script>
+
 
 
 </body>
