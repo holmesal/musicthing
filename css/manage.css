@@ -96,4 +96,18 @@ input[type=submit]{
 
 .welcomemsg{
 	font-size: 13pt;
+	line-height: 150%;
+	text-align: center;
+}
+
+.troubles{
+	color: #464646;
+	text-align: center;
+	margin-top: 50px;
+	margin-bottom: 50px;
+/*
+	position: fixed;
+	bottom: 0px;
+	right: 5px;
+*/
 }

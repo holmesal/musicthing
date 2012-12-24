@@ -34,12 +34,23 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
         	<a id="btnSelect" class="btn btn-success btn-large" href="#">Select this track</a>
         </div>
         
+        <p class="troubles">Troubles? Call Carl: <a href="mailto:carl@getradi.us">carl@getradi.us</a></p>
+        
+        
         <div class="notracks" hidden>
+        	<div class="alert alert-info">
+<!-- 		  <button type="button" class="close" data-dismiss="alert">&times;</button> -->
+		  <p class="welcomemsg"><strong>Don't see your tracks?</strong> Sometimes they take a few minutes to show up. Sometimes all it takes is a couple refreshes.</br>Jiggle it: <a href="#" class="btn btn-success" onclick="location.reload(true)">Refresh</a>
+		  </p></div>
 	        <p class="sad">:(</p>
 	        <h4>It looks like you don't have any tracks yet...</h4>
 	        <p class="explain">Click the button below to be taken to SoundCloud to upload a new track.</br> When you're done, refresh this page - your tracks will show up.</p>
 	        <a id="trackupload" href="http://www.soundcloud.com/upload" target="_blank" class="btn btn-warning btn-large">Upload via SoundCloud</a>
         </div>
+        
+    <script type="text/javascript">
+    
+</script>
     <script type="text/javascript" src="/js/spin.js"></script>
     <script type="text/javascript" src="/js/roundandround.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
@@ -51,13 +62,13 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 		mixpanel.track_links("#trackupload","band upload link clicked");
 		
     $(window).focus(function(){
-	  location.reload(true)
+	  
 	});
     
     
     $.get('https://api.soundcloud.com/users/{{artist.artist_id}}/tracks.json?client_id=d03ca49fb6764663d0992eadc69f8bf1', function(data) {
-/* 	  console.log(data) */
-/* 	  console.log(data.length) */
+	  console.log(data)
+	  console.log(data.length)
 	  
 	  if (data.length==0){
 /* 	  	console.log('hiding!') */
@@ -78,7 +89,12 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 		   script.type= 'text/javascript';
 		   script.src= '/js/sc-player.js';
 		   head.appendChild(script);
+		   
 	}
+	
+	soundcloud.addEventListener('onPlayerError', function(player, data) {
+	  console.error("track couldn't be loaded!");
+	});
 	
 	mixpanel.track("band tracks loaded",{"numtracks":data.length})
 	  
@@ -96,6 +112,17 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 		  $(".select").show()
 		});
     </script>
+    
+    
+<!--     Awesome error logging -->
+    <script type="text/javascript" src="http://jserrlog.appspot.com/jserrlog-min.js"></script>
+ 
+	<script type="text/javascript">
+	// Configure site parameters
+	//jsErrLog.debugMode = true;
+	// Optionally add additional debug information to the jsErrLog.info message field
+	//jsErrLog.info = "Populated the Info Message to pass to logger"
+	</script>
     
   
   </body>
