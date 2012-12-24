@@ -6,6 +6,7 @@
     
     <title>Radius</title>
     <link href="/img/favicon.png" rel="shortcut icon" />
+<!--     <link href="/css/bootstrap.min.css" rel="stylesheet"> -->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,300' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="/css/hype.css" type="text/css">
 	  
@@ -23,7 +24,8 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 		<p class="punct">And they're making history.</p>
 		<p class="what">Radius is an online radio station that plays only local music.</br>Find an artist, download a track, buy a ticket, see a show.</p>
 		{% if state=="signedup" %}
-		<p class="discover">YOU'VE BEEN SIGNED UP! STAY TUNED.</p>
+		<p class="welcomemsg"><strong>Great to have you aboard!</strong> The more artists and fans we can sign up in your area, the sooner we can launch there. If you've got a minute, you should help us spread the word! </br><a id="tweetbtn" href="http://twitter.com/home?status=Pandora%20for%20local%20bands.%20http://www.getradi.us" class="btn btn-primary">Tweet about us</a> or share <a href="http://www.getradi.us">getradi.us</a>
+  </p>
 		{% else %}
 		<p class="discover">DISCOVER SOMETHING GREAT:</p>
 		<form id="signup_form" class="form-wrapper cf" method="post" action="/{{token}}">
@@ -48,6 +50,7 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 			//register signup
 			mixpanel.track_forms("#signup_form", "signup form submitted",{"signup_email":$("#emailinput").val()});
 			mixpanel.track_links("#bands","bands link clicked");
+			mixpanel.track_links("#tweetbtn","tweet button clicked");
 		});
     </script>
   
