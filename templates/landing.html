@@ -5,6 +5,7 @@
   <head>
     
     <title>Radius</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="/css/page.css" type="text/css">
     <link rel="stylesheet" href="/css/sc-player-artwork.css" type="text/css">
     <link rel="stylesheet" href="/css/landing2.css">
@@ -12,12 +13,20 @@
   </head>
   
   <body>
-      	
       	<div id="loading"></div>
       	
-        <div class="top">
+        <div class="headerbar">
+        	<p class="filtered">
+        		<a id="genre" href="#">Ska</a>
+        		 music in 
+        		<a id="radius" href="#">Boston</span>
+        	</p>
 	        <img class="logo" src="/img/logo.png">
         </div>
+        
+        <div id="expando" class="collapse"> some stuff </br> some other stuff</div>
+        
+        
         
         <div class="sc-player">
         	{% for track in tracks %}
@@ -33,12 +42,19 @@
         <div class="trackinfo">
 	        
         </div>
+        
+        
+        
+    
     <script type="text/javascript" src="/js/spin.js"></script>
     <script type="text/javascript" src="/js/roundandround.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-    <script type="text/javascript" src="../js/soundcloud.player.api.js"></script>
-    <script type="text/javascript" src="../js/sc-player.js"></script>
-    <script type="text/javascript" src="../js/player-custom.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/soundcloud.player.api.js"></script>
+    <script type="text/javascript" src="/js/sc-player.js"></script>
+    <script type="text/javascript" src="/js/player-custom.js"></script>
+    <script type="text/javascript" src="/js/landing-player.js"></script>
+<!--     <script type="text/javascript" src="/js/bootstrap.min.js"></script> -->
     <script type="text/javascript">
 	    $(document).bind('onPlayerPause.scPlayer', function(event){
 			idx = $('.sc-trackslist > .active').index()
@@ -50,13 +66,16 @@
 		
 	    $(document).bind('onPlayerInit.scPlayer', function(event){
 		  spinner.stop()
+		  $('#loading').hide()
 		});
+		
+		
     </script>
     <script type="text/javascript">
 	    //enter sandman
 	    {% for artist in artists %}
 	    	
-	    	artist
+/* 	    	artist */
 	    	
 	    {% endfor %}
     </script>

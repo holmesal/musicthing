@@ -72,7 +72,7 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 	
 	if ("{{artist.track_id}}" == "None"){
 		window.location = '/artist/choosetrack'
-	}
+	};
 	
 	$.get('https://api.soundcloud.com/tracks/{{artist.track_id}}.json?client_id=d03ca49fb6764663d0992eadc69f8bf1', function(data) {
 		
