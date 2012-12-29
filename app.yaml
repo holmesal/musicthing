@@ -10,6 +10,8 @@ handlers:
   script: landing.app
 - url: /new
   script: newuser.app
+- url: /music
+  script: music.app
 - url: /artist.*
   script: artist.app
 - url: /signup

@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  
+  <head>
+    
+    <title>Radius</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="/css/page.css" type="text/css">
+    <link rel="stylesheet" href="/css/sc-player-artwork.css" type="text/css">
+    <link rel="stylesheet" href="/css/player.css">
+  
+  </head>
+  
+  <body>
+      	<div id="loading"></div>
+      	
+        <div class="headerbar">
+        	<p class="filtered">
+        		<a id="genre" href="#">Punk</a>
+        		 music in 
+        		<a id="radius" href="#">The Universe</a>
+        	</p>
+	        <img class="logo" src="/img/logo.png">
+        </div>
+        
+        <div id="expando" class="collapse">
+        	<div class="container">
+		    	<div id="radiusrow" class="row">
+		    		<p class="prompt">Choose a location</p>
+		        	<div class="span12">
+			        	<a class="btn btn-primary">Boston</a>
+			        	<a class="btn btn-success">Show me everything</a>
+		        	</div>
+<!--
+		        	<div class="span2">
+			        	<p class="bigor">OR</p>
+		        	</div>
+		        	<div class="span5">
+			        	<a class="btn btn-success">Show me everything</a>
+		        	</div>
+-->
+		    	</div>
+		    	<div id="genrerow" class="row">
+		    		<div class="span12">
+			    	<p class="prompt">Filter your genres</p>
+			    	<p class="prompt-backup">Choose any genres that you absolutely don't want to hear</p>
+		    		<a class="btn btn-primary">Ska</a>
+		    		<a class="btn btn-primary">Punk</a>
+		    		<a class="btn btn-primary">Folk</a>
+		    		<a class="btn btn-primary">Rock</a>
+		    		<a class="btn btn-primary">Pop</a>
+		    		<a class="btn btn-primary">Foo</a>
+		    		<a class="btn btn-primary">Bar</a>
+		    		</div>
+		    	</div>
+        	</div>
+        </div>
+        
+        
+        
+        <div class="sc-player">
+        	{% for artist in artists %}
+        		<a href="http://api.soundcloud.com/tracks/{{artist.track_id}}" class="sc-player"></a>
+        	{% endfor %}
+
+<!--
+          <a href="http://api.soundcloud.com/tracks/71127918" class="sc-player">Forss</a>
+          <a href="http://soundcloud.com/matas/the-pendulum" class="sc-player">Forss</a>
+          <a href="http://soundcloud.com/matas/communion-of-coincidence-from-the-mountain-top" class="sc-player">My dub track</a>
+          <a href="http://soundcloud.com/matas/anadrakonic-waltz" class="sc-player">Pumpkins Track</a>
+          <a href="http://soundcloud.com/matas/frost-theme-0-1" class="sc-player">Oxxo</a>
+-->
+        </div>
+        
+        <div class="trackinfo">
+	        
+        </div>
+        
+        
+        
+    
+    <script type="text/javascript" src="/js/spin.js"></script>
+    <script type="text/javascript" src="/js/roundandround.js"></script>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/soundcloud.player.api.js"></script>
+    <script type="text/javascript" src="/js/sc-player.js"></script>
+    <script type="text/javascript" src="/js/player-custom.js"></script>
+    <script type="text/javascript" src="/js/landing-player.js"></script>
+<!--     <script type="text/javascript" src="/js/bootstrap.min.js"></script> -->
+    <script type="text/javascript">
+	    $(document).bind('onPlayerPause.scPlayer', function(event){
+			idx = $('.sc-trackslist > .active').index()
+			if (idx == $('.sc-trackslist > li').size()-1){
+				location.reload()
+			}
+		  
+		});
+		
+	    $(document).bind('onPlayerInit.scPlayer', function(event){
+		  spinner.stop()
+		  $('#loading').hide()
+		});
+		
+		
+    </script>
+    <script type="text/javascript">
+	    //enter sandman
+	    {% for artist in artists %}
+	    	
+/* 	    	artist */
+	    	
+	    {% endfor %}
+    </script>
+
+  
+  </body>
+
+ </html>
