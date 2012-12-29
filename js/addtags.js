@@ -1,3 +1,22 @@
+var addtag = function(){
+	
+	tag = {
+		"name"		:	$("#singletag").val(),
+		"count"		:	tags[0].count
+	}
+	
+	tags.push(tag)
+	
+	tags = tags.sort(compare).reverse()
+	
+	
+	updatetagshtml()
+	
+	$("#singletag").val("")
+	
+	
+}
+
 var postform = function(signup){
 	
 	to_post = {
@@ -21,18 +40,33 @@ updatetagshtml = function(){
 	$('#html-tags').empty()
 	
 	$(tags).each(function(i,tag){
-		elem = "<a class='tag btn btn-info'>"+tag.name+"</a>"
-		console.log(elem)
+		size = Math.ceil((tag.count/high)*13 + 10)
+		console.log(size)
+		
+		
+		elem = "<a class='tag btn btn-info' style='font-size:"+size+"pt;line-height:100%;'>"+tag.name+"</a>"
+		console.log(tag.count/high)
 		$("#html-tags").append(elem)
 	})
 	
 	//re-register remove listener
 	$(".tag").click(function(){
+		//remove the html
 		$(this).remove()
+		//remove the tag
+		$(tags).each(function(i,tag){
+			if (tag.name == $(this).text()){
+				tags.splice(i,1)
+				updatetagshtml()
+			}
+		})
 	})
 	
 	//add to the hidden input field
 	$("#tags").val(JSON.stringify(tags))
+	
+	//show the alert
+	$("#html-tags").prepend('<div id="removealert" class="alert">Click any tag to remove it.</div>')
 }
 
 function compare(a,b) {
@@ -100,10 +134,15 @@ var grabtags = function(){
 
 $(document).ready(function(){
 	
-	/* tags = [] */
+	//hide the alert
+	$("#removealert").hide()
 	
 	$("#grabtags").click(function(){
 		grabtags()
+	})
+	
+	$("#addtag").click(function(){
+		addtag()
 	})
 	
 	$("#signup").click(function(){

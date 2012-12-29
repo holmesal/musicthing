@@ -190,6 +190,43 @@ class ManageArtistHandler(handlers.ArtistHandler):
 		template = jinja_environment.get_template('templates/artist/manage.html')
 		self.response.out.write(template.render(template_values))
 		
+class AddTagsHandler(handlers.ArtistHandler):
+	'''
+	This handles the tagging process for artists
+	'''
+	def get(self):
+		'''
+		Write out the form and any existing tags
+		'''
+		
+		'''
+		Go find any existing tags for this artist, and write them out in the same format you get them in
+		MUST BE ORDERED BY COUNT (descending)
+		'''
+		
+		tags = [
+			{"name"		:	"carl",
+			 "count"	:	100},
+			 
+			 {"name"		:	"bob",
+			 "count"	:	10},
+		]
+		
+		template_values = {
+			"tags"		:	tags
+		}
+		
+		jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
+		template = jinja_environment.get_template('templates/addtags.html')
+		self.response.out.write(template.render(template_values))
+		
+		
+	def post(self):
+		'''
+		Update the artist's tags
+		'''
+		
+		
 		
 class UploadImageHandler(handlers.UploadHandler):
 	def get(self):
@@ -432,6 +469,7 @@ SC_AUTH = '/artist/scauth'
 ARTIST_LOGIN_COMPLETE = '/artist/login/complete'
 ARTIST_LOGOUT = '/artist/logout'
 ARTIST_MANAGE = '/artist/manage'
+ARTIST_ADDTAGS = '/artist/addtags'
 UPLOAD_IMAGE = '/artist/upload/image'
 # UPLOAD_AUDIO = '/artist/upload/audio'
 CHOOSE_TRACK = '/artist/choosetrack'
@@ -445,6 +483,7 @@ app = webapp2.WSGIApplication([
 							(ARTIST_LOGIN_COMPLETE,ConnectAccountHandler),
 							(ARTIST_LOGOUT,LogOutHandler),
 							(ARTIST_MANAGE,ManageArtistHandler),
+							(ARTIST_ADDTAGS,AddTagsHandler),
 							(UPLOAD_IMAGE,UploadImageHandler),
 							(UPLOAD_URLS,UploadUrlsHandler),
 							(CHOOSE_TRACK,ChooseTrackHandler),

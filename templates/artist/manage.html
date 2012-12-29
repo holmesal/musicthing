@@ -42,7 +42,14 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 			</div>
 			
 			<div class="span6">
+				
 				<form class="well" method="post" action="/artist/upload/urls">
+					
+					<p class="explain">Tags help listeners on Radius discover your music.</p>
+					<a href="/artist/addtags" class="btn btn-info">Add tags</a>
+					
+					
+					
 					<p class="explain">If you have a profile page on any of these services, add the URL! We'll include a link when people listen to your track.</p>
 					<p class="arow"><img class="sicon" src="/img/bandcamp.png"><input type="text" name="bandcamp_url" placeholder="Bandcamp Profile URL" value="{{artist.bandcamp_url or ''}}"></p>
 					<p class="arow"><img class="sicon" src="/img/facebook.png"><input type="text" name="facebook_url" placeholder="Facebook Profile URL" value="{{artist.facebook_url or ''}}"></p>
@@ -56,6 +63,14 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 				</form>
 			</div>
 		</div>
+		
+		<div class="row">
+			<form class="span12" class="well">
+				<h3>Your Tags</h3>
+				
+			</form>
+		</div>
+		
 		<p class="troubles">Troubles? Call Carl: <a href="mailto:carl@getradi.us">carl@getradi.us</a></p>
 	</div>
 

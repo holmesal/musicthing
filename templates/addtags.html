@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+
+	<title>Radius</title>
+	<link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
+	<link rel="stylesheet" href="/css/build_user.css" type="text/css">
+
+</head>
+
+<body>
+	<div class="container">
+		<div class="row">
+			<div id="build-container" class="span10 offset1">
+				
+				
+
+					<form method="post" action="/new">
+						<input type="hidden" id="tags" name="tags">
+						
+						<div class="artist">
+							<p class="titlehead">Your tags</p>
+							<p class="explain">Tags make it easy for listeners on Radius to discover your music.</p>
+							
+							<div id="html-tags">
+								<p class="notags">You haven't added any tags yet.</p>
+							</div>
+							
+							
+							
+							<p class="explain">If you enter the name of a band that has had a strong influence on your work, we'll automatically add the most popular tags for that artist to your band.</p>
+							<p class="explain">If you've got a specific tag in mind, you can also add it below.</p>
+							
+							<div class="row">
+								<div class="span5 pane">
+									<h4>Add tags from a similar artist</h4>
+									<p class="explain">Enter the name of an artist you are similar to </br>(or were influenced by).</p>
+									<input id="artist" type="text" placeholder="Artist Name">
+									<a href="#" id="grabtags" class="btn btn-success">Add this artist's tags</a>
+								</div>
+								<div class="span5 pane">
+									<h4>Add individual tags</h4>
+									<p class="explain">Add a tag that you feel describes your sound</br>().</p>
+									<input id="singletag" type="text" placeholder="Tag">
+									<a href="#" id="addtag" class="btn btn-success">Add tag</a>
+								</div>
+							</div>
+							
+							
+							
+						</div>
+					</form>
+				
+				
+			</div>
+		</div>
+	</div>
+	
+	
+	<!--Le Scripts-->
+	<script src="http://code.jquery.com/jquery.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/js/addtags.js"></script>
+	
+	
+	<script type="text/javascript">
+		{% if tags %}
+			tags = {{tags}}
+			high = tags[0].count
+			updatetagshtml()
+		{% else %}
+			tags = []
+		{% endif %}
+	</script>
+	
+
+
+</body>
+
+</html>
