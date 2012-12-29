@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+
+	<title>Radius</title>
+	<link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
+	<link rel="stylesheet" href="/css/build_user.css" type="text/css">
+
+</head>
+
+<body>
+	<div class="container">
+		<div class="row">
+			<div id="build-container" class="span10 offset1">
+				{% if error %}
+				<div class="alert alert-error"><strong>Whoops!</strong> {{error}}</div>
+				{% endif %}
+				
+				<div id="html-tags">
+					<p>Your tags:</p>
+				</div>
+
+					<form method="post" action="/new">
+						<input type="hidden" id="tags" name="tags">
+						
+						<div class="artist">
+							<h3>Start with an artist</h3>
+							<p>Add a few of your favorite artists</p>
+							<input id="artist" type="text" placeholder="Artist Name">
+							<a href="#" id="grabtags" class="btn btn-success">Grab tags</a>
+						</div>
+						
+						<div class="serendipity">
+							<h3>Adjust your level of serendipity</h3>
+							<input id="serendipity" name="serendipity" type="range" min="0" max="255" value="{{serendipity}}">
+						</div>
+				
+						<div class="account">
+							<h3>Would you like to save these settings?</h3>
+							<p>Create an account if you would like us to save your listening preferences</p>
+							<input id="email" name="email" type="text" placeholder="Email" value="{{email}}">
+							<input id="pw" name="pw" type="password" placeholder="Password">
+							<input id="signup" type="submit" class="btn btn-success" value="Sign Up">
+							<input id="goplay" type="submit" class="btn btn-warning" value="Just take me to the music">
+						</div>
+					</form>
+				
+				
+			</div>
+		</div>
+	</div>
+	
+	
+	<!--Le Scripts-->
+	<script src="http://code.jquery.com/jquery.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/js/build_user.js"></script>
+	
+	
+	<script type="text/javascript">
+		{% if tags %}
+			tags = {{tags}}
+			updatetagshtml()
+		{% else %}
+			tags = []
+		{% endif %}
+	</script>
+	
+
+
+</body>
+
+</html>

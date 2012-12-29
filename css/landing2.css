@@ -17,7 +17,7 @@
 }
 
 .sc-player{
-	margin-top: 120px;
+	margin-top: 20px;
 	height: 440px;
 }
 
@@ -47,9 +47,44 @@
 
 #genre:hover,#radius:hover{
 	text-decoration: none;
+	color: #2ba3e4;
 }
 
 #expando{
 	width: 100%;
-	background-color: gray;
+	box-shadow: inset 0px 1px 3px gray,inset 0px -1px 3px gray;
+	text-align: center;
+	background-image: url(/img/noisy_net.png);
+	color: #e7e7e7;
+/* 	background-color: white; */
+
+}
+
+body{
+/* 	background-image: url(/img/debut_light.png); */
+}
+
+#radiusrow{
+	margin-top: 20px;
+}
+
+#genrerow{
+	margin-top: 50px;
+	margin-bottom: 20px;
+}
+
+.prompt{
+	font-size: 20pt;
+	font-weight: 200;
+	margin-bottom: 20px;
+}
+
+.prompt-backup{
+	font-size: 10pt;
+}
+
+.bigor{
+	color: #d3d3d3;
+	font-size: 14pt;
+	margin-top: 10px;
 }

@@ -1,0 +1,17 @@
+body{
+	background-image: url("/img/debut_light.png");
+}
+
+#build-container{
+	background-color: white;
+	margin-top: 100px;
+	border-radius: 5px;
+}
+
+.tag{
+	margin: 2px;
+}
+
+.tag:hover{
+	text-decoration: line-through;
+}

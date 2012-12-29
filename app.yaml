@@ -8,11 +8,13 @@ default_expiration: "1m"
 handlers:
 - url: /
   script: landing.app
+- url: /new
+  script: newuser.app
 - url: /artist.*
   script: artist.app
 - url: /signup
   script: signup.app
-- url: /test
+- url: /test.*
   script: test.app
 
 #tasks and cronjobs
