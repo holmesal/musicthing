@@ -129,10 +129,24 @@ class ArtistHandler(BaseHandler):
 			raise self.SessionError(e)
 class UserHandler(BaseHandler):
 	def get_user_from_session(self):
-		session = get_current_session()
+		try:
+			session = get_current_session()
+			assert session['logged_in'] == True, 'Not logged in'
+			# grab the users id
+			user_id = session['id']
+			user = models.User.get_by_id(user_id)
+			assert user, 'User does not exist'
+			return user
+		except AssertionError,e:
+			raise self.SessionError(e)
+		except KeyError,e:
+			raise self.SessionError(e)
+		
 	def get_station_from_session(self):
 		session = get_current_session()
-		
+		tags = session.get('tags',{})
+		serendipity = session.get('serendipity',255/2)
+		return tags,serendipity
 	def hash_password(self,pw):
 		'''
 		Hashes a password using a salt and hashlib

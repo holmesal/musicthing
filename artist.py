@@ -179,16 +179,9 @@ class ManageArtistHandler(handlers.ArtistHandler):
 		except self.SessionError:
 			return self.redirect(ARTIST_LOGIN)
 		
-		
-# 		self.say('manage page {}   '.format(artist.strkey))
-
-		logging.info(artist.bandcamp_url)
-		
-		
 		template_values = {
 						'artist'	: artist
 		}
-		
 		logging.info(template_values)
 		
 		template = jinja_environment.get_template('templates/artist/manage.html')
@@ -383,6 +376,10 @@ class UploadUrlsHandler(handlers.ArtistHandler):
 		if email is not None:
 			artist.email = email
 		
+		# store the city
+		city = self.request.get('city',None)
+		if city is not None:
+			artist.city = city
 		# store changes
 		artist.put()
 		

@@ -16,6 +16,7 @@ class Artist(ndb.Model):
 	external_image_url = ndb.StringProperty()
 	description = ndb.StringProperty()
 	email = ndb.StringProperty()
+	city = ndb.StringProperty()
 	
 	# music data/metadata
 	track_url = ndb.StringProperty()

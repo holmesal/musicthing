@@ -18,6 +18,7 @@ class NewUserHandler(handlers.UserHandler):
 	def get(self):
 		'''
 		This handler primarily writes out the new user page
+		Check login state. If a user already exists, redirect to the music page
 		'''
 		try:
 			self.get_user_from_session()
@@ -25,10 +26,6 @@ class NewUserHandler(handlers.UserHandler):
 			pass
 		else:
 			return self.redirect('/music')
-		'''
-		You should check if they're already logged in, and redirect appropriately if so
-		'''
-		
 		template_values = {
 		}
 		

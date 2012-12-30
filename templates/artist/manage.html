@@ -45,7 +45,7 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 				
 				<form class="well" method="post" action="/artist/upload/urls">
 					
-					{% if not artist.tags %}
+					{% if not artist.tags_list %}
 					<div id="alert-tags" class="alert alert-warning">If you don't add any tags, you are less likely to be heard by the right listeners</div>
 					{% endif %}
 					<p class="explain">Tags help listeners on Radius discover your music.</p>
