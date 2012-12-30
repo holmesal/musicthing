@@ -2,7 +2,7 @@ var addtag = function(){
 	
 	tag = {
 		"name"		:	$("#singletag").val(),
-		"count"		:	tags[0].count
+		"count"		:	high
 	}
 	
 	tags.push(tag)

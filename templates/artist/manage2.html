@@ -27,7 +27,7 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
   <p class="welcomemsg"><strong>Great to have you aboard!</strong> We have to build up some artists in a city before we launch there (nobody likes a one-track radio station). If you've got a minute, you should help us spread the word to other artists in your city! </br><a href="http://twitter.com/home?status=Pandora%20for%20local%20bands.%20http://www.getradi.us" class="btn btn-primary">Tweet about us</a> or share <a href="http://www.getradi.us">getradi.us</a>
   </p></div>
 		<div class="band_name">
-			<h3>Welcome to Radius, <span class="artist_name"></span></h3>
+			<h1 class="artist_name"></h1>
 			<p class="explain" style="margin-top:30px;">This track will be put in rotation on Radius when we launch:</p>
 		</div>
 		
@@ -44,33 +44,20 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 			<div class="span6">
 				
 				<form class="well" method="post" action="/artist/upload/urls">
+					
 					<p class="explain">Tags help listeners on Radius discover your music.</p>
-					{% if artist.tags %}
-					<p>You have added <span class="tagcount">{{artist.tags|count}}</span> tags so far.</p>
-					<a href="/artist/addtags" class="btn btn-info">Edit your tags</a>
-					{% else %}
-					<p class="faded">You have not added any tags yet.</p>
+					<p class="faded">You have not added any tags yet</p>
 					<a href="/artist/addtags" class="btn btn-info">Add tags</a>
-					{% endif %}
-					
-					<hr>
-					
-					<p class="explain overhead">Adding a city helps locals find your music. Add the city where you play most of your shows.</p>
-					<p class="explain" style="text-align: left;">Your city:<input type="text" id="city" name="city" placeholder="Ex: Boston" value="{{artist.city or ''}}"></p>
 					
 					
-					<hr class="overhead">
-					<p class="explain overhead">If you have a profile page on any of these services, add the URL! We'll include a link when people listen to your track.</p>
+					
+					<p class="explain">If you have a profile page on any of these services, add the URL! We'll include a link when people listen to your track.</p>
 					<p class="arow"><img class="sicon" src="/img/bandcamp.png"><input type="text" name="bandcamp_url" placeholder="Bandcamp Profile URL" value="{{artist.bandcamp_url or ''}}"></p>
 					<p class="arow"><img class="sicon" src="/img/facebook.png"><input type="text" name="facebook_url" placeholder="Facebook Profile URL" value="{{artist.facebook_url or ''}}"></p>
 					<p class="arow"><img class="sicon" src="/img/myspace.png"><input type="text" name="myspace_url" placeholder="Myspace Profile URL" value="{{artist.myspace_url or ''}}"></p>
 					<p class="arow"><img class="sicon" src="/img/twitter.png"><input type="text" name="twitter_url" placeholder="Twitter Profile URL" value="{{artist.twitter_url or ''}}"></p>
 					<p class="arow"><img class="sicon" src="/img/youtube.png"><input type="text" name="youtube_url" placeholder="YouTube Profile URL" value="{{artist.youtube_url or ''}}"></p>
 					<p class="arow"><img class="sicon" src="/img/website.png"><input type="text" name="website_url" placeholder="Website URL" value="{{artist.website_url or ''}}"></p>
-					
-					
-					<hr>
-					
 					<p class="updates">We (very) occasionally send out a newsletter with tips on gaining exposure and growing your following.</p>
 					<p class="arow" id="email"><img class="sicon" src="/img/email.png"><input type="text" name="email" placeholder="Email" value="{{artist.email or ''}}"></p>
 					<input type="submit" class="btn btn-info" value="Save Changes">
