@@ -77,18 +77,7 @@ class NewUserHandler(handlers.UserHandler):
 			#===================================================================
 			# Clean tags
 			#===================================================================
-			# combine duplicates
-			tags = defaultdict(int)
-			for item in raw_tags:
-				tag = item['name']
-				count = int(item['count'])
-				tags[tag] += count
-			# make tags static
-			tags.default_factory = None
-			# calc max count for all the tags
-			max_count = max([tags[tag] for tag in tags])
-			# update the tags dict
-			tags = {key:float(count)/float(max_count) for key,count in tags.iteritems()}
+			tags = self.parse_tags(raw_tags)
 			#===================================================================
 			# Perform actions
 			#===================================================================

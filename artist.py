@@ -119,15 +119,16 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 			# finish mixpanel rpc call
 			self.complete_rpc(rpc)
 			
-			try:
-				#send a text notification
-				task_params = {
-					'artist_name'	:	artist.username
-				}
-				logging.debug(artist.username)
-				taskqueue.add(url='/tasks/textTask',payload=json.dumps(task_params))
-			except Exception,e:
-				logging.error(e)
+			# TODO: uncomment for production
+#			try:
+#				#send a text notification
+#				task_params = {
+#					'artist_name'	:	artist.username
+#				}
+#				logging.debug(artist.username)
+#				taskqueue.add(url='/tasks/textTask',payload=json.dumps(task_params))
+#			except Exception,e:
+#				logging.error(e)
 			
 			# redirect to image upload page
 			return self.redirect(CHOOSE_TRACK)
@@ -198,15 +199,17 @@ class AddTagsHandler(handlers.ArtistHandler):
 		'''
 		Write out the form and any existing tags
 		'''
-		
+		try:
+			artist = self.get_artist_from_session()
+		except:
+			return self.redirect(ARTIST_LOGIN)
 		'''
 		Go find any existing tags for this artist, and write them out in the same format you get them in:
 		[{name:name,count:count}]
 		MUST BE ORDERED BY COUNT (descending)
 		'''
-		
-		tags = []
-		
+		tags = artist.tags_list
+		tags = sorted(tags,key=lambda x: x['count'])
 		template_values = {
 			"tags"		:	tags
 		}
@@ -221,8 +224,17 @@ class AddTagsHandler(handlers.ArtistHandler):
 		Update the artist's tags
 		Then redirect to /manage
 		'''
+		try:
+			artist = self.get_artist_from_session()
+		except self.SessionError:
+			return self.redirect(ARTIST_MANAGE)
 		
-		self.redirect('/artist/manage')
+		raw_tags = json.loads(self.request.get('tags','{}'))
+		parsed_tags = self.parse_tags(raw_tags)
+		artist.tags_ = self.prep_tags_for_datastore(parsed_tags)
+		
+		artist.put()
+		return self.redirect(ARTIST_MANAGE)
 		
 		
 		

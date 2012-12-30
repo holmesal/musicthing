@@ -6,6 +6,7 @@ import models
 import logging
 from gaesessions import get_current_session
 import hashlib, uuid
+from collections import defaultdict
 
 #from excepts import *
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
@@ -55,6 +56,29 @@ class BaseHandler(webapp2.RequestHandler):
 			logging.error(e)
 	class SessionError(Exception):
 		'''Session is invalid'''
+	def parse_tags(self,raw_tags):
+		# combine duplicates
+		tags = defaultdict(int)
+		for item in raw_tags:
+			tag = item['name']
+			count = int(item['count'])
+			tags[tag] += count
+		# make tags static
+		tags.default_factory = None
+		# calc max count for all the tags
+		max_count = max([tags[tag] for tag in tags])
+		# update the tags dict
+		tags = {key:int(float(count)/float(max_count)*100) for key,count in tags.iteritems()}
+		
+		return tags
+	def prep_tags_for_datastore(self,parsed_tags):
+		return [models.TagProperty(
+									genre = tag,
+									count = count
+									)
+					for tag,count in parsed_tags.iteritems()
+					]
+		
 class ArtistHandler(BaseHandler):
 	def log_in(self,artist_id):
 		'''
@@ -148,19 +172,12 @@ class UserHandler(BaseHandler):
 			del session['serendipity']
 		except KeyError:
 			logging.error('serendipity not in a session that is being destroyed')
-	def create_new_playlist(self,parent_key,tags,serendipity,name='default'):
-		# creates the structured property for storing the genres
-		tags_prop = [models.TagProperty(
-									genre = tag,
-									affinity = affinity
-									)
-					for tag,affinity in tags.iteritems()
-					]
+	def create_new_playlist(self,parent_key,parsed_tags,serendipity,name='default'):
 		# creates the station object
 		models.Station(id=name,
 					parent = parent_key,
 					serendipity = serendipity,
-					tags_ = tags_prop
+					tags_ = self.prep_tags_for_datastore(parsed_tags)
 					).put()
 class UploadHandler(ArtistHandler,blobstore_handlers.BlobstoreUploadHandler):
 	pass
