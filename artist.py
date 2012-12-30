@@ -200,17 +200,12 @@ class AddTagsHandler(handlers.ArtistHandler):
 		'''
 		
 		'''
-		Go find any existing tags for this artist, and write them out in the same format you get them in
+		Go find any existing tags for this artist, and write them out in the same format you get them in:
+		[{name:name,count:count}]
 		MUST BE ORDERED BY COUNT (descending)
 		'''
 		
-		tags = [
-			{"name"		:	"carl",
-			 "count"	:	100},
-			 
-			 {"name"		:	"bob",
-			 "count"	:	10},
-		]
+		tags = []
 		
 		template_values = {
 			"tags"		:	tags
@@ -224,7 +219,11 @@ class AddTagsHandler(handlers.ArtistHandler):
 	def post(self):
 		'''
 		Update the artist's tags
+		Then redirect to /manage
 		'''
+		
+		self.redirect('/artist/manage')
+		
 		
 		
 		
