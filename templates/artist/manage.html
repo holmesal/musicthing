@@ -44,6 +44,10 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 			<div class="span6">
 				
 				<form class="well" method="post" action="/artist/upload/urls">
+					
+					{% if not artist.tags %}
+					<div id="alert-tags" class="alert alert-warning">If you don't add any tags, you are less likely to be heard by the right listeners</div>
+					{% endif %}
 					<p class="explain">Tags help listeners on Radius discover your music.</p>
 					{% if artist.tags %}
 					<p>You have added <span class="tagcount">{{artist.tags|count}}</span> tags so far.</p>
@@ -54,7 +58,7 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 					{% endif %}
 					
 					<hr>
-					
+					<div id="alert-city" class="alert alert-warning">If you don't add a city, your tracks will only be played in the worldwide rotation</div>
 					<p class="explain overhead">Adding a city helps locals find your music. Add the city where you play most of your shows.</p>
 					<p class="explain" style="text-align: left;">Your city:<input type="text" id="city" name="city" placeholder="Ex: Boston" value="{{artist.city or ''}}"></p>
 					
@@ -71,7 +75,7 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 					
 					<hr>
 					
-					<p class="updates">We (very) occasionally send out a newsletter with tips on gaining exposure and growing your following.</p>
+					<p class="updates">We (very) occasionally send out updates about changes and new features.</p>
 					<p class="arow" id="email"><img class="sicon" src="/img/email.png"><input type="text" name="email" placeholder="Email" value="{{artist.email or ''}}"></p>
 					<input type="submit" class="btn btn-info" value="Save Changes">
 				</form>

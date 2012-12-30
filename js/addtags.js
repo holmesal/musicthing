@@ -54,13 +54,16 @@ updatetagshtml = function(){
 	$(".tag").click(function(){
 		//remove the html
 		$(this).remove()
+		//log the name
+		name = $(this).text()
 		//remove the tag
 		$(tags).each(function(i,tag){
-			if (tag.name == $(this).text()){
+			if (tag.name == name){
 				tags.splice(i,1)
-				updatetagshtml()
 			}
 		})
+		//update the hidden input field
+		$("#tags").val(JSON.stringify(tags))
 	})
 	
 	//add to the hidden input field
