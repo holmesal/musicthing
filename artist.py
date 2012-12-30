@@ -184,7 +184,6 @@ class ManageArtistHandler(handlers.ArtistHandler):
 
 		logging.info(artist.bandcamp_url)
 		
-		artist.tags = []
 		
 		template_values = {
 						'artist'	: artist
@@ -201,21 +200,17 @@ class AddTagsHandler(handlers.ArtistHandler):
 	'''
 	def get(self):
 		'''
-		Write out the form and any existing tags
+		Write out the form and any existing tags in form [{name:name,count:count}]
+		ordered by count, descending
 		'''
 		try:
 			artist = self.get_artist_from_session()
 		except:
 			return self.redirect(ARTIST_LOGIN)
-		'''
-		Go find any existing tags for this artist, and write them out in the same format you get them in:
-		[{name:name,count:count}]
-		MUST BE ORDERED BY COUNT (descending)
-		'''
 		tags = artist.tags_list
-		tags = sorted(tags,key=lambda x: x['count'])
+		tags = sorted(tags,key=lambda x: x['count'],reverse=True)
 		template_values = {
-			"tags"		:	tags
+			"tags"		:	json.dumps(tags)
 		}
 		
 		jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
@@ -232,12 +227,20 @@ class AddTagsHandler(handlers.ArtistHandler):
 			artist = self.get_artist_from_session()
 		except self.SessionError:
 			return self.redirect(ARTIST_MANAGE)
+		try:
+			raw_tags = json.loads(self.request.get('tags','{}'))
+		except ValueError:
+			raw_tags = []
+		if raw_tags:
+			parsed_tags = self.parse_tags(raw_tags)
+			prepped_tags = self.prep_tags_for_datastore(parsed_tags)
+		else:
+			# empty list if raw_tags is empty
+			prepped_tags = []
 		
-		raw_tags = json.loads(self.request.get('tags','{}'))
-		parsed_tags = self.parse_tags(raw_tags)
-		artist.tags_ = self.prep_tags_for_datastore(parsed_tags)
-		
+		artist.tags_ = prepped_tags
 		artist.put()
+		
 		return self.redirect(ARTIST_MANAGE)
 		
 		
@@ -282,33 +285,6 @@ class UploadImageHandler(handlers.UploadHandler):
 			return self.redirect(CHOOSE_TRACK)
 		else:
 			return self.redirect(ARTIST_MANAGE)
-# class UploadAudioHandler(handlers.ArtistHandler):
-# 	def get(self):
-# 		'''View the page to upload an audio track url
-# 		'''
-# 		
-# 		try:
-# 			artist = self.get_artist_from_session()
-# 		except self.SessionError:
-# 			return self.redirect(ARTIST_LOGIN)
-# 		# fetch a list of all of the artists tracks from soundcloud
-# 		client = soundcloud.Client(access_token = artist.access_token)
-# 		response = client.get('/users/{}/tracks'.format(artist.strkey))
-# 		
-# 		
-# 		signup = self.request.get('signup',0)
-# 		template_values = {
-# 						'signup' : signup,
-# 						'artist' : artist,
-# 						'artist_key' : artist.strkey,
-# 						'tracks' : response
-# 		}
-# 		
-# 		template = jinja_environment.get_template('templates/artist/upload_audio.html')
-# 		self.response.out.write(template.render(template_values))
-# 		
-
-# 		self.say('audio upload post {}'.format(artist.track_url))
 
 class ChooseTrackHandler(handlers.ArtistHandler):
 	def get(self):

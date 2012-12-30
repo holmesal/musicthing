@@ -35,7 +35,6 @@ class MusicHandler(handlers.BaseHandler):
 		
 		Here's some test values:
 		'''
-		session = get_current_session()
 		
 		# fetch keys
 		artist_keys = models.Artist.query().fetch(None,keys_only=True)

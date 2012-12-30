@@ -76,7 +76,7 @@ class BaseHandler(webapp2.RequestHandler):
 									genre = tag,
 									count = count
 									)
-					for tag,count in parsed_tags.iteritems()
+					for tag,count in parsed_tags.iteritems() if count > 0
 					]
 		
 class ArtistHandler(BaseHandler):
