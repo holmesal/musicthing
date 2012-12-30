@@ -17,7 +17,7 @@
 				
 				
 
-					<form method="post" action="/new">
+					<form method="post" action="/artist/addtags">
 						<input type="hidden" id="tags" name="tags">
 						
 						<div class="artist">
@@ -38,16 +38,19 @@
 									<h4>Add tags from a similar artist</h4>
 									<p class="explain">Enter the name of an artist you are similar to </br>(or were influenced by).</p>
 									<input id="artist" type="text" placeholder="Artist Name">
-									<a href="#" id="grabtags" class="btn btn-success">Add this artist's tags</a>
+									<a href="#" id="grabtags" class="btn btn-info">Add this artist's tags</a>
 								</div>
 								<div class="span5 pane">
 									<h4>Add individual tags</h4>
 									<p class="explain">Add a tag that you feel describes your sound</br>().</p>
 									<input id="singletag" type="text" placeholder="Tag">
-									<a href="#" id="addtag" class="btn btn-success">Add tag</a>
+									<input type="hidden" id="tags">
+									<a href="#" id="addtag" class="btn btn-info">Add tag</a>
 								</div>
 							</div>
-							
+							<div class="submitter">
+							<input type="submit" id="saveTags" class="btn btn-success btn-large" value="Save Tags">
+							</div>
 							
 							
 						</div>
