@@ -38,18 +38,18 @@
 									<h4>Add tags from a similar artist</h4>
 									<p class="explain">Enter the name of an artist you are similar to </br>(or were influenced by).</p>
 									<input id="artist" type="text" placeholder="Artist Name">
-									<a id="grabtags" class="btn btn-info">Add this artist's tags</a>
+									<a id="grabtags" class="btn btn-info" disabled>Add this artist's tags</a>
 								</div>
 								<div class="span5 pane">
 									<h4>Add individual tags</h4>
 									<p class="explain">Add a tag that you feel describes your sound</br>().</p>
 									<input id="singletag" type="text" placeholder="Tag">
-									<input type="hidden" id="tags" value="{{ tags }}">
-									<a id="addtag" class="btn btn-info">Add tag</a>
+									<input type="hidden" id="tags">
+									<a id="addtag" class="btn btn-info" disabled>Add tag</a>
 								</div>
 							</div>
 							<div class="submitter">
-							<input type="submit" id="saveTags" class="btn btn-success btn-large" value="Save Tags">
+							<input type="submit" id="saveTags" class="btn btn-success btn-large" value="Save Tags" disabled>
 							</div>
 							
 							
