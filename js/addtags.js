@@ -70,7 +70,10 @@ updatetagshtml = function(){
 	$("#tags").val(JSON.stringify(tags))
 	
 	//show the alert
-	$("#html-tags").prepend('<div id="removealert" class="alert">Click any tag to remove it.</div>')
+	$("#html-tags").prepend('<div id="removealert" class="alert alert-info">Click any tag to remove it.</div>')
+	
+	//enable the save button
+	$("#saveTags").removeAttr("disabled");
 }
 
 function compare(a,b) {
@@ -156,5 +159,15 @@ $(document).ready(function(){
 	$("#goplay").click(function(){
 		postform(false)
 	})
+	
+	
+    $("#artist,#singletag").bind("change keyup input",
+		function () {      
+			if ($(this).val() != ""){
+				$(this).siblings(".btn").removeAttr("disabled");
+			}else {
+				$(this).siblings(".btn").attr("disabled", "disabled");
+			}      
+	});
 
 });
