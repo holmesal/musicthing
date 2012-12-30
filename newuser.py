@@ -8,6 +8,7 @@ import os
 import random
 import webapp2
 import json
+from collections import defaultdict
 
 
 class NewUserHandler(handlers.UserHandler):
@@ -40,7 +41,11 @@ class NewUserHandler(handlers.UserHandler):
 		email 		=	self.request.get("email",'')
 		pw			=	self.request.get("pw",'')
 		submit_type =	self.request.get("submit")
-		tags		=	json.loads(self.request.get("tags","{}")) #NOTE - this currently crashes if tags is empty
+		try:
+			raw_tags		=	json.loads(self.request.get("tags","{}")) #NOTE - this currently crashes if tags is empty
+		except:
+			raw_tags = {}
+			logging.error('tags are not being handled correctly when not passed in post')
 		try:
 			'''
 			You should check the following statements:
@@ -50,8 +55,11 @@ class NewUserHandler(handlers.UserHandler):
 			4. email is valid (grab the regex from the wayfare or levr pages)
 			5. pw is valid (see above)
 			'''
+			#===================================================================
+			# Validate required fields
+			#===================================================================
 			# assure that all fields are passed
-			assert tags, 'You did not select any tags!'
+			assert raw_tags, 'You did not select any tags!'
 			assert serendipity, 'You did not choose a serendipity level!'
 			
 			# validate serendipity
@@ -61,16 +69,33 @@ class NewUserHandler(handlers.UserHandler):
 					'Serendipity must be an integer in range 0-255'
 			except ValueError:
 				assert False, 'serendipity must be an integer in range 0-255'
-			
+			#===================================================================
+			# Clean tags
+			#===================================================================
+			# combine duplicates
+			tags = defaultdict(int)
+			for item in raw_tags:
+				tag = item['name']
+				count = int(item['count'])
+				tags[tag] += count
+			# make tags static
+			tags.default_factory = None
+			# calc max count for all the tags
+			max_count = max([tags[tag] for tag in tags])
+			# update the tags dict
+			tags = {key:float(count)/float(max_count) for key,count in tags.iteritems()}
+			#===================================================================
+			# Perform actions
+			#===================================================================
 			if submit_type != 'Sign Up':
 				# user did not create an account
 				# preferences are only stored in the session
-				self.update_session()
+				self.update_session(tags,serendipity)
 			else:
 				# the signup button was pressed
 				# Create a new user account to store preferences
-				assert email, 'email is empty'
-				assert pw, 'pw is empty'
+				assert email, 'Email is empty.'
+				assert pw, 'Password is empty.'
 				# validate email
 				existing_user = models.User.query(
 												models.User.email == email
@@ -79,33 +104,26 @@ class NewUserHandler(handlers.UserHandler):
 				
 				# create a new user in the ndb
 				pw,salt = self.hash_password(pw)
-				logging.info('pw: {}'.format(pw))
-				logging.info('salt: {}'.format(salt))
-				user = models.User(
+				id_ = models.User.allocate_ids(1)[0]
+				user = models.User(id=id_,
 						email = email,
 						pw = pw,
 						salt = salt,
-						serendipity = serendipity,
-						tags = tags
 						)
-				logging.info()
+				self.log_in(user.intkey, tags, serendipity)
+				self.create_new_playlist(user.key, tags, serendipity)
 				user.put()
-				logging.info(user)
-				uid = user.id()
-				logging.info(uid)
-				assert False, uid
-				self.create_session(uid)
-			
 			
 		except AssertionError,error:
 			#write out all of the inputted values and tags
 			template_values = {
 				"error"			:	error,
-				"tags"			:	json.dumps(tags),
 				"serendipity"	:	serendipity,
 				"email"			:	email,
 				"pw"			:	pw
 			}
+			if raw_tags:
+				template_values['tags'] = json.dumps(raw_tags)
 			
 			jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 			template = jinja_environment.get_template('templates/build_user.html')

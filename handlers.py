@@ -99,6 +99,7 @@ class UserHandler(BaseHandler):
 	def hash_password(self,pw):
 		'''
 		Hashes a password using a salt and hashlib
+		http://stackoverflow.com/questions/9594125/salt-and-hash-a-password-in-python
 		@param pw: the users password
 		@type pw: str
 		@return: hashed_password (str), salt (str)
@@ -134,6 +135,20 @@ class UserHandler(BaseHandler):
 			del session['serendipity']
 		except KeyError:
 			logging.error('serendipity not in a session that is being destroyed')
+	def create_new_playlist(self,parent_key,tags,serendipity,name='default'):
+		# creates the structured property for storing the genres
+		tags_prop = [models.TagProperty(
+									genre = tag,
+									affinity = affinity
+									)
+					for tag,affinity in tags.iteritems()
+					]
+		# creates the station object
+		models.Station(id=name,
+					parent = parent_key,
+					serendipity = serendipity,
+					tags_ = tags_prop
+					).put()
 class UploadHandler(ArtistHandler,blobstore_handlers.BlobstoreUploadHandler):
 	pass
 

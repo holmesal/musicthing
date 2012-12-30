@@ -53,12 +53,25 @@ class TagProperty(ndb.Model):
 	Model definition of the structured property on users
 	'''
 	genre = ndb.StringProperty()
-	affinity = ndb.StringProperty()
+	affinity = ndb.FloatProperty()
 	
 class User(ndb.Model):
 	created = ndb.DateProperty(auto_now_add=True)
 	email = ndb.StringProperty()
 	pw = ndb.StringProperty()
 	salt = ndb.StringProperty() # salt for the pw hash
+	@property
+	def intkey(self):
+		'''Returns the integer id from the users key
+		@return: the users numeric id
+		@rtype: int
+		'''
+		return self.key.id()
+class Station(ndb.Model):
 	serendipity = ndb.IntegerProperty()
-	tags = ndb.StructuredProperty(TagProperty,repeated=True)
+	tags_ = ndb.StructuredProperty(TagProperty,repeated=True)
+	
+	@property
+	def tags(self):
+		return {tag.genre:tag.genre for tag in self.tags_}
+		
