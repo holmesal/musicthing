@@ -13,6 +13,10 @@ h1,h3{
 	color: #4d4d4d;
 }
 
+.artist_name{
+	color: #0d84bb;
+}
+
 .artwork{
 	width: 400px;
 	height: 400px;
@@ -86,8 +90,15 @@ input[type=submit]{
 	font-weight: 300;
 	font-size: 12pt;
 	line-height: 120%;
+}
+
+.overhead{
 	margin-bottom: 30px;
-	margin-top: 10px;
+	margin-top: 40px;
+}
+
+.faded{
+	color: #8e8e8e;
 }
 
 .banner{

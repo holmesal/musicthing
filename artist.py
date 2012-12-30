@@ -184,9 +184,13 @@ class ManageArtistHandler(handlers.ArtistHandler):
 
 		logging.info(artist.bandcamp_url)
 		
+		artist.tags = []
+		
 		template_values = {
-						'artist' : artist
+						'artist'	: artist
 		}
+		
+		logging.info(template_values)
 		
 		template = jinja_environment.get_template('templates/artist/manage.html')
 		self.response.out.write(template.render(template_values))
