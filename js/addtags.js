@@ -169,5 +169,12 @@ $(document).ready(function(){
 				$(this).siblings(".btn").attr("disabled", "disabled");
 			}      
 	});
-
+	
+	//prevent enter submitting
+	$('.noEnterSubmit').keypress(function(e){
+	    if ( e.which == 13 ) {
+	    	return false;
+	    }
+/* 	    if ( e.which == 13 ) e.preventDefault(); */
+	});
 });

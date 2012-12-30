@@ -17,24 +17,24 @@
 				{% if error %}
 				<div class="alert alert-error"><strong>Whoops!</strong> {{error}}</div>
 				{% endif %}
-				
+				<h3>Start with an artist</h3>
 				<div id="html-tags">
-					<p>Your tags:</p>
+					<p class="notags">You haven't added any tags yet.</p>
 				</div>
 
 					<form method="post" action="/new">
 						<input type="hidden" id="tags" name="tags" value="{}">
 						
 						<div class="artist">
-							<h3>Start with an artist</h3>
 							<p>Add a few of your favorite artists</p>
-							<input id="artist" type="text" placeholder="Artist Name">
-							<a href="#" id="grabtags" class="btn btn-success">Grab tags</a>
+							<input id="artist" class="noEnterSubmit" type="text" placeholder="Artist Name">
+							<a id="grabtags" class="btn btn-success" disabled>Grab tags</a>
 						</div>
 						
 						<div class="serendipity">
-							<h3>Adjust your level of serendipity</h3>
-							<input id="serendipity" name="serendipity" type="range" min="0" max="255" value="{{serendipity|default(100)}}">
+							<h3>How much variation do you want?</h3>
+							<p class="explain">Choose how often you would like to hear tracks outside of the genres above</p>
+							<input id="serendipity" name="serendipity" type="range" min="0" step="1" max="5" value="{{serendipity|default(0.1)}}">
 						</div>
 				
 						<div class="account">
@@ -56,7 +56,7 @@
 	<!--Le Scripts-->
 	<script src="http://code.jquery.com/jquery.js"></script>
     <script src="/js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="/js/build_user.js"></script>
+	<script type="text/javascript" src="/js/addtags.js"></script>
 	
 	
 	<script type="text/javascript">
