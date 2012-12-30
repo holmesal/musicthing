@@ -21,24 +21,27 @@ class Artist(ndb.Model):
 	# music data/metadata
 	track_url = ndb.StringProperty()
 	track_id = ndb.StringProperty() # soundcloud track id
-	genre = ndb.StringProperty() # deprecated
 	tags_ = ndb.StructuredProperty(TagProperty,repeated=True)
+	
 	# external urls
 	bandcamp_url = ndb.StringProperty()
 	facebook_url = ndb.StringProperty()
 	myspace_url = ndb.StringProperty()
-	soundcloud_url = ndb.StringProperty()
 	tumblr_url = ndb.StringProperty()
 	twitter_url = ndb.StringProperty()
 	youtube_url = ndb.StringProperty()
 	website_url = ndb.StringProperty()
 	other_urls = ndb.StringProperty(repeated=True)
 	
+	# deprecated
+	soundcloud_url = ndb.StringProperty()
+	genre = ndb.StringProperty() # deprecated
+	
 	@property
-	def tags(self):
+	def tags_dict(self):
 		return {tag.genre:tag.count for tag in self.tags_}
 	@property
-	def tags_list(self):
+	def tags(self):
 		return [{'name':tag.genre,'count':tag.count} for tag in self.tags_]
 	@property
 	def image_url(self):
@@ -83,5 +86,8 @@ class Station(ndb.Model):
 	
 	@property
 	def tags(self):
+		return [{'name':tag.genre,'count':tag.count} for tag in self.tags_]
+	@property
+	def tags_dict(self):
 		return {tag.genre:tag.count for tag in self.tags_}
 		

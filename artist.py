@@ -200,7 +200,7 @@ class AddTagsHandler(handlers.ArtistHandler):
 			artist = self.get_artist_from_session()
 		except:
 			return self.redirect(ARTIST_LOGIN)
-		tags = artist.tags_list
+		tags = artist.tags
 		tags = sorted(tags,key=lambda x: x['count'],reverse=True)
 		template_values = {
 			"tags"		:	json.dumps(tags)

@@ -126,12 +126,6 @@ class NewUserHandler(handlers.UserHandler):
 			return self.redirect('/music')
 			
 			
-		
-		
-		'''
-		If there is no error, create the user (if they passed signup info), 
-		create the session variable, and redirect them to /music
-		'''
 app = webapp2.WSGIApplication([('/new',NewUserHandler)])
 
 

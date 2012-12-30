@@ -45,12 +45,12 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 				
 				<form class="well" method="post" action="/artist/upload/urls">
 					
-					{% if not artist.tags_list %}
+					{% if not artist.tags %}
 					<div id="alert-tags" class="alert alert-error">If you don't add any tags, you are less likely to be heard by the right listeners</div>
 					{% endif %}
 					<p class="explain">Tags help listeners on Radius discover your music.</p>
-					{% if artist.tags_list %}
-					<p>You have added <span class="tagcount">{{artist.tags_list|count}}</span> tags so far.</p>
+					{% if artist.tags %}
+					<p>You have added <span class="tagcount">{{artist.tags|count}}</span> tags so far.</p>
 					<a href="/artist/addtags" class="btn btn-info">Edit your tags</a>
 					{% else %}
 					<p class="faded">You have not added any tags yet.</p>
