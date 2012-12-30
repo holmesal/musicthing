@@ -9,6 +9,7 @@ import random
 import webapp2
 import json
 from collections import defaultdict
+import re
 
 
 class NewUserHandler(handlers.UserHandler):
@@ -25,6 +26,7 @@ class NewUserHandler(handlers.UserHandler):
 		except self.SessionError:
 			pass
 		else:
+			# user exists, so redirect to some music!
 			return self.redirect('/music')
 		template_values = {
 		}
@@ -88,6 +90,8 @@ class NewUserHandler(handlers.UserHandler):
 				assert email, 'Email is empty.'
 				assert pw, 'Password is empty.'
 				# validate email
+				email_pattern = re.compile("[-a-zA-Z0-9._]+@[-a-zA-Z0-9_]+.[a-zA-Z0-9_.]+", re.IGNORECASE)
+				assert email_pattern.match(email),'Invalid email.'
 				existing_user = models.User.query(models.User.email == email).get()
 				assert not existing_user, 'Email is already in use.'
 				
