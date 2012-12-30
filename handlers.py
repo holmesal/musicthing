@@ -38,6 +38,14 @@ class BaseHandler(webapp2.RequestHandler):
 			return artist
 		except AssertionError,e:
 			raise self.SessionError(e)
+	def get_user_by_id(self,user_id):
+		try:
+			user_id = long(user_id)
+			user = models.User.get_by_id(user_id)
+			assert user, 'User does not exist'
+			return user
+		except AssertionError,e:
+			raise self.SessionError(e)
 	def complete_rpc(self,rpc):
 		try:
 			mp_result = rpc.get_result()
@@ -96,6 +104,11 @@ class ArtistHandler(BaseHandler):
 		except KeyError,e:
 			raise self.SessionError(e)
 class UserHandler(BaseHandler):
+	def get_user_from_session(self):
+		session = get_current_session()
+	def get_station_from_session(self):
+		session = get_current_session()
+		
 	def hash_password(self,pw):
 		'''
 		Hashes a password using a salt and hashlib
@@ -111,7 +124,7 @@ class UserHandler(BaseHandler):
 	def log_in(self,uid,tags,serendipity):
 		session = get_current_session()
 		session['logged_in'] = True
-		session['uid'] = uid
+		session['id'] = uid
 		session['tags'] = tags
 		session['serendipity'] = serendipity
 	def update_session(self,tags=None,serendipity=None):
@@ -124,7 +137,7 @@ class UserHandler(BaseHandler):
 		session = get_current_session()
 		session['logged_in'] = False
 		try:
-			del session['uid']
+			del session['id']
 		except KeyError:
 			pass
 		try:

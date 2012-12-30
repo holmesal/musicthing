@@ -19,7 +19,12 @@ class NewUserHandler(handlers.UserHandler):
 		'''
 		This handler primarily writes out the new user page
 		'''
-		
+		try:
+			self.get_user_from_session()
+		except self.SessionError:
+			pass
+		else:
+			return self.redirect('/music')
 		'''
 		You should check if they're already logged in, and redirect appropriately if so
 		'''
@@ -97,10 +102,8 @@ class NewUserHandler(handlers.UserHandler):
 				assert email, 'Email is empty.'
 				assert pw, 'Password is empty.'
 				# validate email
-				existing_user = models.User.query(
-												models.User.email == email
-												).fetch(keys_only=True)
-				assert not existing_user, 'email already exists'
+				existing_user = models.User.query(models.User.email == email).get()
+				assert not existing_user, 'Email is already in use.'
 				
 				# create a new user in the ndb
 				pw,salt = self.hash_password(pw)
