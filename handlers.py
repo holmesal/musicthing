@@ -5,6 +5,7 @@ import os
 import models
 import logging
 from gaesessions import get_current_session
+import hashlib, uuid
 
 #from excepts import *
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
@@ -95,7 +96,44 @@ class ArtistHandler(BaseHandler):
 		except KeyError,e:
 			raise self.SessionError(e)
 class UserHandler(BaseHandler):
-	pass
+	def hash_password(self,pw):
+		'''
+		Hashes a password using a salt and hashlib
+		@param pw: the users password
+		@type pw: str
+		@return: hashed_password (str), salt (str)
+		@rtype: tuple
+		'''
+		salt = uuid.uuid4().hex
+		hashed_password = hashlib.sha512(pw + salt).hexdigest()
+		return hashed_password,salt
+	def log_in(self,uid,tags,serendipity):
+		session = get_current_session()
+		session['logged_in'] = True
+		session['uid'] = uid
+		session['tags'] = tags
+		session['serendipity'] = serendipity
+	def update_session(self,tags=None,serendipity=None):
+		session = get_current_session()
+		if tags is not None:
+			session['tags'] = tags
+		if serendipity is not None:
+			session['serendipity'] = serendipity
+	def destroy_session(self):
+		session = get_current_session()
+		session['logged_in'] = False
+		try:
+			del session['uid']
+		except KeyError:
+			pass
+		try:
+			del session['tags']
+		except KeyError:
+			logging.error('tags not in a session that is being destroyed')
+		try:
+			del session['serendipity']
+		except KeyError:
+			logging.error('serendipity not in a session that is being destroyed')
 class UploadHandler(ArtistHandler,blobstore_handlers.BlobstoreUploadHandler):
 	pass
 

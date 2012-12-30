@@ -23,7 +23,7 @@
 				</div>
 
 					<form method="post" action="/new">
-						<input type="hidden" id="tags" name="tags">
+						<input type="hidden" id="tags" name="tags" value="{}">
 						
 						<div class="artist">
 							<h3>Start with an artist</h3>
@@ -42,8 +42,8 @@
 							<p>Create an account if you would like us to save your listening preferences</p>
 							<input id="email" name="email" type="text" placeholder="Email" value="{{email}}">
 							<input id="pw" name="pw" type="password" placeholder="Password">
-							<input id="signup" type="submit" class="btn btn-success" value="Sign Up">
-							<input id="goplay" type="submit" class="btn btn-warning" value="Just take me to the music">
+							<input id="signup" type="submit" class="btn btn-success" name="submit" value="Sign Up">
+							<input id="goplay" type="submit" class="btn btn-warning" name="submit" value="Just take me to the music">
 						</div>
 					</form>
 				

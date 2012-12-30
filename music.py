@@ -1,13 +1,14 @@
-from google.appengine.ext import ndb
+from gaesessions import get_current_session
 from google.appengine.api import taskqueue
+from google.appengine.ext import ndb
 import handlers
 import jinja2
+import json
 import logging
 import models
 import os
 import random
 import webapp2
-import json
 
 
 class MusicHandler(handlers.BaseHandler):
@@ -34,11 +35,19 @@ class MusicHandler(handlers.BaseHandler):
 		
 		Here's some test values:
 		'''
+		session = get_current_session()
 		
-		artist_keys = models.Artist.query().fetch(30,keys_only=True)
-		artists = ndb.get_multi(artist_keys)
-		logging.info(artists)
-		
+		# fetch keys
+		artist_keys = models.Artist.query().fetch(None,keys_only=True)
+		try:
+			# get a random sample
+			random_artists = random.sample(artist_keys,50)
+		except ValueError:
+			# list is not big enough, return all of them
+			random_artists = artist_keys
+		# shuffle list
+		random.shuffle(random_artists)
+		artists = ndb.get_multi(random_artists)
 		
 		template_values = {
 			"artists"		:	artists

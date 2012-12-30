@@ -3,6 +3,7 @@ from google.appengine.api import images
 BASEURL = 'http://local-music.appspot.com'
 DEFAULT_IMAGE_URL = '{}/img/default_artwork.jpeg'.format(BASEURL)
 class Artist(ndb.Model):
+	created = ndb.DateProperty(auto_now_add=True)
 	access_token = ndb.StringProperty()
 	username = ndb.StringProperty()
 	image_key = ndb.BlobKeyProperty()
@@ -47,8 +48,17 @@ class Artist(ndb.Model):
 		@rtype: str
 		'''
 		return str(self.key.id())
-
+class TagProperty(ndb.Model):
+	'''
+	Model definition of the structured property on users
+	'''
+	genre = ndb.StringProperty()
+	affinity = ndb.StringProperty()
+	
 class User(ndb.Model):
+	created = ndb.DateProperty(auto_now_add=True)
 	email = ndb.StringProperty()
-#class Song(ndb.Model):
-#	audio = blobstore.blob
+	pw = ndb.StringProperty()
+	salt = ndb.StringProperty() # salt for the pw hash
+	serendipity = ndb.IntegerProperty()
+	tags = ndb.StructuredProperty(TagProperty,repeated=True)
