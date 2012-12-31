@@ -34,21 +34,36 @@ class MusicHandler(handlers.UserHandler):
 		station = utils.StationPlayer(station_tags,serendipity,city)
 		station.create_station()
 		
+		# pull the first 10 tracks
 		count = 10
 		tracks = station.sorted_tracks_list[:count]
 		artists = [t['artist'] for t in tracks]
+		
+		
+		
+		# find available cities with a minimum number of artists
+		available_cities = self.calc_major_cities(artists)
+		
 		# update session
 		session = get_current_session()
 		session['idx'] = count
+		
+		# store the tracks that have been listened to
+		listened_to = [t['key'] for t in tracks]
+		session['listened_to'] = listened_to
+		
 #		self.say(json.dumps([[t['rank'], t['old_rank']] for t in tracks]))
 #		return
 		template_values = {
 			'artists' : artists,
 			'city' : city,
 			'tags' : station_tags,
-			'serendipity' : serendipity
+			'serendipity' : serendipity,
+			'cities' : available_cities
 		}
 		logging.info(dt.now()-t0)
+#		self.say(json.dumps([a['artist'].to_dict(exclude=('created','tags')) for a in tracks]))
+#		return
 		jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 		template = jinja_environment.get_template('templates/music.html')
 		self.response.out.write(template.render(template_values))
@@ -94,7 +109,7 @@ class GetTracksHandler(handlers.UserHandler):
 		session = get_current_session()
 		station = session['station']
 		idx = session['idx']
-		new_idx = idx+20
+		new_idx = idx+10
 		
 		tracks = station.sorted_tracks_list[idx:new_idx]
 		artists = []
@@ -112,12 +127,31 @@ class UpdateStationHandler(handlers.UserHandler):
 		'''
 		Updates the station playlist with new variables
 		'''
+		max_serendipity = 5.
+		serendipity = self.request.get("serendipity",2)
+		serendipity = float(serendipity)/max_serendipity
+		try:
+			raw_tags = json.loads(self.request.get("tags","{}")) #NOTE - this currently crashes if tags is empty
+		except:
+			raw_tags = {}
+			logging.info('empty tags')
+#			logging.error('tags are not being handled correctly when not passed in post')
+		# Clean tags
+		tags = self.parse_tags(raw_tags)
+		# preferences are only stored in the session
+		self.add_station_meta_to_session(tags,serendipity)
+		return self.redirect('/music')
+	
 class UpdateCityHandler(handlers.UserHandler):
 	def post(self):
 		'''
 		Updates the station playlist with a new city
 		'''
-		
+		city = self.request.get('city',None)
+		session = get_current_session()
+		session['city'] = city
+#		self.response.out.write({'success':1})
+		return self.redired('/music')
 
 app = webapp2.WSGIApplication([
 							('/music', MusicHandler),

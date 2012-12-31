@@ -7,6 +7,7 @@ import logging
 from gaesessions import get_current_session
 import hashlib, uuid
 from collections import defaultdict
+from collections import Counter
 
 #from excepts import *
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
@@ -165,7 +166,8 @@ class UserHandler(BaseHandler):
 			session['tags'] = tags
 		if serendipity is not None:
 			session['serendipity'] = serendipity
-		session['city'] = city
+		if city is not None:
+			session['city'] = city
 	def get_station_meta_from_session(self):
 		session = get_current_session()
 		tags = session.get('tags',{})
@@ -202,6 +204,22 @@ class UserHandler(BaseHandler):
 					serendipity = serendipity,
 					tags_ = self.prep_tags_for_datastore(parsed_tags)
 					).put()
+	def calc_major_cities(self,artists):
+		'''
+		@param artists: a list of artist entities
+		@type artists: list
+		@return: a list of cities with a minimum number of artists
+		@rtype: list
+		'''
+		# minumum artists in a city to qualify to be a major city
+		min_artists = 10
+		
+		cities = [a.city for a in artists]
+		city_counts = Counter(cities).most_common()
+		cities = filter(lambda x: x[1] > min_artists,city_counts)
+		cities = [c[0] for c in cities]
+		return cities
+		
 class UploadHandler(ArtistHandler,blobstore_handlers.BlobstoreUploadHandler):
 	pass
 
