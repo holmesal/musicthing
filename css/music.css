@@ -1,0 +1,107 @@
+body{
+	width: 100%;
+	overflow: hidden;
+}
+
+.headerbar{
+/* 	position: absolute; */
+/* 	background-color: gray; */
+/*
+	left:0;
+	right:0;
+	top:0;
+*/
+	height: 100px;
+}
+
+.logo{
+	margin-right: 150px;
+	margin-top: 20px;
+	width: 120px;
+	float: right;
+}
+
+.player-container{
+	position: absolute;
+	width: 8000px;
+	height: 440px;
+	font-size: 0;
+	left: 50%;
+	margin-left: -200px;
+}
+
+.sc-player{
+	margin-top: 20px;
+	height: 440px;
+	display: inline-block;
+	width: 400px;
+	font-size: 11px;
+}
+
+.trackinfo{
+	background-color: white;
+	height: 200px;
+	width: 800px;
+	margin-left: auto;
+	margin-right: auto;
+	border-radius: 5px;
+}
+
+.filtered{
+	font-size: 30pt;
+	font-weight: 800;
+	margin-left: 100px;
+	margin-top: 20px;
+	color: #383838;
+	line-height: 120%;
+	float: left;
+}
+
+#genre,#radius{
+	color: #6b9cd5;
+	text-decoration: none;
+}
+
+#genre:hover,#radius:hover{
+	text-decoration: none;
+	color: #2ba3e4;
+}
+
+#expando{
+	width: 100%;
+	box-shadow: inset 0px 1px 3px gray,inset 0px -1px 3px gray;
+	text-align: center;
+	background-image: url(/img/noisy_net.png);
+	color: #e7e7e7;
+/* 	background-color: white; */
+
+}
+
+body{
+/* 	background-image: url(/img/debut_light.png); */
+}
+
+#radiusrow{
+	margin-top: 20px;
+}
+
+#genrerow{
+	margin-top: 50px;
+	margin-bottom: 20px;
+}
+
+.prompt{
+	font-size: 20pt;
+	font-weight: 200;
+	margin-bottom: 20px;
+}
+
+.prompt-backup{
+	font-size: 10pt;
+}
+
+.bigor{
+	color: #d3d3d3;
+	font-size: 14pt;
+	margin-top: 10px;
+}
