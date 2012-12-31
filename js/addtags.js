@@ -93,6 +93,9 @@ updatetagshtml = function(){
 	//enable the save button
 	$("#saveTags").removeAttr("disabled");
 	
+	//re-disable the artist input
+	$("#grabtags").attr("disabled", "disabled");
+	
 }
 
 function compare(a,b) {

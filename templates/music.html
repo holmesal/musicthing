@@ -19,9 +19,19 @@
         <div class="headerbar">
         	<p class="filtered"> 
         		Playing
-        		<a id="genre">Punk</a>
-        		 music in 
-        		<a id="radius">Boston</a>
+        		{% if tags %}
+        		<a id="genre">{{length(tags)}}</a>
+        		 genres of
+        		{% else %}
+        		<a id="genre">all</a>
+        		{% endif %}
+        		 music 
+        		{% if city %}
+        		in 
+        		<a id="radius">{{city}}</a>
+        		{% else %}
+        		<a id="radius">everywhere</a>
+        		{% endif %}
         		<span class="clickchange">Click to change</span>
         	</p>
 	        <img class="logo" src="/img/logo.png">
@@ -33,25 +43,29 @@
 		    		<div id="build-container" class="span10 offset1">
 						<p class="prompt">What do you like?</p>
 						<div id="html-tags">
-							<p class="notags">Enter a few of your favorite artists - we'll use their genres to filter the songs you hear on Radius.</p>
+							<p class="explain">Enter a few of your favorite artists - we'll use their genres to filter the songs you hear on Radius.</p>
 						</div>
 		
-							<form method="post" action="/new">
-								<input type="hidden" id="tags" name="tags" value="{}">
+							<form method="post" action="/music/updateStation">
+								<input type="hidden" id="tags" name="tags" value="">
 								
 								<div class="artist">
 									<input id="artist" class="noEnterSubmit" type="text" placeholder="Artist Name">
-									<a id="grabtags" class="btn btn-success" disabled>Add this artist's tags</a>
+									<a id="grabtags" class="btn btn-success" disabled>Add this artist's genres</a>
 								</div>
 								
 								<div class="serendipity">
 									<p class="prompt">How much variation do you want?</p>
 									<p class="explain">Choose how often you would like to hear tracks outside of the genres above</p>
-									<input id="serendipity" name="serendipity" type="range" min="0" step="1" max="5" value="{{serendipity|default(0.1)}}">
+									<input id="serendipity" name="serendipity" type="range" min="0" step="1" max="255" value="{{serendipity|default(0.1)}}">
+									<div class="serendipity-labels">
+										<span class="explain label-left">Never</span>
+										<span class="explain label-right">Every other song</span>
+									</div>
 								</div>
-								
-								<input type="submit" class="btn btn-warning btn-large" name="submit" value="Save these settings">
-								
+								<div>
+									<input type="submit" id="btnSave" class="btn btn-warning btn-large" name="submit" value="Save these settings">
+								</div>
 							</form>
 						
 						
@@ -65,11 +79,13 @@
         	<div class="container">
 		    	<div class="row collapserow">
 		    		<p class="prompt">Choose a location</p>
-		        	<div class="span12">
-			        	<a class="btn btn-primary">Boston</a>
+		        	<div id="cities" class="span12">
+		        		{% for c in cities %}
+		        			<a class="btn btn-primary" href="/music/updateCity?city={{c}}">{{c}}</a>
+		        		{% endfor %}
 			        	<a class="btn btn-success">Everywhere</a>
 		        	</div>
-		        	<p class="nocity">Don't see your city? We'll launch there automatically as soon as enough artists sign up. You can help spread the word by <a href="http://twitter.com/home?status=Pandora%20for%20local%20bands.%20http://www.getradi.us">tweeting about us!</a></p>
+		        	<p class="explain">Don't see your city? We'll launch there automatically as soon as enough artists sign up. </br>You can help spread the word by <a href="http://twitter.com/home?status=Pandora%20for%20local%20bands.%20http://www.getradi.us">tweeting about us</a> or sharing <a href="http://www.getradi.us">getradi.us</a></p>
 		    	</div>
         	</div>
         </div>
@@ -92,11 +108,14 @@
 
     	</div>
         
-        <!--
-<div class="trackinfo">
+        <div class="trackinfo">
+        	<p class="info-track">Track Name</p>
+	        <p><span class="info-name">Artist Name</span><span class="info-city">City</span></p>
+	        <a href="http://bandcamp.com"><img src="http://s0.bcbits.com/img/buttons/bandcamp_130x27_black.png"></a>
+	        
+	        
 	        
         </div>
--->
         
         
         
