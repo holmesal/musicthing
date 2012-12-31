@@ -80,7 +80,7 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 		del client
 		client = soundcloud.Client(access_token = access_token)
 		current_user = client.get('/me')
-		
+		logging.info('city: '+str(current_user.city))
 		# pull the artist_id from the response
 		artist_id = str(current_user.id)
 		logging.debug(artist_id)
@@ -114,6 +114,7 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 							id = artist_id,
 							access_token = access_token,
 							username = current_user.username,
+							city = current_user.city
 							)
 			artist.put()
 			# log in
@@ -454,11 +455,7 @@ class TestHandler(handlers.ArtistHandler):
 		for use on the dev server
 		'''
 		artists = models.Artist.query().fetch(None)
-		self.response.out.write(json.dumps([{
-										'username' : a.username,
-										'track_id' : a.track_id,
-										'genre' : a.genre
-										} for a in artists]))
+		self.response.out.write(json.dumps([a.to_dict(exclude=('created',)) for a in artists]))
 	def get_2(self):
 		'''
 		Gets all the access tokens of the artists on the server.

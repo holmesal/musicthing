@@ -159,12 +159,19 @@ class UserHandler(BaseHandler):
 		session['id'] = uid
 		session['tags'] = tags
 		session['serendipity'] = serendipity
-	def add_station_meta_to_session(self,tags=None,serendipity=None):
+	def add_station_meta_to_session(self,tags=None,serendipity=None,city=None):
 		session = get_current_session()
 		if tags is not None:
 			session['tags'] = tags
 		if serendipity is not None:
 			session['serendipity'] = serendipity
+		session['city'] = city
+	def get_station_meta_from_session(self):
+		session = get_current_session()
+		tags = session.get('tags',{})
+		serendipity = session.get('serendipity',.4)
+		city = session.get('city',None)
+		return tags, serendipity, city
 	def get_station_from_session(self):
 		session = get_current_session()
 		try:
@@ -172,11 +179,6 @@ class UserHandler(BaseHandler):
 			return station
 		except KeyError,e:
 			raise self.SessionError(e)
-	def get_station_meta_from_session(self):
-		session = get_current_session()
-		tags = session.get('tags',{})
-		serendipity = session.get('serendipity',255/2)
-		return tags,serendipity
 	def destroy_session(self):
 		session = get_current_session()
 		session.terminate()
@@ -193,7 +195,7 @@ class UserHandler(BaseHandler):
 #			del session['serendipity']
 #		except KeyError:
 #			logging.error('serendipity not in a session that is being destroyed')
-	def create_new_playlist(self,parent_key,parsed_tags,serendipity,name='default'):
+	def save_station_meta(self,parent_key,parsed_tags,serendipity,name='default'):
 		# creates the station object
 		models.Station(id=name,
 					parent = parent_key,

@@ -107,7 +107,7 @@ class NewUserHandler(handlers.UserHandler):
 						salt = salt,
 						)
 				self.log_in(user.intkey, tags, serendipity)
-				self.create_new_playlist(user.key, tags, serendipity)
+				self.save_station_meta(user.key, tags, serendipity)
 				user.put()
 			
 		except AssertionError,error:
