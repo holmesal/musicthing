@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="/css/page.css" type="text/css">
     <link rel="stylesheet" href="/css/sc-player-artwork.css" type="text/css">
-    <link rel="stylesheet" href="/css/player.css">
+    <link rel="stylesheet" href="/css/music.css">
   
   </head>
   
@@ -19,7 +19,7 @@
         	<p class="filtered">
         		<a id="genre" href="#">Punk</a>
         		 music in 
-        		<a id="radius" href="#">The Universe</a>
+        		<a id="radius" href="#">Boston</a>
         	</p>
 	        <img class="logo" src="/img/logo.png">
         </div>
@@ -58,7 +58,7 @@
         </div>
         
         
-        
+    	<div class="player-container">    
 <!--
         <div class="sc-player">
         	{% for artist in artists %}
@@ -72,23 +72,30 @@
           <a href="http://soundcloud.com/matas/anadrakonic-waltz" class="sc-player">Pumpkins Track</a>
           <a href="http://soundcloud.com/matas/frost-theme-0-1" class="sc-player">Oxxo</a>
 <!--         </div> -->
+
+    	</div>
         
-        <div class="trackinfo">
+        <!--
+<div class="trackinfo">
 	        
         </div>
+-->
         
         
         
     
-    <script type="text/javascript" src="/js/spin.js"></script>
-    <script type="text/javascript" src="/js/roundandround.js"></script>
+<!--     <script type="text/javascript" src="/js/spin.js"></script> -->
+<!--     <script type="text/javascript" src="/js/roundandround.js"></script> -->
     <script src="http://code.jquery.com/jquery.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/js/soundcloud.player.api.js"></script>
     <script type="text/javascript" src="/js/sc-player.js"></script>
-    <script type="text/javascript" src="/js/player-custom.js"></script>
-    <script type="text/javascript" src="/js/landing-player.js"></script>
+<!--     <script type="text/javascript" src="/js/player-custom.js"></script> -->
+<!--     <script type="text/javascript" src="/js/landing-player.js"></script> -->
+	<script type="text/javascript" src="/js/music-player.js"></script>
+
 <!--     <script type="text/javascript" src="/js/bootstrap.min.js"></script> -->
+<!--
     <script type="text/javascript">
 	    $(document).bind('onPlayerPause.scPlayer', function(event){
 			idx = $('.sc-trackslist > .active').index()
@@ -105,6 +112,7 @@
 		
 		
     </script>
+-->
     <script type="text/javascript">
 	    //enter sandman
 	    {% for artist in artists %}
