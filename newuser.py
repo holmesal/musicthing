@@ -21,13 +21,13 @@ class NewUserHandler(handlers.UserHandler):
 		This handler primarily writes out the new user page
 		Check login state. If a user already exists, redirect to the music page
 		'''
-		try:
-			self.get_user_from_session()
-		except self.SessionError:
-			pass
-		else:
-			# user exists, so redirect to some music!
-			return self.redirect('/music')
+#		try:
+#			self.get_user_from_session()
+#		except self.SessionError:
+#			pass
+#		else:
+#			# user exists, so redirect to some music!
+#			return self.redirect('/music')
 		template_values = {
 		}
 		
@@ -83,7 +83,7 @@ class NewUserHandler(handlers.UserHandler):
 			if submit_type != 'Sign Up':
 				# user did not create an account
 				# preferences are only stored in the session
-				self.update_session(tags,serendipity)
+				self.add_station_to_session(tags,serendipity)
 			else:
 				# the signup button was pressed
 				# Create a new user account to store preferences

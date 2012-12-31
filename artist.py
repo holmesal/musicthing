@@ -11,6 +11,7 @@ import soundcloud
 import webapp2
 import json
 from datetime import datetime as dt
+import urllib2
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
@@ -405,6 +406,15 @@ class ViewArtistHandler(handlers.BaseHandler):
 class SpoofArtistHandler(handlers.ArtistHandler):
 	def get(self):
 		'''
+		Spoof a lot of the data on the server
+		'''
+		self.set_plaintext()
+		remote_url = 'http://pattest.radius-levr.appspot.com/artist/test'
+		data = json.loads(urllib2.urlopen(remote_url).read())
+#		logging.info(data)
+		self.say(json.dumps(data))
+	def get_(self):
+		'''
 		For creating an artist account without soundcloud handshake
 		'''
 		artist = models.Artist.get_or_insert('31035942',
@@ -418,6 +428,26 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 		
 class TestHandler(handlers.ArtistHandler):
 	def get(self):
+		'''
+		A spoof api call to exist on the server to retrieve artist information
+		for use on the dev server
+		'''
+		artists = models.Artist.query().fetch(None)
+		self.response.out.write(json.dumps([{
+										'username' : a.username,
+										'track_id' : a.track_id,
+										'genre' : a.genre
+										} for a in artists]))
+	def get_2(self):
+		'''
+		Gets all the access tokens of the artists on the server.
+		'''
+		self.set_plaintext()
+		artists = models.Artist.query().fetch(None)
+#		tokens = [artist.access_token for artist in artists]
+		for a in artists:
+			self.say('"'+a.username.encode('ascii','ignore')+'" : "'+a.access_token+'",')
+	def get_1(self):
 		self.set_plaintext()
 		artist = self.get_artist_from_session()
 		artist_id = artist.strkey
