@@ -1,4 +1,6 @@
 from gaesessions import get_current_session
+import random
+import logging
 
 class Test(object):
 	def next(self):
@@ -11,8 +13,10 @@ from google.appengine.ext import ndb
 class StationPlayer(object):
 	def __init__(self,station_tags,serendipity):
 		assert station_tags, 'station tags is empty'
-		assert serendipity or serendipity==0, 'serendipity is empty'
+		assert serendipity or serendipity < 0.01, 'serendipity is empty'
 		self.station_tags = station_tags
+		if serendipity < 0.1:
+			serendipity = 0.1
 		self.serendipity = serendipity
 		# calculated values
 		keyfunc = lambda x: x[1]
@@ -45,7 +49,7 @@ class StationPlayer(object):
 		@return: the total rank of the track w/ respect to the station
 		'''
 		track_total_rank = sum(tags_to_rank.values())
-		return float(track_total_rank)/float(self.station_total_count)
+		return float(track_total_rank)/float(self.station_total_count)*100
 	def create_station(self):
 		# query each of the tags
 		# create a list of iterators to fetch all of the keys 
@@ -87,9 +91,38 @@ class StationPlayer(object):
 					pass
 			# set the total rank of the track
 			track['rank'] = self._rank_track(track['tags_to_ranks'])
+		keyfunc = lambda x: x['rank']
+		max_rank = keyfunc(max(tracks_list,key=keyfunc))
+		logging.info('max rank: '+str(max_rank))
+		min_rank = 0
+		# add some entropy
+		for track in tracks_list:
+			rank = track['rank']
+			logging.info('rank: '+str(rank))
+			logging.info('serendipity: '+str(self.serendipity))
+			random_factor = max_rank*self.serendipity
+			logging.info('random_factor: '+str(random_factor))
+			rank_plus = rank + random_factor
+			if rank_plus > max_rank: rank_plus = max_rank
+			rank_minus = rank - random_factor
+			if rank_minus < min_rank: rank_minus = min_rank
+			range_factor = 100.
+			rank_plus = int(rank_plus*range_factor)
+			rank_minus = int(rank_minus*range_factor)
+			logging.info('rank_plus: '+str(rank_plus/range_factor))
+			logging.info('rank_minus: '+str(rank_minus/range_factor))
+			if rank_plus == rank_minus:
+				logging.info('! same ranks')
+				new_rank = rank
+			else:
+				r = [x/range_factor for x in range(rank_minus,rank_plus)]
+				new_rank = random.choice(r)
+			logging.info('new_rank: '+str(new_rank))
+			track['rank'] = new_rank
+			track['old_rank'] = rank
 		
 		self.sorted_tracks_list = sorted(tracks_list,key=lambda x: x['rank'],reverse=True)
-		
+		logging.info(', '.join([str(t['rank']) for t in self.sorted_tracks_list]))
 		#=======================================================================
 		# add station to current session
 		#=======================================================================

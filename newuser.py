@@ -42,6 +42,7 @@ class NewUserHandler(handlers.UserHandler):
 			or creates the user and redirects to the music page
 		'''
 		serendipity	=	self.request.get("serendipity",-1)
+		max_serendipity = 5.
 		email 		=	self.request.get("email",'')
 		pw			=	self.request.get("pw",'')
 		submit_type =	self.request.get("submit")
@@ -68,11 +69,13 @@ class NewUserHandler(handlers.UserHandler):
 			
 			# validate serendipity
 			try:
-				serendipity = int(serendipity)
+				serendipity = float(serendipity)
 				assert serendipity >-1 and serendipity < 256, \
 					'Serendipity must be an integer in range 0-255'
 			except ValueError:
 				assert False, 'serendipity must be an integer in range 0-255'
+			# normalize serendipity
+			serendipity = serendipity/max_serendipity
 			#===================================================================
 			# Clean tags
 			#===================================================================
@@ -83,7 +86,7 @@ class NewUserHandler(handlers.UserHandler):
 			if submit_type != 'Sign Up':
 				# user did not create an account
 				# preferences are only stored in the session
-				self.add_station_to_session(tags,serendipity)
+				self.add_station_meta_to_session(tags,serendipity)
 			else:
 				# the signup button was pressed
 				# Create a new user account to store preferences
@@ -117,6 +120,8 @@ class NewUserHandler(handlers.UserHandler):
 			}
 			if raw_tags:
 				template_values['tags'] = json.dumps(raw_tags)
+			else:
+				assert False, raw_tags
 			
 			jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 			template = jinja_environment.get_template('templates/build_user.html')

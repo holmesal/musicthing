@@ -36,17 +36,19 @@ class MusicHandler(handlers.UserHandler):
 		station = utils.StationPlayer(station_tags,serendipity)
 		station.create_station()
 		
-		count = 20
+		count = 10
 		tracks = station.sorted_tracks_list[:count]
 		artists = [t['artist'] for t in tracks]
 		# update session
 		session = get_current_session()
 		session['idx'] = count
-		
+#		self.say(json.dumps([[t['rank'], t['old_rank']] for t in tracks]))
+#		return
 		template_values = {
 			"artists"		:	artists
 		}
 		logging.info(dt.now()-t0)
+		
 		jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 		template = jinja_environment.get_template('templates/player.html')
 		self.response.out.write(template.render(template_values))

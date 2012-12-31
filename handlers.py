@@ -141,13 +141,6 @@ class UserHandler(BaseHandler):
 			raise self.SessionError(e)
 		except KeyError,e:
 			raise self.SessionError(e)
-	def get_station_from_session(self):
-		session = get_current_session()
-		try:
-			station = session['station']
-			return station
-		except KeyError,e:
-			raise self.SessionError(e)
 	def hash_password(self,pw):
 		'''
 		Hashes a password using a salt and hashlib
@@ -166,12 +159,19 @@ class UserHandler(BaseHandler):
 		session['id'] = uid
 		session['tags'] = tags
 		session['serendipity'] = serendipity
-	def add_station_to_session(self,tags=None,serendipity=None):
+	def add_station_meta_to_session(self,tags=None,serendipity=None):
 		session = get_current_session()
 		if tags is not None:
 			session['tags'] = tags
 		if serendipity is not None:
 			session['serendipity'] = serendipity
+	def get_station_from_session(self):
+		session = get_current_session()
+		try:
+			station = session['station']
+			return station
+		except KeyError,e:
+			raise self.SessionError(e)
 	def get_station_meta_from_session(self):
 		session = get_current_session()
 		tags = session.get('tags',{})
