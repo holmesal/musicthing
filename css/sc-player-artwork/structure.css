@@ -93,9 +93,9 @@
 /*   left: 50px; */
   bottom:0;
   z-index: -1;
-  height: 100px;
+  height: 20px;
   width: 100%;
-  display: block;
+  display: none;
 }
 
 .sc-scrubber .sc-time-span{

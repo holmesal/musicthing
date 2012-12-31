@@ -1,3 +1,5 @@
+html {-webkit-font-smoothing: antialiased}
+
 body{
 	width: 100%;
 	overflow: hidden;
@@ -57,9 +59,16 @@ body{
 	float: left;
 }
 
+.clickchange{
+	color: #ababab;
+	margin-left: 30px;
+	opacity: 0;
+}
+
 #genre,#radius{
 	color: #6b9cd5;
 	text-decoration: none;
+	opacity: 0;
 }
 
 #genre:hover,#radius:hover{
