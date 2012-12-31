@@ -1,9 +1,20 @@
+bindoptions = function(){
+	
+	$("#expando").collapse({toggle:false})
+	
+	$("#genre").click(function(){
+		$("#expando").collapse('toggle')
+	})
+	
+}
+
 flashhelp = function(){
 	speed = 700
 	
 	$("#genre,#radius").css({"text-decoration":"underline"})
 	
 	$("#genre,#radius,.clickchange").pulse({opacity:1},{"pulses":2,"duration":1500,"returnDelay":1000},function(){
+		$("#genre,#radius").css({"text-decoration":"none"})
 		$("#genre,#radius").animate({opacity:1})
 	})
 	
@@ -188,6 +199,9 @@ $(document).ready(function() {
   
 	//bind click events for players
 	bindevents()
+	
+	//bind click events for options
+	bindoptions()
 	
 	//flash the help text
 	flashhelp()

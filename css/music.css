@@ -74,6 +74,7 @@ body{
 #genre:hover,#radius:hover{
 	text-decoration: none;
 	color: #2ba3e4;
+	cursor: pointer;
 }
 
 #expando{
