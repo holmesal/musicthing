@@ -58,7 +58,9 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 					{% endif %}
 					
 					<hr>
+					{% if not artist.city %}
 					<div id="alert-city" class="alert alert-warning">If you don't add a city, your tracks will only be played in the worldwide rotation</div>
+					{% endif %}
 					<p class="explain overhead">Adding a city helps locals find your music. Add the city where you play most of your shows.</p>
 					<p class="explain" style="text-align: left;">Your city:<input type="text" id="city" name="city" placeholder="Ex: Boston" value="{{artist.city or ''}}"></p>
 					

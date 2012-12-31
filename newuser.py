@@ -21,13 +21,13 @@ class NewUserHandler(handlers.UserHandler):
 		This handler primarily writes out the new user page
 		Check login state. If a user already exists, redirect to the music page
 		'''
-#		try:
-#			self.get_user_from_session()
-#		except self.SessionError:
-#			pass
-#		else:
-#			# user exists, so redirect to some music!
-#			return self.redirect('/music')
+		try:
+			self.get_user_from_session()
+		except self.SessionError:
+			pass
+		else:
+			# user exists, so redirect to some music!
+			return self.redirect('/music')
 		template_values = {
 		}
 		

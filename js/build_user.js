@@ -1,22 +1,3 @@
-var postform = function(signup){
-	
-	to_post = {
-		"tags"			:	tags,
-		"serendipity"	:	$("#serendipity").val(),
-		"email"			:	$("#email").val(),
-		"pw"			:	$("#pw").val()
-	}
-	
-	if (signup == true){
-		to_post.signup = true
-	} else{
-		to_post.signup = false
-	}
-	
-	console.log(to_post)
-
-}
-
 updatetagshtml = function(){
 	$('#html-tags').empty()
 	

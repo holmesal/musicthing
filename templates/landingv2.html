@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+	<head>
+		
+		<link href="../css/m-buttons.min.css" rel="stylesheet">
+		<link href="../css/m-icons.min.css" rel="stylesheet">
+		<style type="text/css">
+			
+			body{
+				font-family: Helvetica, Arial, sans-serif;
+				margin:0;
+/* 				background-image: url(../img/debut_light.png); */
+/* 				background-size: cover; */
+				width:100%;
+				overflow-x: hidden;
+/* 				min-width: 900px; */
+			}
+			
+			.left,.middle,.right{
+				position: absolute;
+				left: 50%;
+				top: 20px;
+				font-size: 40pt;
+				line-height: 100%;
+			}
+			
+			.left{
+				margin-left: -440px;
+				text-align: right;
+				width: 400px;
+			}
+			
+			.right{
+				margin-left: 40px;
+				text-align: left;
+				width: 400px;
+			}
+			
+			.middle{
+				text-align: center;
+				width: 40px;
+				margin-left: -20px;
+			}
+			
+			#genre{
+				position: absolute;
+				text-align: right;
+				left: 50%;
+			}
+			
+			#slider{
+				position: absolute;
+				width: 10000px;
+				height: 400px;
+				padding: 0;
+				font-size: 0;
+				top: 200px;
+				left: 100%;
+			}
+			
+			.img{
+				background-image: url(http://i1.sndcdn.com/artworks-000036902244-m5mwuh-t300x300.jpg?923db0b);
+/* 				background-color: green; */
+				background-size: cover;
+				height: 400px;
+				width: 400px;
+				display: inline-block;
+				margin: 0 !important;
+				padding: 0 !important;
+				opacity: 0.8;
+			}
+			
+			.bottom{
+				position: absolute;
+				top: 650px;
+				text-align: center;
+				width: 100%;
+			}
+			
+			#slidedown{
+				position: relative;
+			}
+			
+			
+			.page2{
+				text-align: center;
+				width: 900px;
+				height: 1000px;
+				background-color: white;
+				box-shadow: 1px 2px 3px #505050;
+				margin-top: 1000px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+			
+		</style>
+		
+	</head>
+	
+	<body>
+		
+		<div class="page1">
+		
+			<div class="top">
+	
+	<!--
+					<div id="right"><span id="genre"></span></div>
+	
+					<span id="middle">in</span>
+	
+					<span id="city"></span>
+	-->
+	
+				
+				<p class="left" id="genre"></p>
+	<!-- 				<p id="genre"></p> -->
+	<!-- 			</div> -->
+				<p class="middle" id="in">in</p>
+				
+				<p class="right" id="city"></p>
+	<!--
+					<span id="middle">in</span>
+				</div>
+	-->
+				
+				<p class="right">
+					<span id="city"></span>
+				</div>
+			</div>
+			
+			<div id="slider">
+				
+				<div class="img" style="opacity:1;"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+				<div class="img"></div>
+	
+	
+				
+			</div>
+			
+			<div class="bottom">
+				<p>Radius is an online radio station for local artists</p>
+				<a id="slidedown" class="m-btn red big">I'm an artist - tell me more!<i class="m-icon-big-swapright m-icon-white"></i></a>
+				<a id="slidedown" class="m-btn blue big">Take me to the music<i class="m-icon-big-swapdown m-icon-white"></i></a>
+			</div>
+		</div>
+		
+		<div class="page2">
+<!--
+			{% if error %}
+				<div class="alert alert-error"><strong>Whoops!</strong> {{error}}</div>
+				{% endif %}
+-->
+				<h3>What do you like?</h3>
+<!--
+				<div id="html-tags">
+					<p class="notags">You haven't added any tags yet.</p>
+				</div>
+
+					<form method="post" action="/new">
+						<input type="hidden" id="tags" name="tags" value="{}">
+						
+						<div class="artist">
+							<p>Add a few of your favorite artists</p>
+							<input id="artist" class="noEnterSubmit" type="text" placeholder="Artist Name">
+							<a id="grabtags" class="btn btn-success" disabled>Grab tags</a>
+						</div>
+						
+						<div class="serendipity">
+							<h3>How much variation do you want?</h3>
+							<p class="explain">Choose how often you would like to hear tracks outside of the genres above</p>
+							<input id="serendipity" name="serendipity" type="range" min="0" step="1" max="5" value="{{serendipity|default(0.1)}}">
+						</div>
+				
+						<div class="account">
+							<h3>Would you like to save these settings?</h3>
+							<p>Create an account if you would like us to save your listening preferences</p>
+							<input id="email" name="email" type="text" placeholder="Email" value="{{email}}">
+							<input id="pw" name="pw" type="password" placeholder="Password">
+							<input id="signup" type="submit" class="btn btn-success" name="submit" value="Sign Up">
+							<input id="goplay" type="submit" class="btn btn-warning" name="submit" value="Just take me to the music">
+						</div>
+					</form>
+-->
+				
+				
+
+		</div>
+		
+		
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script type="text/javascript">
+		
+		genres = ["punk","ska","folk","darkwave","minion","major","etc"]
+		cities = ["berlin","boston","new york","austin","san diego","tulsaloosa","san francisco"]
+		
+		$("#genre").text(genres[0])
+		$("#city").text(cities[0])
+		
+		idx = 1
+		
+		$("#slider").animate({"left":"50%","margin-left":-200},600)
+		
+		intervalid = setInterval(function(){
+			console.log(genres[idx-1])
+			$("#slider").animate({"margin-left":-400*idx-200},600)
+			$("#genre,#city").animate({opacity:0},200,function() {
+				$("#genre").text(genres[idx-1])
+				$("#city").text(cities[idx-1])
+				$("#genre,#city").animate({opacity:1},200)
+			})
+			
+			prev = $(".img")[idx-1]
+			$(prev).animate({"opacity":0.8},600)
+			next = $(".img")[idx]
+			$(next).animate({"opacity":1},600)
+			
+			console.log(idx)
+			console.log(genres.length)
+			
+			if (idx == genres.length){
+				clearInterval(intervalid);
+			} else{
+				idx++
+			}
+				
+			
+		}, 4000)
+		
+		
+		$("#slidedown").click(function() {
+		     $('html, body').animate({
+		         scrollTop: $(".page2").offset().top
+		     }, 400);
+		 });
+		
+	</script>
+		
+		
+	</body>
+</html>
