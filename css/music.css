@@ -2,7 +2,7 @@ html {-webkit-font-smoothing: antialiased}
 
 body{
 	width: 100%;
-	overflow: hidden;
+	overflow-x: hidden;
 }
 
 .headerbar{
@@ -40,13 +40,18 @@ body{
 	font-size: 11px;
 }
 
+.sc-trackslist{
+	opacity: 0;
+}
+
 .trackinfo{
-	background-color: white;
+/* 	background-color: white; */
 	height: 200px;
-	width: 800px;
+	width: 400px;
 	margin-left: auto;
 	margin-right: auto;
 	border-radius: 5px;
+	margin-top: 450px;
 }
 
 .filtered{
@@ -119,4 +124,28 @@ body{
 	color: #d3d3d3;
 	font-size: 14pt;
 	margin-top: 10px;
+}
+
+#cities{
+	margin-bottom: 30px;
+}
+
+.explain{
+	font-size: 12pt;
+	line-height: 150%;
+}
+
+.info-track{
+	font-size: 14pt;
+	font-weight: 500;
+}
+
+.info-name{
+	font-size: 12pt;
+}
+
+.info-city{
+	float:right;
+	font-size: 12pt;
+	color: #5e5e5e;
 }
