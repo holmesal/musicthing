@@ -77,7 +77,7 @@ body{
 	cursor: pointer;
 }
 
-#expando{
+#expando-radius,#expando-genre{
 	width: 100%;
 	box-shadow: inset 0px 1px 3px gray,inset 0px -1px 3px gray;
 	text-align: center;
@@ -98,6 +98,11 @@ body{
 #genrerow{
 	margin-top: 50px;
 	margin-bottom: 20px;
+}
+
+.collapserow{
+	padding-top: 20px;
+	padding-bottom: 50px;
 }
 
 .prompt{

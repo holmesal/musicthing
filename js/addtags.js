@@ -1,3 +1,18 @@
+var removedupes = function(){
+	var seen = {};
+	$('#html-tags > .tag').each(function() {
+	    var txt = $(this).text();
+	    if (seen[txt]){
+	        $(this).remove();
+	        console.log("removed:" + this)
+	    }else{
+	        seen[txt] = true;
+	    }
+	});
+}
+
+
+
 var addtag = function(){
 	
 	tag = {
@@ -66,14 +81,18 @@ updatetagshtml = function(){
 		$("#tags").val(JSON.stringify(tags))
 	})
 	
+	//remove the html duplicates
+	removedupes()
+	
 	//add to the hidden input field
 	$("#tags").val(JSON.stringify(tags))
 	
 	//show the alert
-	$("#html-tags").prepend('<div id="removealert" class="alert alert-info">Click any tag to remove it.</div>')
+	$("#html-tags").prepend('<p id="removealert">(click any tag to remove it)</p>')
 	
 	//enable the save button
 	$("#saveTags").removeAttr("disabled");
+	
 }
 
 function compare(a,b) {

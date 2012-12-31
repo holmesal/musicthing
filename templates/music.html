@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/css/page.css" type="text/css">
     <link rel="stylesheet" href="/css/sc-player-artwork.css" type="text/css">
     <link rel="stylesheet" href="/css/music.css">
+    <link rel="stylesheet" href="/css/music-collapse.css">
   
   </head>
   
@@ -26,35 +27,49 @@
 	        <img class="logo" src="/img/logo.png">
         </div>
         
-        <div id="expando" class="collapse">
+        <div id="expando-genre" class="collapse">
         	<div class="container">
-		    	<div id="radiusrow" class="row">
+		    	<div class="row collapserow">
+		    		<div id="build-container" class="span10 offset1">
+						<p class="prompt">What do you like?</p>
+						<div id="html-tags">
+							<p class="notags">Enter a few of your favorite artists - we'll use their genres to filter the songs you hear on Radius.</p>
+						</div>
+		
+							<form method="post" action="/new">
+								<input type="hidden" id="tags" name="tags" value="{}">
+								
+								<div class="artist">
+									<input id="artist" class="noEnterSubmit" type="text" placeholder="Artist Name">
+									<a id="grabtags" class="btn btn-success" disabled>Add this artist's tags</a>
+								</div>
+								
+								<div class="serendipity">
+									<p class="prompt">How much variation do you want?</p>
+									<p class="explain">Choose how often you would like to hear tracks outside of the genres above</p>
+									<input id="serendipity" name="serendipity" type="range" min="0" step="1" max="5" value="{{serendipity|default(0.1)}}">
+								</div>
+								
+								<input type="submit" class="btn btn-warning btn-large" name="submit" value="Save these settings">
+								
+							</form>
+						
+						
+					</div>
+		    		</div>
+		    	</div>
+        	</div>
+        </div>
+        
+        <div id="expando-radius" class="collapse">
+        	<div class="container">
+		    	<div class="row collapserow">
 		    		<p class="prompt">Choose a location</p>
 		        	<div class="span12">
 			        	<a class="btn btn-primary">Boston</a>
-			        	<a class="btn btn-success">Show me everything</a>
+			        	<a class="btn btn-success">Everywhere</a>
 		        	</div>
-<!--
-		        	<div class="span2">
-			        	<p class="bigor">OR</p>
-		        	</div>
-		        	<div class="span5">
-			        	<a class="btn btn-success">Show me everything</a>
-		        	</div>
--->
-		    	</div>
-		    	<div id="genrerow" class="row">
-		    		<div class="span12">
-			    	<p class="prompt">Filter your genres</p>
-			    	<p class="prompt-backup">Choose any genres that you absolutely don't want to hear</p>
-		    		<a class="btn btn-primary">Ska</a>
-		    		<a class="btn btn-primary">Punk</a>
-		    		<a class="btn btn-primary">Folk</a>
-		    		<a class="btn btn-primary">Rock</a>
-		    		<a class="btn btn-primary">Pop</a>
-		    		<a class="btn btn-primary">Foo</a>
-		    		<a class="btn btn-primary">Bar</a>
-		    		</div>
+		        	<p class="nocity">Don't see your city? We'll launch there automatically as soon as enough artists sign up. You can help spread the word by <a href="http://twitter.com/home?status=Pandora%20for%20local%20bands.%20http://www.getradi.us">tweeting about us!</a></p>
 		    	</div>
         	</div>
         </div>
@@ -89,9 +104,10 @@
 <!--     <script type="text/javascript" src="/js/spin.js"></script> -->
 <!--     <script type="text/javascript" src="/js/roundandround.js"></script> -->
     <script src="http://code.jquery.com/jquery.js"></script>
-    <script src="/js/jquery.color.min.js"></script>
+<!--     <script src="/js/jquery.color.min.js"></script> -->
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/pulse.min.js"></script>
+    <script src="/js/addtags.js"></script>
     <script type="text/javascript" src="/js/soundcloud.player.api.js"></script>
     <script type="text/javascript" src="/js/sc-player.js"></script>
 <!--     <script type="text/javascript" src="/js/player-custom.js"></script> -->
@@ -125,6 +141,15 @@
 	    	
 	    {% endfor %}
     </script>
+    
+    <script type="text/javascript">
+		{% if tags %}
+			tags = {{tags}}
+			updatetagshtml()
+		{% else %}
+			tags = []
+		{% endif %}
+	</script>
 
   
   </body>

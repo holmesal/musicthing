@@ -1,9 +1,16 @@
 bindoptions = function(){
 	
-	$("#expando").collapse({toggle:false})
+	$("#expando-genre").collapse({toggle:false})
+	$("#expando-radius").collapse({toggle:false})
 	
 	$("#genre").click(function(){
-		$("#expando").collapse('toggle')
+		$("#expando-genre").collapse('toggle')
+		$("#expando-radius").collapse('hide')
+	})
+	
+	$("#radius").click(function(){
+		$("#expando-radius").collapse('toggle')
+		$("#expando-genre").collapse('hide')
 	})
 	
 }
