@@ -8,6 +8,9 @@ import models
 import os
 import random
 import webapp2
+from datetime import datetime as dt
+import utils
+from gaesessions import get_current_session
 
 
 class MusicHandler(handlers.UserHandler):
@@ -24,71 +27,31 @@ class MusicHandler(handlers.UserHandler):
 		artists		:	an array of the artist entities, as they come out of the datastore
 		
 		'''
-		self.set_plaintext()
-		tags_to_counts,serendipity = self.get_station_from_session()
-		# calc max count in the station
-		keyfunc = lambda x: x[1]
-		station_max_count = keyfunc(max(tags_to_counts.iteritems(),key=keyfunc))
-		station_total_count = sum(tags_to_counts.values())
-		# query each of the tags
-		# create a list of iterators to fetch all of the keys 
-		tags_to_keys = {tag:models.Artist.query(models.Artist.tags_.genre == tag
-								).iter(batch_size=50,keys_only=True) \
-					for tag in tags_to_counts}
-		# reverse key:val mappings, so tracks become unique and are mapped to lists of their tags
-		# reduces number of gets required from the datastore
-		keys_to_tags = defaultdict(list)
-		for tag,tag_qit in tags_to_keys.iteritems():
-			# each of the tags is mapped to an iterator for getting artist keys
-			for key_result in tag_qit:
-#				# result: {ndb.Key:['tag','tag','tag']}
-				keys_to_tags[key_result].append(tag)
-		# make keys_to_tags static
-		keys_to_tags.default_factory = None
-		# fetch datastore entites asynchronously
-		keys_to_be_fetched = [key for key in keys_to_tags]
-		track_futures = ndb.get_multi_async(keys_to_be_fetched)
-		tracks = [t.get_result() for t in track_futures]
+#		self.set_plaintext()
+		t0 = dt.now()
+		station_tags,serendipity = self.get_station_meta_from_session()
 		#=======================================================================
-		# Have a unique set of tags
+		# # TODO: handle case where station doesnt exist
 		#=======================================================================
-#		# create list of [{key:<key>,tags:{},rank:<int>,]
-		f = lambda x: {'key':x.key,'tags_to_counts':x.tags_dict,'tags_to_ranks':{},'rank':0}
-		tracks_list = [f(t) for t in tracks]
-		def rank_track_tags(track_count,station_count):
-			inverted_diff = station_max_count - abs(station_count - track_count)
-			station_tag_weight = float(station_count)/float(station_max_count)
-			return inverted_diff * station_tag_weight
-		def rank_track(tags_to_rank,station_total_count):
-			'''
-			Sum the weighted counts in each of the tags, and normalize by the max score
-			@param tags_to_rank: mapping of {'tag':rank}
-			@type tags_to_rank: dict
-			@param station_total_count: the sum of all the tag counts in the station
-			@type station_total_count: int
-			@return: the total rank of the track w/ respect to the station
-			'''
-			track_total_rank = sum(tags_to_rank.values())
-			return float(track_total_rank)/float(station_total_count)
+		station = utils.StationPlayer(station_tags,serendipity)
+		station.create_station()
 		
-		for track in tracks_list:
-			for tag,station_count in tags_to_counts.iteritems(): # for each tag in the station
-				try:
-					track_count = track['tags_to_counts'][tag]
-					track['tags_to_ranks'][tag] = rank_track_tags(track_count,station_count)
-				except KeyError:
-					pass
-			# set the total rank of the track
-			track['rank'] = rank_track(track['tags_to_ranks'], station_total_count)
+		count = 20
+		tracks = station.sorted_tracks_list[:count]
+		artists = [t['artist'] for t in tracks]
+		# update session
+		session = get_current_session()
+		session['idx'] = count
 		
-		tracks_list = sorted(tracks_list,key=lambda x: x['rank'],reverse=True)
-		self.say(tracks_list)
-		#=======================================================================
-		# Sum the individual tag ranks and divide by the station sum to get net rank
-		#=======================================================================
+		template_values = {
+			"artists"		:	artists
+		}
+		logging.info(dt.now()-t0)
+		jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
+		template = jinja_environment.get_template('templates/player.html')
+		self.response.out.write(template.render(template_values))
 		
-		
-	def get_(self):
+	def get_spoof(self):
 		'''
 		This handler does most of the heavy lifting. The process is:
 		
@@ -126,10 +89,33 @@ class MusicHandler(handlers.UserHandler):
 		'''
 		
 		pass
+class GetTracksHandler(handlers.UserHandler):
+	def get(self):
+		'''
+		For an ajax call to get the next 20 tracks
+		'''
+		session = get_current_session()
+		station = session['station']
+		idx = session['idx']
+		new_idx = idx+20
+		
+		tracks = station.sorted_tracks_list[idx:new_idx]
+		artists = []
+		for track in tracks:
+			artist = track['artist']
+			artist_dict = artist.to_dict(exclude=('created',))
+			artist_dict.update({'id':artist.strkey})
+			artists.append(artist_dict)
+		
+		# update session
+		session['idx'] = new_idx
+		self.response.out.write(json.dumps(artists))
 		
 
-
-app = webapp2.WSGIApplication([('/music', MusicHandler)])
+app = webapp2.WSGIApplication([
+							('/music', MusicHandler),
+							('/music/gettracks',GetTracksHandler)
+							])
 
 
 

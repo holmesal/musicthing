@@ -1,17 +1,19 @@
-from google.appengine.ext import blobstore
+from datetime import datetime as dt
+from gaesessions import get_current_session
 from google.appengine.api import taskqueue
+from google.appengine.ext import blobstore
 from sc_creds import sc_creds, sc_creds_test
 import handlers
 import jinja2
+import json
 import logging
 import mixpanel_track as mixpanel
 import models
 import os
+import random
 import soundcloud
-import webapp2
-import json
-from datetime import datetime as dt
 import urllib2
+import webapp2
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
@@ -411,8 +413,27 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 		self.set_plaintext()
 		remote_url = 'http://pattest.radius-levr.appspot.com/artist/test'
 		data = json.loads(urllib2.urlopen(remote_url).read())
+		
+		# extract all the genres
+		tags = list(set([d['genre'] for d in data]))
+		counts = range(1,101) + [0 for i in range(1,601)] #@UnusedVariable
+		
 #		logging.info(data)
 		self.say(json.dumps(data))
+		artist_futures = []
+		for d in data:
+			# create random tag counts
+			parsed_tags = {tag:random.choice(counts) for tag in tags}
+			prepped_tags = self.prep_tags_for_datastore(parsed_tags)
+			artist_futures.append(models.Artist(username = d['username'],
+								genre = d['genre'],
+								track_id = d['track_id'],
+								tags_ = prepped_tags
+								).put_async())
+		for f in artist_futures:
+			self.say(f.get_result())
+		self.say('Done!')
+		
 	def get_(self):
 		'''
 		For creating an artist account without soundcloud handshake
@@ -507,5 +528,5 @@ app = webapp2.WSGIApplication([
 							(CHOOSE_TRACK,ChooseTrackHandler),
 							(STORE_TRACK,StoreTrackHandler),
 							('/artist/(.*)/',ViewArtistHandler),
-							('/artist/test',TestHandler)
+							('/artist/test',TestHandler),
 							])

@@ -141,6 +141,13 @@ class UserHandler(BaseHandler):
 			raise self.SessionError(e)
 		except KeyError,e:
 			raise self.SessionError(e)
+	def get_station_from_session(self):
+		session = get_current_session()
+		try:
+			station = session['station']
+			return station
+		except KeyError,e:
+			raise self.SessionError(e)
 	def hash_password(self,pw):
 		'''
 		Hashes a password using a salt and hashlib
@@ -165,26 +172,27 @@ class UserHandler(BaseHandler):
 			session['tags'] = tags
 		if serendipity is not None:
 			session['serendipity'] = serendipity
-	def get_station_from_session(self):
+	def get_station_meta_from_session(self):
 		session = get_current_session()
 		tags = session.get('tags',{})
 		serendipity = session.get('serendipity',255/2)
 		return tags,serendipity
 	def destroy_session(self):
 		session = get_current_session()
-		session['logged_in'] = False
-		try:
-			del session['id']
-		except KeyError:
-			pass
-		try:
-			del session['tags']
-		except KeyError:
-			logging.error('tags not in a session that is being destroyed')
-		try:
-			del session['serendipity']
-		except KeyError:
-			logging.error('serendipity not in a session that is being destroyed')
+		session.terminate()
+#		session['logged_in'] = False
+#		try:
+#			del session['id']
+#		except KeyError:
+#			pass
+#		try:
+#			del session['tags']
+#		except KeyError:
+#			logging.error('tags not in a session that is being destroyed')
+#		try:
+#			del session['serendipity']
+#		except KeyError:
+#			logging.error('serendipity not in a session that is being destroyed')
 	def create_new_playlist(self,parent_key,parsed_tags,serendipity,name='default'):
 		# creates the station object
 		models.Station(id=name,
