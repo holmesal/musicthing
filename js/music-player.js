@@ -24,50 +24,7 @@ flashhelp = function(){
 		$("#genre,#radius").css({"text-decoration":"none"})
 		$("#genre,#radius").animate({opacity:1})
 	})
-	
-/* 	for (var i=0; i<5; i++){ */
-	
-		/*
-$(".clickchange").animate({opacity:1},speed,function(){
-			$(".clickchange").animate({opacity:0},speed,function(){
-				$(".clickchange").animate({opacity:1},speed,function(){
-					$(".clickchange").animate({opacity:0},speed)
-				})
-			})
-		})
-		
-		$("#genre,#radius").animate({opacity:1},{duration:speed,queue:false},function(){
-			$("#genre,#radius").animate({opacity:0},speed,function(){
-				$("#genre,#radius").animate({opacity:1},speed,function(){
-					$("#genre,#radius").animate({opacity:0},speed,function(){
-						$("#genre,#radius").animate({opacity:1},speed)
-					})
-				})
-			})
-		})
-*/
-/* 	} */
 }
-
-spoofart = [
-	{
-		"username"	:	"Test Band 1",
-		"track_id"	:	"71796551"
-		
-	},
-	
-	{
-		"username"	:	"Test Band 2",
-		"track_id"	:	"72286558"
-		
-	},
-	
-	{
-		"username"	:	"Test Band 3",
-		"track_id"	:	"43339247"
-		
-	}
-]
 
 addtracks = function(artists){
 	
@@ -104,14 +61,12 @@ addtracks = function(artists){
 loadtracks = function(){
 	
 	//go get more tracks
-	/*
-$.get('/music/gettracks',function(data){
+	$.get('/music/gettracks',function(data){
 		console.log(data)
 		addtracks(data)
 	})
-*/
 
-	addtracks(spoofart)
+/* 	addtracks(spoofart) */
 	
 /*
 	//spoof some links
