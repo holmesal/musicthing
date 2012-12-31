@@ -50,7 +50,7 @@ class MusicHandler(handlers.UserHandler):
 		logging.info(dt.now()-t0)
 		
 		jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
-		template = jinja_environment.get_template('templates/player.html')
+		template = jinja_environment.get_template('templates/music.html')
 		self.response.out.write(template.render(template_values))
 		
 	def get_spoof(self):

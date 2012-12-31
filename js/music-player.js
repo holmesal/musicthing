@@ -128,12 +128,12 @@ changetrack = function(player){
 	idx = $(player).index()
 	console.log(idx)
 	offset = -400*idx - 200
-	$(".player-container").animate({"margin-left":offset},400);
+	$(".player-container").animate({"margin-left":offset},{duration:400,queue:false});
 	
 	//fade out all controls
-	$(".sc-player").not(player).children(".sc-controls").animate({opacity:0});
+	$(".sc-player").not(player).children(".sc-controls").animate({opacity:0},{duration:400,queue:false});
 	//fade in the controls
-	$(player).children(".sc-controls").animate({opacity:1});
+	$(player).children(".sc-controls").animate({opacity:1},{duration:400,queue:false});
 	
 	//check if on last track - time to refresh
 	//do this 2 tracks before the end
