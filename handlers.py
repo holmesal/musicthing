@@ -213,11 +213,10 @@ class UserHandler(BaseHandler):
 		'''
 		# minumum artists in a city to qualify to be a major city
 		min_artists = 10
-		
-		cities = [a.city for a in artists]
+		cities = [a.city.lower() for a in artists if a.city]
 		city_counts = Counter(cities).most_common()
 		cities = filter(lambda x: x[1] > min_artists,city_counts)
-		cities = [c[0] for c in cities]
+		cities = [c[0].title() for c in cities]
 		return cities
 		
 class UploadHandler(ArtistHandler,blobstore_handlers.BlobstoreUploadHandler):

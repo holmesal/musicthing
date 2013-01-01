@@ -429,7 +429,8 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 			artist_futures.append(models.Artist(username = d['username'],
 								genre = d['genre'],
 								track_id = d['track_id'],
-								tags_ = prepped_tags
+								tags_ = prepped_tags,
+								city = d['city']
 								).put_async())
 		for f in artist_futures:
 			self.say(f.get_result())

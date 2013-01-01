@@ -52,6 +52,8 @@ class StationPlayer(object):
 		'''
 		track_total_rank = sum(tags_to_rank.values())
 		return float(track_total_rank)/float(self.station_total_count)*100
+	def artists(self):
+		return [t['artist'] for t in self.sorted_tracks_list]
 	def create_station(self):
 		'''
 		Creates a station using the station meta properties.

@@ -42,7 +42,7 @@ class MusicHandler(handlers.UserHandler):
 		
 		
 		# find available cities with a minimum number of artists
-		available_cities = self.calc_major_cities(artists)
+		available_cities = self.calc_major_cities(station.artists())
 		
 		# update session
 		session = get_current_session()
@@ -62,6 +62,7 @@ class MusicHandler(handlers.UserHandler):
 			'cities' : available_cities
 		}
 		logging.info(dt.now()-t0)
+#		self.say(template_values['cities'])
 #		self.say(json.dumps([a['artist'].to_dict(exclude=('created','tags')) for a in tracks]))
 #		return
 		jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
