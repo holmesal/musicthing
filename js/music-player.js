@@ -6,6 +6,7 @@ changetrackinfo = function(player){
 	console.log(art[0][idx].username)
 	console.log(art[idx].username)
 	$(".info-name").text(art[0][idx].username)
+	$(".info-city").text(art[0][idx].city)
 /* 	$(".info-name").text(curtrack.user.username) */
 /* 	$(".info-city").text(track.title) */
 }
