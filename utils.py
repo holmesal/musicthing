@@ -27,6 +27,8 @@ class StationPlayer(object):
 		
 		# init the iterator index variable
 		self.idx = 0
+		# set the limit to the number of tracks that can be played
+		self.max_tracks = 150
 		
 	def _rank_track_tags(self,track_count,station_count):
 		'''
@@ -83,7 +85,7 @@ class StationPlayer(object):
 #			tracks = [f(a) for a in tracks]
 #			tracks = [track for track in tracks]
 			random.shuffle(tracks_list)
-			self.sorted_tracks_list = tracks_list
+			self.sorted_tracks_list = tracks_list[:self.max_tracks]
 		else:
 #			if self.city:
 #				# also filter by city
@@ -169,7 +171,8 @@ class StationPlayer(object):
 #				logging.info('rank_minus: '+str(rank_minus/range_factor))
 			
 			# sort the tracks list based on their new ranks
-			self.sorted_tracks_list = sorted(tracks_list,key=lambda x: x['rank'],reverse=True)
+			sorted_tracks_list = sorted(tracks_list,key=lambda x: x['rank'],reverse=True)
+			self.sorted_tracks_list = sorted_tracks_list[:self.max_tracks]
 #		logging.info(', '.join([str(t['rank']) for t in self.sorted_tracks_list]))
 		#=======================================================================
 		# add station to current session

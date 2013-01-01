@@ -216,7 +216,7 @@ class UserHandler(BaseHandler):
 		min_artists = 10
 		cities = [a.city.lower() for a in artists if a.city]
 		city_counts = Counter(cities).most_common()
-		logging.info(cities)
+#		logging.info(cities)
 		cities = filter(lambda x: x[1] > min_artists,city_counts)
 		cities = [c[0].title() for c in cities]
 		logging.info(cities)
