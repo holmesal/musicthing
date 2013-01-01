@@ -63,7 +63,7 @@ class StationPlayer(object):
 		'''
 		# query each of the tags from the station meta
 		# create a list of iterators to fetch all of the keys
-		f = lambda x: {'key':x.key,'artist':x,'tags_to_counts':x.tags_dict,'tags_to_ranks':{},'rank':0}
+		
 		logging.info(not self.station_tags)
 		
 		if self.city:
@@ -72,16 +72,18 @@ class StationPlayer(object):
 			artist_keys = models.Artist.query().iter(batch_size=50,keys_only=True)
 		artist_futures = (a.get_async() for a in artist_keys)
 		tracks = (f.get_result() for f in artist_futures)
+		f = lambda x: {'key':x.key,'artist':x,'tags_to_counts':x.tags_dict,'tags_to_ranks':{},'rank':0}
+		tracks_list = [f(t) for t in tracks]
 		if not self.station_tags:
 			logging.info('empty station')
 #			if self.city:
 #				artists = models.Artist.query(models.Artist.city == self.city).iter(batch_size=50)
 #			else:
 #				artists = models.Artist.query().iter(batch_size=50)
-#			tracks = [f(a) for a in artists]
-			tracks = [track for track in tracks]
-			random.shuffle(tracks)
-			self.sorted_tracks_list = tracks
+#			tracks = [f(a) for a in tracks]
+#			tracks = [track for track in tracks]
+			random.shuffle(tracks_list)
+			self.sorted_tracks_list = tracks_list
 		else:
 #			if self.city:
 #				# also filter by city
@@ -111,7 +113,7 @@ class StationPlayer(object):
 #			tracks = (t.get_result() for t in track_futures)
 	#		f = lambda x: {'key':x.key,'artist':x,'tags_to_counts':x.tags_dict,'tags_to_ranks':{},'rank':0}
 #			assert False, tracks
-			tracks_list = [f(t) for t in tracks]
+			
 			
 			#=======================================================================
 			# Rank the tracks based on their tags

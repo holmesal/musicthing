@@ -69,32 +69,6 @@ class MusicHandler(handlers.UserHandler):
 		template = jinja_environment.get_template('templates/music.html')
 		self.response.out.write(template.render(template_values))
 		
-#	def get_spoof(self):
-#		'''
-#		Check if they're already logged in, and redirect appropriately if not (back to the user signup page)
-#		'''
-#		
-#		
-#		# fetch keys
-#		artist_keys = models.Artist.query().fetch(None,keys_only=True)
-#		try:
-#			# get a random sample
-#			random_artists = random.sample(artist_keys,50)
-#		except ValueError:
-#			# list is not big enough, return all of them
-#			random_artists = artist_keys
-#		# shuffle list
-#		random.shuffle(random_artists)
-#		artists = ndb.get_multi(random_artists)
-#		
-#		template_values = {
-#			"artists"		:	artists
-#		}
-#		
-#		jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
-#		template = jinja_environment.get_template('templates/music.html')
-#		self.response.out.write(template.render(template_values))
-#		
 	def post(self):
 		'''
 		This handler takes care of updating user preferences that are available on the player page
@@ -144,21 +118,23 @@ class UpdateStationHandler(handlers.UserHandler):
 		return self.redirect('/music')
 	
 class UpdateCityHandler(handlers.UserHandler):
-	def post(self):
+	def get(self):
 		'''
 		Updates the station playlist with a new city
 		'''
 		city = self.request.get('city',None)
 		session = get_current_session()
+		if city.lower() == 'none' or city.lower() == 'all':
+			city = None
 		session['city'] = city
 #		self.response.out.write({'success':1})
-		return self.redired('/music')
+		return self.redirect('/music')
 
 app = webapp2.WSGIApplication([
 							('/music', MusicHandler),
 							('/music/gettracks',GetTracksHandler),
-							('/music/updateStation',),
-							('/music/updateCity',)
+							('/music/updateStation',UpdateStationHandler),
+							('/music/updateCity',UpdateCityHandler)
 							])
 
 
