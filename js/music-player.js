@@ -3,6 +3,9 @@ changetrackinfo = function(player){
 /* 	console.log($(player).children(".sc-info").children("h3").children("a").text()) */
 	
 	$(".info-track").text($(player).children(".sc-info").children("h3").children("a").text())
+	console.log(art[0][idx].username)
+	console.log(art[idx].username)
+	$(".info-name").text(art[0][idx].username)
 /* 	$(".info-name").text(curtrack.user.username) */
 /* 	$(".info-city").text(track.title) */
 }
