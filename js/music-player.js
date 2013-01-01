@@ -3,7 +3,7 @@ changetrackinfo = function(player){
 /* 	console.log($(player).children(".sc-info").children("h3").children("a").text()) */
 	
 	$(".info-track").text($(player).children(".sc-info").children("h3").children("a").text())
-	$(".info-name").text(curtrack.user.username)
+/* 	$(".info-name").text(curtrack.user.username) */
 /* 	$(".info-city").text(track.title) */
 }
 
@@ -37,6 +37,7 @@ flashhelp = function(){
 
 addtracks = function(data){
 	
+	console.log("loading tracks!")
 	console.log(data)
 	
 	newlinks = []
@@ -44,10 +45,14 @@ addtracks = function(data){
 	
 	//create and append html elements
 	for (var i=0; i<data.length; i++){
-		console.log(data[i])
-		
-		newlinks.push('<a href="http://api.soundcloud.com/tracks/'+data[i].track_id+'" class="sc-player"></a>')
-		newdata.push(data[i])
+		if (data[i].track_id != 'None' && data[i].track_id != null){
+			console.log(data[i])
+			
+			newlinks.push('<a href="http://api.soundcloud.com/tracks/'+data[i].track_id+'" class="sc-player">some</a>')
+/* 			newlinks.push('<a href="http://api.soundcloud.com/tracks/72232364" class="sc-player">http://api.soundcloud.com/tracks/72232364</a>') */
+			
+			newdata.push(data[i])
+		}
 		
 	}
 	
@@ -58,11 +63,13 @@ addtracks = function(data){
 	$('.player-container').append(newlinks)
 	
 	//add the data to the artists array
-	artists.push(newdata)
+	art.push(newdata)
 	
 	//increase the width of the player container to accomidate new players
 	$('.player-container').css({width:400*$(".sc-player").length})
 	
+	
+	console.log($("a.sc-player"))
 	//covert these links into players
 	$('a.sc-player').scPlayer();
 	
@@ -74,30 +81,15 @@ addtracks = function(data){
 
 loadtracks = function(){
 	
-	//go get more tracks
-	$.get('/music/gettracks',function(data){
-		console.log(data)
-		addtracks(data)
-	})
-
-/* 	addtracks(spoofart) */
-	
-/*
-	//spoof some links
-	links = ['<a href="http://api.soundcloud.com/tracks/71127918" class="sc-player">Forss</a>','<a href="http://soundcloud.com/matas/the-pendulum" class="sc-player">Forss</a>','<a href="http://soundcloud.com/matas/communion-of-coincidence-from-the-mountain-top" class="sc-player">My dub track</a>','<a href="http://soundcloud.com/matas/anadrakonic-waltz" class="sc-player">Pumpkins Track</a>','<a href="http://soundcloud.com/matas/frost-theme-0-1" class="sc-player">Oxxo</a>']
-	
-	//add some links
-	$('.player-container').append(links)
-	
-	//increase the width of the player container to accomidate new players
-	$('.player-container').css({width:400*$(".sc-player").length})
-	
-	//covert these links into players
-	$('a.sc-player').scPlayer();
-	
-	//rebind click events for players
-	bindevents()
-*/
+	if (latch == false){
+		latch = true
+		//go get more tracks
+		$.getJSON('/music/gettracks',function(data){
+			console.log(data)
+			addtracks(data)
+			latch = false
+		})
+	}
 	
 }
 
@@ -193,7 +185,7 @@ $(document).ready(function() {
 	
 	//inites
 	idx = 0
-/* 	artists = [] */
+	latch = false
   
 	//bind click events for players
 	bindevents()

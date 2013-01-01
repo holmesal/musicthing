@@ -28,6 +28,16 @@ class MusicHandler(handlers.UserHandler):
 #		self.set_plaintext()
 		t0 = dt.now()
 		station_tags,serendipity,city = self.get_station_meta_from_session()
+#		
+#		ntags = []
+#		for key,val in enumerate(station_tags):
+#			ntags.append({"count":key,"name":val})
+#		
+#		rtags = reversed(ntags)
+#		tags = []
+#		for tag in rtags:
+#			tags.append(tag)
+#		
 		station = utils.StationPlayer(station_tags,serendipity,city)
 		station.create_station()
 		
@@ -52,7 +62,7 @@ class MusicHandler(handlers.UserHandler):
 		template_values = {
 			'artists' : artists,
 			'city' : city,
-			'tags' : station_tags,
+			'tags' : tags,
 			'serendipity' : serendipity,
 			'cities' : available_cities
 		}
@@ -110,7 +120,7 @@ class UpdateStationHandler(handlers.UserHandler):
 		tags = self.parse_tags(raw_tags)
 		# preferences are only stored in the session
 		self.add_station_meta_to_session(tags,serendipity)
-		return self.redirect('/music')
+		self.redirect('/music')
 	
 class UpdateCityHandler(handlers.UserHandler):
 	def get(self):

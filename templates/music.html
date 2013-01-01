@@ -93,18 +93,14 @@
         
         
     	<div class="player-container">    
-<!--
-        <div class="sc-player">
-        	{% for artist in artists %}
-        		<a href="http://api.soundcloud.com/tracks/{{artist.track_id}}" class="sc-player"></a>
-        	{% endfor %}
--->
 
+<!--
           <a href="http://api.soundcloud.com/tracks/71127918" class="sc-player">Forss</a>
           <a href="http://soundcloud.com/matas/the-pendulum" class="sc-player">Forss</a>
           <a href="http://soundcloud.com/matas/communion-of-coincidence-from-the-mountain-top" class="sc-player">My dub track</a>
           <a href="http://soundcloud.com/matas/anadrakonic-waltz" class="sc-player">Pumpkins Track</a>
           <a href="http://soundcloud.com/matas/frost-theme-0-1" class="sc-player">Oxxo</a>
+-->
 <!--         </div> -->
 
     	</div>
@@ -163,12 +159,16 @@
     <script type="text/javascript">
 	    //enter sandman
 	    init_artists = []
-	    artists = []
+	    art = []
+	    
+/* 	    {{artists}} */
 	    {% for artist in artists %}
-	    	ta = {"username":'{{artist.username}}',"track_id":'{{artist.track_id}}',"city":'{{artist.city}}'}
+	    	ta = {"username":"{{artist.username}}","track_id":"{{artist.track_id}}","city":"{{artist.city}}"}
 	    	init_artists.push(ta)
 	    	
 	    {% endfor %}
+	    
+	    console.log(init_artists)
 	    
 	    addtracks(init_artists)
 	    
@@ -177,7 +177,14 @@
     
     <script type="text/javascript">
 		{% if tags %}
-			tags = {{tags}}
+			tags = []
+			
+/* 			{{tags}} */
+			
+			{% for tag in tags %}
+			tags.push({"name":'{{tag.name}}',"count":{{tag.count}}})
+			{% endfor %}
+			high = tags[0].count
 			updatetagshtml()
 		{% else %}
 			tags = []

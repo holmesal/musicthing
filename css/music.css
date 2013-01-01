@@ -1,4 +1,7 @@
-html {-webkit-font-smoothing: antialiased}
+html {
+	-webkit-font-smoothing: antialiased;
+	overflow: auto;
+}
 
 body{
 	width: 100%;
