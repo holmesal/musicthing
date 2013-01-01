@@ -55,6 +55,8 @@ var postform = function(signup){
 updatetagshtml = function(){
 	$('#html-tags').empty()
 	
+	console.log(tags)
+	
 	$(tags).each(function(i,tag){
 		size = Math.ceil((tag.count/high)*13 + 10)
 		console.log(size)
