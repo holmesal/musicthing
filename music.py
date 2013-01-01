@@ -28,16 +28,13 @@ class MusicHandler(handlers.UserHandler):
 #		self.set_plaintext()
 		t0 = dt.now()
 		station_tags,serendipity,city = self.get_station_meta_from_session()
-#		
-#		ntags = []
-#		for key,val in enumerate(station_tags):
-#			ntags.append({"count":key,"name":val})
-#		
-#		rtags = reversed(ntags)
-#		tags = []
-#		for tag in rtags:
-#			tags.append(tag)
-#		
+		
+		
+		# format the tags for the client
+		tags = [{'name':t,'count':c} for t,c in station_tags.iteritems()]
+		tags = sorted(tags,key=lambda x: x['count'],reverse=True)
+		
+		# create the station!!
 		station = utils.StationPlayer(station_tags,serendipity,city)
 		station.create_station()
 		

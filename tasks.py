@@ -6,7 +6,6 @@ import json
 import logging
 import urllib
 import webapp2
-				
 class TextTaskHandler(webapp2.RequestHandler):
 	def post(self):
 		try:
