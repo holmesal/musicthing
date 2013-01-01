@@ -1,4 +1,6 @@
 from collections import defaultdict
+from datetime import datetime as dt
+from gaesessions import get_current_session
 from google.appengine.ext import ndb
 import handlers
 import jinja2
@@ -7,10 +9,8 @@ import logging
 import models
 import os
 import random
-import webapp2
-from datetime import datetime as dt
 import utils
-from gaesessions import get_current_session
+import webapp2
 
 
 class MusicHandler(handlers.UserHandler):
@@ -63,7 +63,7 @@ class MusicHandler(handlers.UserHandler):
 		}
 		logging.info(dt.now()-t0)
 #		self.say(template_values['cities'])
-#		self.say(json.dumps([a['artist'].to_dict(exclude=('created','tags')) for a in tracks]))
+#		self.say(json.dumps([a['artist'].username for a in tracks]))
 #		return
 		jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 		template = jinja_environment.get_template('templates/music.html')
