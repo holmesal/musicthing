@@ -47,7 +47,7 @@ class SCAuthHandler(handlers.ArtistHandler):
 		# init soundcloud client
 		client = soundcloud.Client(**sc_creds)
 		# redirect to soundcloud page to perform oauth handshake
-		return self.redirect(client.authorize_url())	
+		return self.redirect(client.authorize_url())
 	
 
 class ConnectAccountHandler(handlers.ArtistHandler):

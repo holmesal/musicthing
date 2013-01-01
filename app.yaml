@@ -18,6 +18,8 @@ handlers:
   script: signup.app
 - url: /test.*
   script: test.app
+- url: /feedback
+  script: feedback.app
 
 #tasks and cronjobs
 - url: /tasks.*

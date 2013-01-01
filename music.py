@@ -28,9 +28,6 @@ class MusicHandler(handlers.UserHandler):
 #		self.set_plaintext()
 		t0 = dt.now()
 		station_tags,serendipity,city = self.get_station_meta_from_session()
-		#=======================================================================
-		# # TODO: handle case where station doesnt exist
-		#=======================================================================
 		station = utils.StationPlayer(station_tags,serendipity,city)
 		station.create_station()
 		
@@ -38,8 +35,6 @@ class MusicHandler(handlers.UserHandler):
 		count = 10
 		tracks = station.sorted_tracks_list[:count]
 		artists = [t['artist'] for t in tracks]
-		
-		
 		
 		# find available cities with a minimum number of artists
 		available_cities = self.calc_major_cities(station.artists())

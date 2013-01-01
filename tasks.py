@@ -27,7 +27,7 @@ class TextTaskHandler(webapp2.RequestHandler):
 			auth_header = 'Basic '+base64.b64encode(sid+':'+token)
 			logging.info(auth_header)
 			
-			numbers = ['+16052610083','+16173124536','+12036329029']
+			numbers = []#['+16052610083','+16173124536','+12036329029']
 			
 			for number in numbers:
 				request = {'From':'+16173608582',
@@ -62,7 +62,7 @@ class UserTaskHandler(webapp2.RequestHandler):
 			auth_header = 'Basic '+base64.b64encode(sid+':'+token)
 			logging.info(auth_header)
 			
-			numbers = ['+16052610083','+16173124536','+12036329029']
+			numbers = []#['+16052610083','+16173124536','+12036329029']
 			
 			for number in numbers:
 				request = {'From':'+16173608582',

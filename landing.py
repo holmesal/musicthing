@@ -28,15 +28,15 @@ class LandingHandler(handlers.BaseHandler):
 			"state"	:	"signedup"
 		}
 		
-		try:
-			#send a text notification
-			task_params = {
-				'email'	:	email
-			}
-			logging.debug(email)
-			taskqueue.add(url='/tasks/userTask',payload=json.dumps(task_params))
-		except Exception,e:
-			logging.error(e)
+#		try:
+#			#send a text notification
+#			task_params = {
+#				'email'	:	email
+#			}
+#			logging.debug(email)
+#			taskqueue.add(url='/tasks/userTask',payload=json.dumps(task_params))
+#		except Exception,e:
+#			logging.error(e)
 		
 		jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 		template = jinja_environment.get_template('templates/hypev2.html')
