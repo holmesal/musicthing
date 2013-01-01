@@ -158,13 +158,13 @@ class StationPlayer(object):
 					new_rank = random.choice(r)
 				track['rank'] = new_rank
 				track['old_rank'] = rank
-				logging.info('-->')
-				logging.info('rank: '+str(rank))
-				logging.info('new_rank: '+str(new_rank))
-				logging.info('serendipity: '+str(self.serendipity))
-				logging.info('random_factor: '+str(random_factor))
-				logging.info('rank_plus: '+str(rank_plus/range_factor))
-				logging.info('rank_minus: '+str(rank_minus/range_factor))
+#				logging.info('-->')
+#				logging.info('rank: '+str(rank))
+#				logging.info('new_rank: '+str(new_rank))
+#				logging.info('serendipity: '+str(self.serendipity))
+#				logging.info('random_factor: '+str(random_factor))
+#				logging.info('rank_plus: '+str(rank_plus/range_factor))
+#				logging.info('rank_minus: '+str(rank_minus/range_factor))
 			
 			# sort the tracks list based on their new ranks
 			self.sorted_tracks_list = sorted(tracks_list,key=lambda x: x['rank'],reverse=True)
