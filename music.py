@@ -129,7 +129,6 @@ class UpdateCityHandler(handlers.UserHandler):
 		if city.lower() == 'none' or city.lower() == 'all':
 			city = None
 		session['city'] = city
-#		self.response.out.write({'success':1})
 		return self.redirect('/music')
 
 app = webapp2.WSGIApplication([

@@ -123,16 +123,15 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 			# finish mixpanel rpc call
 			self.complete_rpc(rpc)
 			
-			# TODO: uncomment for production
-#			try:
-#				#send a text notification
-#				task_params = {
-#					'artist_name'	:	artist.username
-#				}
-#				logging.debug(artist.username)
-#				taskqueue.add(url='/tasks/textTask',payload=json.dumps(task_params))
-#			except Exception,e:
-#				logging.error(e)
+			try:
+				#send a text notification
+				task_params = {
+					'artist_name'	:	artist.username
+				}
+				logging.debug(artist.username)
+				taskqueue.add(url='/tasks/textTask',payload=json.dumps(task_params))
+			except Exception,e:
+				logging.error(e)
 			
 			# redirect to image upload page
 			return self.redirect(CHOOSE_TRACK)
@@ -407,7 +406,7 @@ class ViewArtistHandler(handlers.BaseHandler):
 # Development handlers
 #===============================================================================
 class SpoofArtistHandler(handlers.ArtistHandler):
-	def get(self):
+	def get_(self):
 		'''
 		Spoof a lot of the data on the server
 		'''
@@ -436,7 +435,7 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 			self.say(f.get_result())
 		self.say('Done!')
 		
-	def get_(self):
+	def get(self):
 		'''
 		For creating an artist account without soundcloud handshake
 		'''
