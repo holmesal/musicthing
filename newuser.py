@@ -121,7 +121,7 @@ class NewUserHandler(handlers.UserHandler):
 			if raw_tags:
 				template_values['tags'] = json.dumps(raw_tags)
 			else:
-				assert False, raw_tags
+				pass
 			
 			jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 			template = jinja_environment.get_template('templates/build_user.html')

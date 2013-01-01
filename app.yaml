@@ -1,5 +1,5 @@
 application: radius-levr
-version: alonsotest
+version: pattest
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -10,7 +10,7 @@ handlers:
   script: landing.app
 - url: /new
   script: newuser.app
-- url: /music.*
+- url: /music
   script: music.app
 - url: /artist.*
   script: artist.app
@@ -18,8 +18,6 @@ handlers:
   script: signup.app
 - url: /test.*
   script: test.app
-- url: /logout.*
-  script: logout.app
 
 #tasks and cronjobs
 - url: /tasks.*

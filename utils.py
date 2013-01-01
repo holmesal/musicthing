@@ -65,43 +65,52 @@ class StationPlayer(object):
 		# create a list of iterators to fetch all of the keys
 		f = lambda x: {'key':x.key,'artist':x,'tags_to_counts':x.tags_dict,'tags_to_ranks':{},'rank':0}
 		logging.info(not self.station_tags)
+		
+		if self.city:
+			artist_keys = models.Artist.query(models.Artist.city == self.city).iter(batch_size=50,keys_only=True)
+		else:
+			artist_keys = models.Artist.query().iter(batch_size=50,keys_only=True)
+		artist_futures = (a.get_async() for a in artist_keys)
+		tracks = (f.get_result() for f in artist_futures)
 		if not self.station_tags:
 			logging.info('empty station')
-			if self.city:
-				artists = models.Artist.query(models.Artist.city == self.city).iter(batch_size=50)
-			else:
-				artists = models.Artist.query().iter(batch_size=50)
-			tracks = [f(a) for a in artists]
+#			if self.city:
+#				artists = models.Artist.query(models.Artist.city == self.city).iter(batch_size=50)
+#			else:
+#				artists = models.Artist.query().iter(batch_size=50)
+#			tracks = [f(a) for a in artists]
+			tracks = [track for track in tracks]
 			random.shuffle(tracks)
 			self.sorted_tracks_list = tracks
 		else:
-			if self.city:
-				# also filter by city
-				tags_to_keys = {tag:models.Artist.query(
-										models.Artist.tags_.genre == tag,
-										models.Artist.city == self.city
-										).iter(batch_size=50,keys_only=True) \
-							for tag in self.station_tags}
-			else:
-				# do not filter by city
-				tags_to_keys = {tag:models.Artist.query(models.Artist.tags_.genre == tag
-										).iter(batch_size=50,keys_only=True) \
-							for tag in self.station_tags}
-			# reverse key:val mappings, so tracks become unique and are mapped to lists of their tags
-			# reduces number of gets required from the datastore
-			keys_to_tags = defaultdict(list)
-			for tag,tag_qit in tags_to_keys.iteritems():
-				# each of the tags is mapped to an iterator for getting artist keys
-				for key_result in tag_qit:
-	#				# result: {ndb.Key:['tag','tag','tag']}
-					keys_to_tags[key_result].append(tag)
-			# make keys_to_tags static
-			keys_to_tags.default_factory = None
-			# fetch datastore entites asynchronously
-			keys_to_be_fetched = [key for key in keys_to_tags]
-			track_futures = ndb.get_multi_async(keys_to_be_fetched)
-			tracks = (t.get_result() for t in track_futures)
+#			if self.city:
+#				# also filter by city
+#				tags_to_keys = {tag:models.Artist.query(
+#										models.Artist.tags_.genre == tag,
+#										models.Artist.city == self.city
+#										).iter(batch_size=50,keys_only=True) \
+#							for tag in self.station_tags}
+#			else:
+#				# do not filter by city
+#				tags_to_keys = {tag:models.Artist.query(models.Artist.tags_.genre == tag
+#										).iter(batch_size=50,keys_only=True) \
+#							for tag in self.station_tags}
+#			# reverse key:val mappings, so tracks become unique and are mapped to lists of their tags
+#			# reduces number of gets required from the datastore
+#			keys_to_tags = defaultdict(list)
+#			for tag,tag_qit in tags_to_keys.iteritems():
+#				# each of the tags is mapped to an iterator for getting artist keys
+#				for key_result in tag_qit:
+#	#				# result: {ndb.Key:['tag','tag','tag']}
+#					keys_to_tags[key_result].append(tag)
+#			# make keys_to_tags static
+#			keys_to_tags.default_factory = None
+#			# fetch datastore entites asynchronously
+#			keys_to_be_fetched = [key for key in keys_to_tags]
+#			track_futures = ndb.get_multi_async(keys_to_be_fetched)
+#			tracks = (t.get_result() for t in track_futures)
 	#		f = lambda x: {'key':x.key,'artist':x,'tags_to_counts':x.tags_dict,'tags_to_ranks':{},'rank':0}
+#			assert False, tracks
 			tracks_list = [f(t) for t in tracks]
 			
 			#=======================================================================
@@ -114,6 +123,7 @@ class StationPlayer(object):
 						track_count = track['tags_to_counts'][tag]
 						# rank the track tag based on the station tag
 						track['tags_to_ranks'][tag] = self._rank_track_tags(track_count,station_count)
+						logging.info(track['tags_to_ranks'][tag])
 					except KeyError:
 						# the track did not have that tag in its list of tags
 						pass
@@ -124,16 +134,20 @@ class StationPlayer(object):
 			#=======================================================================
 			keyfunc = lambda x: x['rank']
 			max_rank = keyfunc(max(tracks_list,key=keyfunc))
+			if max_rank < 0.0001:
+				max_rank = 0.1
 			logging.info('max rank: '+str(max_rank))
 			min_rank = 0
 			for track in tracks_list:
 				rank = track['rank']
 				random_factor = max_rank*self.serendipity
 				rank_plus = rank + random_factor
-				if rank_plus > max_rank: rank_plus = max_rank
+				if rank_plus > max_rank:
+					rank_plus = max_rank
 				rank_minus = rank - random_factor
-				if rank_minus < min_rank: rank_minus = min_rank
-				range_factor = 100.
+				if rank_minus < min_rank:
+					rank_minus = min_rank
+				range_factor = 1000.
 				rank_plus = int(rank_plus*range_factor)
 				rank_minus = int(rank_minus*range_factor)
 				if rank_plus == rank_minus:
@@ -144,12 +158,13 @@ class StationPlayer(object):
 					new_rank = random.choice(r)
 				track['rank'] = new_rank
 				track['old_rank'] = rank
+				logging.info('-->')
 				logging.info('rank: '+str(rank))
-	#			logging.info('serendipity: '+str(self.serendipity))
-	#			logging.info('random_factor: '+str(random_factor))
-	#			logging.info('rank_plus: '+str(rank_plus/range_factor))
-	#			logging.info('rank_minus: '+str(rank_minus/range_factor))
 				logging.info('new_rank: '+str(new_rank))
+				logging.info('serendipity: '+str(self.serendipity))
+				logging.info('random_factor: '+str(random_factor))
+				logging.info('rank_plus: '+str(rank_plus/range_factor))
+				logging.info('rank_minus: '+str(rank_minus/range_factor))
 			
 			# sort the tracks list based on their new ranks
 			self.sorted_tracks_list = sorted(tracks_list,key=lambda x: x['rank'],reverse=True)
