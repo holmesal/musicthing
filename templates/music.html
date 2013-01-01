@@ -5,6 +5,7 @@
   <head>
     
     <title>Radius</title>
+    <link href="/img/favicon.png" rel="shortcut icon" />
     <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="/css/page.css" type="text/css">
     <link rel="stylesheet" href="/css/sc-player-artwork.css" type="text/css">
@@ -161,11 +162,17 @@
 -->
     <script type="text/javascript">
 	    //enter sandman
+	    init_artists = []
+	    artists = []
 	    {% for artist in artists %}
-	    	
-/* 	    	artist */
+	    	ta = {"username":'{{artist.username}}',"track_id":'{{artist.track_id}}',"city":'{{artist.city}}'}
+	    	init_artists.push(ta)
 	    	
 	    {% endfor %}
+	    
+	    addtracks(init_artists)
+	    
+	    
     </script>
     
     <script type="text/javascript">

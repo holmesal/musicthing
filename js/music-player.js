@@ -1,3 +1,12 @@
+changetrackinfo = function(player){
+	
+/* 	console.log($(player).children(".sc-info").children("h3").children("a").text()) */
+	
+	$(".info-track").text($(player).children(".sc-info").children("h3").children("a").text())
+	$(".info-name").text(curtrack.user.username)
+/* 	$(".info-city").text(track.title) */
+}
+
 bindoptions = function(){
 	
 	$("#expando-genre").collapse({toggle:false})
@@ -26,17 +35,19 @@ flashhelp = function(){
 	})
 }
 
-addtracks = function(artists){
+addtracks = function(data){
+	
+	console.log(data)
 	
 	newlinks = []
 	newdata = []
 	
 	//create and append html elements
-	for (var i=0; i<artists.length-1; i++){
-		console.log(artists[i])
+	for (var i=0; i<data.length; i++){
+		console.log(data[i])
 		
-		newlinks.push('<a href="http://api.soundcloud.com/tracks/'+artists[i].track_id+'" class="sc-player"></a>')
-		newdata.push(artists[i])
+		newlinks.push('<a href="http://api.soundcloud.com/tracks/'+data[i].track_id+'" class="sc-player"></a>')
+		newdata.push(data[i])
 		
 	}
 	
@@ -45,6 +56,9 @@ addtracks = function(artists){
 	
 	//add some links
 	$('.player-container').append(newlinks)
+	
+	//add the data to the artists array
+	artists.push(newdata)
 	
 	//increase the width of the player container to accomidate new players
 	$('.player-container').css({width:400*$(".sc-player").length})
@@ -99,7 +113,7 @@ changetrack = function(player){
 	
 	//slide the player
 	idx = $(player).index()
-	console.log(idx)
+/* 	console.log(idx) */
 	offset = -400*idx - 200
 	$(".player-container").animate({"margin-left":offset},{duration:400,queue:false});
 	
@@ -108,10 +122,13 @@ changetrack = function(player){
 	//fade in the controls
 	$(player).children(".sc-controls").animate({opacity:1},{duration:400,queue:false});
 	
+	//change the track information
+	changetrackinfo(player)
+	
 	//check if on last track - time to refresh
 	//do this 2 tracks before the end
 	
-	console.log(idx)
+/* 	console.log(idx) */
 /* 	console.log($(".sc-player").length) */
 	
 	if (idx > $(".sc-player").length-3){
@@ -141,10 +158,28 @@ $(document).bind('onMediaTimeUpdate.scPlayer', function(event){
 	});
 */
 	
+/*
 	$(document).bind('onPlayerTrackSwitch.scPlayer', function(event, track){
 		
+		if (first_track == null){
+			first_track = track
+		}
+		
 		curtrack = track
+		
+		console.log(first_track)
+		
+		//fade out the track info
+		$(".trackinfo").animate({opacity:0},200,function(){
+			//change the track info
+			changetrackinfo()
+		});
+		
+		//fade in the track info
+		$(".trackinfo").delay(300).animate({opacity:1},{duration:200,queue:true});
+		
 	});
+*/
 	
 	/*
 $(document).bind('onPlayerPause.scPlayer', function(event){
@@ -158,6 +193,7 @@ $(document).ready(function() {
 	
 	//inites
 	idx = 0
+/* 	artists = [] */
   
 	//bind click events for players
 	bindevents()

@@ -1,5 +1,5 @@
 application: radius-levr
-version: pattest
+version: alonsotest
 runtime: python27
 api_version: 1
 threadsafe: true
