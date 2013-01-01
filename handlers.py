@@ -97,11 +97,12 @@ class ArtistHandler(BaseHandler):
 		and deleting other session variables
 		'''
 		session = get_current_session()
-		session['logged_in'] = False
-		try:
-			del session['artist_id']
-		except Exception,e:
-			logging.error(e)
+		session.terminate()
+#		session['logged_in'] = False
+#		try:
+#			del session['artist_id']
+#		except Exception,e:
+#			logging.error(e)
 	def get_artist_from_session(self):
 		'''
 		Assures that the artist is logged in

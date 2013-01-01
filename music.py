@@ -109,12 +109,12 @@ class UpdateStationHandler(handlers.UserHandler):
 		serendipity = float(serendipity)/max_serendipity
 		try:
 			raw_tags = json.loads(self.request.get("tags","{}")) #NOTE - this currently crashes if tags is empty
+			tags = self.parse_tags(raw_tags)
 		except:
-			raw_tags = {}
+			tags = {}
 			logging.info('empty tags')
 #			logging.error('tags are not being handled correctly when not passed in post')
 		# Clean tags
-		tags = self.parse_tags(raw_tags)
 		# preferences are only stored in the session
 		self.add_station_meta_to_session(tags,serendipity)
 		self.redirect('/music')

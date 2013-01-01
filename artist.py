@@ -396,6 +396,7 @@ class ViewArtistHandler(handlers.BaseHandler):
 			artist = self.get_artist(artist_id)
 		except:
 			self.say('Artist {} does not exist'.format(artist_id))
+			artist = None
 		template_values = {
 						'artist' : artist,
 		}
