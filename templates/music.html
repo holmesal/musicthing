@@ -21,7 +21,7 @@
         	<p class="filtered"> 
         		Playing
         		{% if tags %}
-        		<a id="genre">{{length(tags)}}</a>
+        		<a id="genre">{{tags|length}}</a>
         		 genres of
         		{% else %}
         		<a id="genre">all</a>
