@@ -11,12 +11,17 @@
     <link rel="stylesheet" href="/css/sc-player-artwork.css" type="text/css">
     <link rel="stylesheet" href="/css/music.css">
     <link rel="stylesheet" href="/css/music-collapse.css">
+    
+    <!-- start Mixpanel --><script type="text/javascript">(function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src=("https:"===e.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f);b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==
+typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.increment people.append people.track_charge".split(" ");for(g=0;g<i.length;g++)f(c,i[g]);b._i.push([a,e,d])};b.__SV=1.2}})(document,window.mixpanel||
+[]);
+mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
   
   </head>
   
   <body>
 <!--       	<div id="loading"></div> -->
-      	
+		      	
         <div class="headerbar">
         	<p class="filtered"> 
         		Playing
@@ -82,11 +87,11 @@
 		    		<p class="prompt">Choose a location</p>
 		        	<div id="cities" class="span12">
 		        		{% for c in cities %}
-		        			<a class="btn btn-primary" href="/music/updateCity?city={{c}}">{{c}}</a>
+		        			<a id="citybutton" class="btn btn-primary" href="/music/updateCity?city={{c}}">{{c}}</a>
 		        		{% endfor %}
 			        	<a class="btn btn-success" href="/music/updateCity?city=none">Everywhere</a>
 		        	</div>
-		        	<p class="explain">Don't see your city? We'll launch there automatically as soon as enough artists sign up. </br>You can help spread the word by <a href="http://twitter.com/home?status=Pandora%20for%20local%20bands.%20http://www.getradi.us">tweeting about us</a> or sharing <a href="http://www.getradi.us">getradi.us</a></p>
+		        	<p class="explain">Don't see your city? We'll launch there automatically as soon as enough artists sign up. </br>You can help spread the word by <a id="twittershare" href="http://twitter.com/home?status=Pandora%20for%20local%20bands.%20http://www.getradi.us">tweeting about us</a> or sharing <a href="http://www.getradi.us">getradi.us</a></p>
 		    	</div>
         	</div>
         </div>
@@ -106,22 +111,40 @@
     	</div>
         
         <div class="trackinfo">
-        	<p class="info-track">Track Name</p>
-	        <p><span class="info-name">Artist Name</span><span class="info-city">City</span></p>
+        	<p class="info-track"></p>
+	        <p><span class="info-name"></span><span class="info-city"></span></p>
 	        <div class="buttoncontainer">
-		        <a href="http://bandcamp.com"><img class="ext-button" src="/img/bandcamp.png"></a>
+		        <!--
+<a href="http://bandcamp.com"><img class="ext-button" src="/img/bandcamp.png"></a>
 		        <a href="http://facebook.com"><img class="ext-button" src="/img/facebook.png"></a>
 		        <a href="http://soundcloud.com"><img class="ext-button" src="/img/soundcloud.png"></a>
 		        <a href="http://twitter.com"><img class="ext-button" src="/img/twitter.png"></a>
 		        <a href="http://myspace.com"><img class="ext-button" src="/img/myspace.png"></a>
+		        <a href="http://youtube.com"><img class="ext-button" src="/img/youtube.png"></a>
 		        <a href="http://google.com"><img class="ext-button" src="/img/web.png"></a>
+-->
 	        </div>
+	        
+	       <!--
+ <a id="next"></a>
+	        <a id="prev"></a>
+-->
 	        
 	        
 	        
         </div>
         
+        <p>Tracks hosted by <a href="http://www.soundcloud.com">Soundcloud</a></p>
+        <p class="troubles">Troubles? Call Carl: <a href="mailto:carl@getradi.us">carl@getradi.us</a></p>
         
+<!--
+        <form class="feedback" action="/feedback" method="post">
+        	<input type="text" name="body" placeholder="Comments? Bugs? We're listening.">
+        	<input type="submit" class="btn btn-success">
+	        
+        </form>
+        
+-->
         
     
 <!--     <script type="text/javascript" src="/js/spin.js"></script> -->
@@ -157,13 +180,23 @@
     </script>
 -->
     <script type="text/javascript">
+    	
+    	mixpanel.track("Music player page loaded")
+    	/*
+mixpanel.track_links("#genre","Genre dropdown link clicked")
+    	mixpanel.track_links("#radius","Radius dropdown link clicked")
+*/
+    	mixpanel.track_links("#twittershare","Twitter share link clicked")
+    	mixpanel.track_links("#citybutton","City button clicked")
+    	mixpanel.track_links("#btnSave","Save button clicked")
+    	
 	    //enter sandman
 	    init_artists = []
 	    art = []
 	    
 /* 	    {{artists}} */
 	    {% for artist in artists %}
-	    	ta = {"username":"{{artist.username}}","track_id":"{{artist.track_id}}","city":"{{artist.city}}"}
+	    	ta = {"username":"{{artist.username}}","track_id":"{{artist.track_id}}","city":"{{artist.city}}","facebook_url":"{{artist.facebook_url|default('None')}}","myspace_url":"{{artist.myspace_url|default('None')}}","twitter_url":"{{artist.twitter_url|default('None')}}","website_url":"{{artist.website_url|default('None')}}","youtube_url":"{{artist.youtube_url|default('None')}}","bandcamp_url":"{{artist.bandcamp_url|default('None')}}"}
 	    	init_artists.push(ta)
 	    	
 	    {% endfor %}
@@ -171,6 +204,11 @@
 	    console.log(init_artists)
 	    
 	    addtracks(init_artists)
+	    
+	    //first values
+	    idx = 0
+	    changetrackinfo($(".sc-player")[0])
+	    $('.sc-controls').animate({opacity:1},200)
 	    
 	    
     </script>

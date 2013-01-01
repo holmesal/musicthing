@@ -27,7 +27,7 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 	<div class="overlay">
 		<p class="welcome">Welcome to Radius.</p>
 		<p class="about">Listen to great local bands in your city, or on the other side of the world.</p>
-		<a class="btn btn-warning btn-large bigbtn" href="/music">Discover something great</a>
+		<a id="discover" class="btn btn-warning btn-large bigbtn" href="/music">Discover something great</a>
 	</div>
 	
 	<div class="banner">
@@ -40,7 +40,8 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
     
     <script type="text/javascript">
 	    $(document).ready(function() {
-			mixpanel.track("landing page loaded")
+			mixpanel.track_links("#discover","Discover button clicked")
+			mixpanel.track_links("#bands","Bands button clicked (landing)")
 		});
     </script>
   
