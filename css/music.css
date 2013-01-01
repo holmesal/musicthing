@@ -1,11 +1,12 @@
 html {
 	-webkit-font-smoothing: antialiased;
-	overflow: auto;
+/* 	overflow: auto; */
 }
 
 body{
-	width: 100%;
-	overflow-x: hidden;
+/* 	max-width: 100%; */
+	overflow: hidden;
+/* 	min-height: 1000px; */
 }
 
 .headerbar{
@@ -20,10 +21,10 @@ body{
 }
 
 .logo{
-	margin-right: 150px;
-	margin-top: 20px;
+	position: absolute;
+	right: 80px;
+	top: 35px;
 	width: 120px;
-	float: right;
 }
 
 .player-container{
@@ -33,11 +34,12 @@ body{
 	font-size: 0;
 	left: 50%;
 	margin-left: -200px;
+	overflow: auto;
 }
 
 .sc-player{
 	margin-top: 20px;
-	height: 440px;
+	height: 400px;
 	display: inline-block;
 	width: 400px;
 	font-size: 11px;
@@ -55,6 +57,7 @@ body{
 	margin-right: auto;
 	border-radius: 5px;
 	margin-top: 450px;
+	position: relative;
 }
 
 .filtered{
@@ -164,12 +167,44 @@ body{
 	margin-right: 5px;
 }
 
-/*
 .sc-next{
-	margin-left: 400px !important;
+	margin-left: 500px !important;
+	margin-top: 400px !important;
 }
 
 .sc-prev{
-	margin-left: -400px !important;
+	margin-left: -500px !important;
+	margin-top: 400px !important;
 }
-*/
+
+#next,#prev{
+	position: absolute;
+	top: 83px;
+	display: block;
+	color: transparent;
+	background-size: cover;
+	width: 40px;
+	height: 40px;
+}
+
+#next{
+	background-image: url("/css/sc-player-artwork/img/next.png");
+	right:0;
+	margin-right: -120px;
+}
+
+#next:hover{
+	background-image: url("/css/sc-player-artwork/img/next-hover.png");
+	cursor: pointer;
+}
+
+#prev{
+	background-image: url("/css/sc-player-artwork/img/prev.png");
+	left:0;
+	margin-left: -120px;
+}
+
+#prev:hover{
+	background-image: url("/css/sc-player-artwork/img/prev-hover.png");
+	cursor: pointer;
+}

@@ -59,11 +59,11 @@ updatetagshtml = function(){
 	
 	$(tags).each(function(i,tag){
 		size = Math.ceil((tag.count/high)*13 + 10)
-		console.log(size)
+/* 		console.log(size) */
 		
 		
 		elem = "<a class='tag btn btn-info' style='font-size:"+size+"pt;line-height:100%;'>"+tag.name+"</a>"
-		console.log(tag.count/high)
+/* 		console.log(tag.count/high) */
 		$("#html-tags").append(elem)
 	})
 	

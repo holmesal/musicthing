@@ -1,14 +1,83 @@
+checkhttp = function(url){
+	if (url.substring(0,1) == "@"){
+		url = "http://www.twitter.com/" + url.substring(1)
+	} else{
+	
+		if (url.substring(0,7) != "http://" && url.substring(0,8) != "https://"){
+			url = "http://" + url
+		}
+	}
+	
+	
+	
+	return url
+}
+
 changetrackinfo = function(player){
+
+	mixpanel.track("Track changed")
 	
 /* 	console.log($(player).children(".sc-info").children("h3").children("a").text()) */
 	
+	info = art[idx]
+	console.log(info)
+	
 	$(".info-track").text($(player).children(".sc-info").children("h3").children("a").text())
-	console.log(art[0][idx].username)
-	console.log(art[idx].username)
-	$(".info-name").text(art[0][idx].username)
-	$(".info-city").text(art[0][idx].city)
-/* 	$(".info-name").text(curtrack.user.username) */
-/* 	$(".info-city").text(track.title) */
+/* 	console.log(art[0][idx].username) */
+/* 	console.log(info.username) */
+	$(".info-name").text(info.username)
+	
+	if (info.city != '' && info.city != 'None' && info.city != null){
+		$(".info-city").text(info.city)
+	} else{
+		$(".info-city").text('Somewhere')
+	}
+	
+	//empty the button container
+	$('.buttoncontainer').empty()
+	
+	//append buttons as necessary
+	if (info.bandcamp_url != '' && info.bandcamp_url != 'None' && info.bandcamp_url != null){
+		url = checkhttp(info.bandcamp_url)
+		$('.buttoncontainer').append('<a href="'+url+'" target="_blank"><img class="ext-button" src="/img/bandcamp.png"></a>')
+	}
+	
+	if (info.facebook_url != '' && info.facebook_url != 'None' && info.facebook_url != null){
+		url = checkhttp(info.facebook_url)
+		$('.buttoncontainer').append('<a href="'+url+'" target="_blank"><img class="ext-button" src="/img/facebook.png"></a>')
+	}
+	
+	if (info.twitter_url != '' && info.twitter_url != 'None' && info.twitter_url != null){
+		url = checkhttp(info.twitter_url)
+		$('.buttoncontainer').append('<a href="'+url+'" target="_blank"><img class="ext-button" src="/img/twitter.png"></a>')
+	}
+	
+	if (info.myspace_url != '' && info.myspace_url != 'None' && info.myspace_url != null){
+		url = checkhttp(info.myspace_url)
+		$('.buttoncontainer').append('<a href="'+url+'" target="_blank"><img class="ext-button" src="/img/myspace.png"></a>')
+	}
+	
+	if (info.youtube_url != '' && info.youtube_url != 'None' && info.youtube_url != null){
+		url = checkhttp(info.youtube_url)
+		$('.buttoncontainer').append('<a href="'+url+'" target="_blank"><img class="ext-button" src="/img/youtube.png"></a>')
+	}
+	
+	if (info.website_url != '' && info.website_url != 'None' && info.website_url != null){
+		url = checkhttp(info.website_url)
+		$('.buttoncontainer').append('<a href="'+url+'" target="_blank"><img class="ext-button" src="/img/website.png"></a>')
+	}
+	
+	$('.buttoncontainer').append('<a id="scbtn" href="" target="_blank"><img class="ext-button" src="/img/soundcloud.png"></a>')
+	
+	//go get the link
+	url = 'http://api.soundcloud.com/tracks/'+info.track_id+'.json?client_id=d03ca49fb6764663d0992eadc69f8bf1'
+	$.get(url,function(data){
+		sc_url = data.permalink_url
+		$('#scbtn').attr("href",sc_url)
+	})
+	
+	
+	
 }
 
 bindoptions = function(){
@@ -19,11 +88,13 @@ bindoptions = function(){
 	$("#genre").click(function(){
 		$("#expando-genre").collapse('toggle')
 		$("#expando-radius").collapse('hide')
+		mixpanel.track("Genre dropdown link clicked")
 	})
 	
 	$("#radius").click(function(){
 		$("#expando-radius").collapse('toggle')
 		$("#expando-genre").collapse('hide')
+		mixpanel.track("Radius dropdown link clicked")
 	})
 	
 }
@@ -67,7 +138,7 @@ addtracks = function(data){
 	$('.player-container').append(newlinks)
 	
 	//add the data to the artists array
-	art.push(newdata)
+	art.push.apply(art,newdata)
 	
 	//increase the width of the player container to accomidate new players
 	$('.player-container').css({width:400*$(".sc-player").length})
@@ -109,7 +180,7 @@ changetrack = function(player){
 	
 	//slide the player
 	idx = $(player).index()
-/* 	console.log(idx) */
+	console.log(idx)
 	offset = -400*idx - 200
 	$(".player-container").animate({"margin-left":offset},{duration:400,queue:false});
 	
@@ -117,6 +188,12 @@ changetrack = function(player){
 	$(".sc-player").not(player).children(".sc-controls").animate({opacity:0},{duration:400,queue:false});
 	//fade in the controls
 	$(player).children(".sc-controls").animate({opacity:1},{duration:400,queue:false});
+	
+	if (idx==0){
+		$('#prev').hide()
+	} else{
+		$('#prev').show()
+	}
 	
 	//change the track information
 	changetrackinfo(player)
@@ -143,9 +220,19 @@ bindevents = function(){
 	});
 	
 	//next button listeners
-	$('.sc-next').on("click",function(e) { 
+	$('#next').on("click",function(e) { 
 		console.log("clicked!")
-		$(this).parent().parent().next('.sc-player').children(".sc-info").click()
+		changetrack($('.player-container >')[idx+1])
+/* 		elem = $(".sc-player")[idx+1] */
+/* 		$(elem).children(".sc-controls").children(".sc-play").click() */
+	});
+	
+	//next button listeners
+	$('#prev').on("click",function(e) { 
+		console.log("clicked!")
+		changetrack($('.player-container >')[idx-1])
+/* 		elem = $(".sc-player")[idx+1] */
+/* 		$(elem).children(".sc-controls").children(".sc-play").click() */
 	});
 	
 	/*

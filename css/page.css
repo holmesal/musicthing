@@ -13,8 +13,8 @@ body{
 }
 
 .sc-no-artwork{
-	background-image: url(/img/debut_dark.png);
-	color: #ededed;
+	background-image: url(/img/noartwork.jpg);
+	color: rgba(255,255,255,0);
 }
 
 .sc-loading-artwork{
