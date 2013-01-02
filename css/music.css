@@ -208,3 +208,7 @@ body{
 	background-image: url("/css/sc-player-artwork/img/prev-hover.png");
 	cursor: pointer;
 }
+
+.scattrib{
+	margin-bottom: 50px;
+}

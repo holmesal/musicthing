@@ -21,9 +21,11 @@
 	margin-left: auto;
 	margin-right: auto;
 	display: inline-block;
-	width: 489px;
+	width: 480px;
 	left: 50%;
 	margin-top: 5px;
+	padding-top: 0px;
+	padding-bottom: 0px;
 }
 
 #submitbtn{
