@@ -7,6 +7,6 @@ $("#submitbtn").click(function(){
 	console.log(data)
 	
 	$.post('/feedback',{"body":data},function(){
-		/* $('.feedback').animate({opacity:0}) */
+		$('.feedback').animate({opacity:0})
 	})
 })
