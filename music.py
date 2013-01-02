@@ -26,18 +26,21 @@ class MusicHandler(handlers.UserHandler):
 		
 		'''
 #		self.set_plaintext()
+		timer = utils.Timer()
+		time = timer.time
+		
 		t0 = dt.now()
 		station_tags,serendipity,city = self.get_station_meta_from_session()
-		
+		time('b_get_station_meta')
 		
 		# format the tags for the client
 		tags = [{'name':t,'count':c} for t,c in station_tags.iteritems()]
 		tags = sorted(tags,key=lambda x: x['count'],reverse=True)
-		
+		time('c_format_tags')
 		# create the station!!
 		station = utils.StationPlayer(station_tags,serendipity,city)
-		station.create_station()
-		
+		algo_times = station.create_station()
+		time('d_create_station')
 		# pull the first 10 tracks
 		count = 10
 		tracks = station.sorted_tracks_list[:count]
@@ -64,6 +67,9 @@ class MusicHandler(handlers.UserHandler):
 			'cities' : available_cities
 		}
 		logging.info(dt.now()-t0)
+		global_times = timer.get_times()
+		self.say(json.dumps({'global':global_times,'algo':algo_times}))
+		return
 #		self.say(template_values['cities'])
 #		self.say(json.dumps([a['artist'].username for a in tracks]))
 #		return
