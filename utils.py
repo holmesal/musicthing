@@ -21,6 +21,7 @@ class Timer(object):
 		times_dict.update({'_total':str(datetime.now()-self.init_time)})
 		return times_dict
 class StationPlayer(object):
+	max_serendipity = 255.
 	def __init__(self,station_tags,serendipity,city=None):
 		self.station_tags = station_tags
 		logging.info(self.station_tags)

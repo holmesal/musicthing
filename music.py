@@ -31,9 +31,10 @@ class MusicHandler(handlers.UserHandler):
 		template_values = {
 			'city' : city,
 			'tags' : tags,
-			'serendipity' : serendipity,
+			'serendipity' : int(serendipity*utils.StationPlayer.max_serendipity),
 			'cities' : ['Boston']
 		}
+#		self.say(template_values['serendipity'])
 		jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 		template = jinja_environment.get_template('templates/music.html')
 		self.response.out.write(template.render(template_values))
@@ -84,7 +85,7 @@ class UpdateStationHandler(handlers.UserHandler):
 		'''
 		Updates the station playlist with new variables
 		'''
-		max_serendipity = 5.
+		max_serendipity = utils.StationPlayer.max_serendipity
 		serendipity = self.request.get("serendipity",2)
 		serendipity = float(serendipity)/max_serendipity
 		try:
