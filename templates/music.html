@@ -207,7 +207,7 @@ mixpanel.track_links("#genre","Genre dropdown link clicked")
 	    addtracks(init_artists)
 	    
 */
-	    $.get('/initialize',function(data){
+	    $.get('/music/initialize',function(data){
 		    addtracks(data)
 		    //first values
 		    idx = 0

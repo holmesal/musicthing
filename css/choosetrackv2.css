@@ -1,0 +1,56 @@
+html {
+	-webkit-font-smoothing: antialiased;
+/* 	overflow: auto; */
+}
+
+.cell{
+	margin-bottom: 40px;
+	margin-top: 40px;
+	margin-left: 40px;
+	width: 700px;
+	height: 100px;
+/* 	background-color: green; */
+}
+
+.trackselect{
+	background-color: white;
+}
+
+.artwork{
+	width:100px;
+	height:100px;
+	float: left;
+	background-size: cover;
+/* 	margin-left: 40px; */
+}
+
+.info{
+	float: left;
+	width: 400px;
+	height: 100px;
+}
+
+.title{
+	
+	padding-top: 10px;
+	padding-left: 20px;
+	font-size: 20pt;
+	line-height: 100%;
+}
+
+.time{
+	padding-left: 20px;
+	padding-top: 10px;
+	font-size: 20pt;
+	color: #b0b0b0;
+}
+
+.picktrack{
+	margin-top: 30px;
+	margin-right: 40px;
+	float: right;
+}
+
+.instructions{
+	margin-bottom: 50px;
+}
