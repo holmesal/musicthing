@@ -228,8 +228,8 @@ class UserHandler(BaseHandler):
 		# index bookkeeping
 		idx = session['idx']
 		# reset station
-		logging.info(station.sorted_tracks_list.__len__())
-		logging.info(idx)
+		logging.info('playlist length:'+str(station.sorted_tracks_list.__len__()))
+		logging.info('beginning idx: '+str(idx))
 		max_idx = station.sorted_tracks_list.__len__() -1
 		if idx == max_idx:
 			idx = 0
@@ -239,9 +239,14 @@ class UserHandler(BaseHandler):
 		logging.info('new_index: '+str(new_idx))
 		session['idx'] = new_idx
 		
-		tracks = station.sorted_tracks_list[idx:new_idx]
-		to_send = [t['artist'] for t in tracks]
+		if new_idx > 0:
+			tracks = station.sorted_tracks_list[idx:new_idx]
+		elif new_idx == 0:
+			tracks = station.sorted_tracks_list
+		elif new_idx == -1:
+			tracks = []
 		
+		to_send = [t['artist'] for t in tracks]
 		# store the tracks that have been listened to
 		listened_to = [t['key'] for t in tracks]
 		session['listened_to'] = listened_to

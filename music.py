@@ -70,6 +70,7 @@ class InitializeStationHandler(handlers.UserHandler):
 		time('e_package_artists')
 		global_times = timer.get_times()
 		
+		logging.info('{} tracks in the playlist'.format(station.sorted_tracks_list.__len__()))
 		logging.info(json.dumps({'global':global_times,'algo':algo_times}))
 		self.response.out.write(json.dumps(packaged_artists))
 class GetTracksHandler(handlers.UserHandler):
