@@ -67,7 +67,8 @@ class Artist(ndb.Model):
 		'''
 		return str(self.key.id())
 
-	
+class ArtistBackup(Artist):
+	pass
 class User(ndb.Model):
 	created = ndb.DateProperty(auto_now_add=True)
 	email = ndb.StringProperty()
