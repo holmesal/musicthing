@@ -190,10 +190,8 @@ changetrack = function(player){
 	$(player).children(".sc-controls").animate({opacity:1},{duration:400,queue:false});
 	$(player).next().children(".sc-controls").animate({opacity:1},{duration:400,queue:false});
 	
-	if (idx==0){
-		$('#prev').hide()
-	} else{
-		$('#prev').show()
+	if (idx!=0){
+		$(player).next().children(".sc-controls").animate({opacity:1},{duration:400,queue:false});
 	}
 	
 	//change the track information
