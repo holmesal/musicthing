@@ -52,7 +52,7 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 							<p class="explain">Enter a few of your favorite artists - we'll use their genres to filter the songs you hear on Radius.</p>
 						</div>
 		
-							<form method="post" action="/music/updateStation">
+							<form method="POST" action="/music/updateStation">
 								<input type="hidden" id="tags" name="tags" value="">
 								
 								<div class="artist">
@@ -70,7 +70,7 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 									</div>
 								</div>
 								<div>
-									<input type="submit" id="btnSave" class="btn btn-warning btn-large" name="submit" value="Save these settings">
+									<input type="submit" id="btnSave" class="btn btn-warning btn-large" value="Save these settings">
 								</div>
 							</form>
 						
@@ -188,7 +188,7 @@ mixpanel.track_links("#genre","Genre dropdown link clicked")
 */
     	mixpanel.track_links("#twittershare","Twitter share link clicked")
     	mixpanel.track_links("#citybutton","City button clicked")
-    	mixpanel.track_links("#btnSave","Save button clicked")
+    	mixpanel.track_forms("#btnSave","Save button clicked")
     	
 	    //enter sandman
 	    art = []

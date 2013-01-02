@@ -188,6 +188,7 @@ changetrack = function(player){
 	$(".sc-player").not(player).children(".sc-controls").animate({opacity:0},{duration:400,queue:false});
 	//fade in the controls
 	$(player).children(".sc-controls").animate({opacity:1},{duration:400,queue:false});
+	$(player).next().children(".sc-controls").animate({opacity:1},{duration:400,queue:false});
 	
 	if (idx==0){
 		$('#prev').hide()
