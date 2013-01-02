@@ -227,7 +227,16 @@ class UserHandler(BaseHandler):
 		station = session['station']
 		# index bookkeeping
 		idx = session['idx']
+		# reset station
+		logging.info(station.sorted_tracks_list.__len__())
+		logging.info(idx)
+		max_idx = station.sorted_tracks_list.__len__() -1
+		if idx == max_idx:
+			idx = 0
 		new_idx = idx+n
+		if new_idx > max_idx:
+			new_idx = max_idx
+		logging.info('new_index: '+str(new_idx))
 		session['idx'] = new_idx
 		
 		tracks = station.sorted_tracks_list[idx:new_idx]

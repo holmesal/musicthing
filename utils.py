@@ -48,7 +48,7 @@ class StationPlayer(object):
 		@type track_count:
 		@param station_count:
 		@type station_count:
-		@return: a rankfor the track tag
+		@return: a rank for the track tag
 		@rtype: float
 		'''
 		inverted_diff = self.station_max_count - abs(station_count - track_count)
@@ -95,11 +95,11 @@ class StationPlayer(object):
 #			random.shuffle(tracks_list)
 			# this line necessary b/c artist_keys is a generator
 			artist_keys = [k for k in artist_keys]
-			
 			try:
 				artist_keys = random.sample(artist_keys,self.max_tracks)
 			except ValueError:
 				pass
+			
 			random.shuffle(artist_keys)
 			time('select_random_artists')
 			artists = ndb.get_multi(artist_keys)
