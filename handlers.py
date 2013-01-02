@@ -221,7 +221,30 @@ class UserHandler(BaseHandler):
 		cities = [c[0].title() for c in cities]
 		logging.info(cities)
 		return cities
+	def fetch_next_n_artists(self,n,session=None):
+		if not session:
+			session = get_current_session()
+		station = session['station']
+		# index bookkeeping
+		idx = session['idx']
+		new_idx = idx+n
+		session['idx'] = new_idx
 		
+		tracks = station.sorted_tracks_list[idx:new_idx]
+		to_send = [t['artist'] for t in tracks]
+		
+		# store the tracks that have been listened to
+		listened_to = [t['key'] for t in tracks]
+		session['listened_to'] = listened_to
+		
+		return to_send
+	def package_artist_multi(self,artists):
+		to_send = []
+		for artist in artists:
+			artist_dict = artist.to_dict(exclude=('created',))
+			artist_dict.update({'id':artist.strkey})
+			to_send.append(artist_dict)
+		return to_send
 class UploadHandler(ArtistHandler,blobstore_handlers.BlobstoreUploadHandler):
 	pass
 

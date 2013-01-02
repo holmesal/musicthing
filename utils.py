@@ -175,7 +175,9 @@ class StationPlayer(object):
 		#=======================================================================
 		session = get_current_session()
 		session['station'] = self
-		return timer.get_times()
+		session['idx'] = self.idx
+		return session,timer.get_times()
+#		return timer.get_times()
 	
 #			if self.city:
 #				# also filter by city
