@@ -7,6 +7,8 @@ class FeedbackHandler(handlers.BaseHandler):
 #	def get(self):
 #		pass
 	def post(self):
+	
+		logging.info(self.request.body)
 		body = self.request.get('body')
 		body = body.encode('ascii','ingore')
 #		assert False, self.request.params
