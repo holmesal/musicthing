@@ -7,13 +7,13 @@ class FeedbackHandler(handlers.BaseHandler):
 #	def get(self):
 #		pass
 	def post(self):
-#		assert False, self.request.params
+		logging.info(self.request.body)
 		body = self.request.get('body')
-		body = body.encode('ascii','ignore')
+		body = body.encode('ascii','ingore')
 		try:
 			message = mail.AdminEmailMessage(
 											sender = 'patrick@levr.com',
-											subject = 'New Merchant',
+											subject = 'Feedback',
 											)
 			message.body = body
 			message.check_initialized()
