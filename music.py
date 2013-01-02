@@ -97,7 +97,7 @@ class UpdateStationHandler(handlers.UserHandler):
 		# Clean tags
 		# preferences are only stored in the session
 		self.add_station_meta_to_session(tags,serendipity)
-		self.redirect('/music')
+		return self.redirect('/music')
 	
 class UpdateCityHandler(handlers.UserHandler):
 	def get(self):
