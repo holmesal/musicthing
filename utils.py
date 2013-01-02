@@ -93,11 +93,16 @@ class StationPlayer(object):
 #			tracks = [f(a) for a in tracks]
 #			tracks = [track for track in tracks]
 #			random.shuffle(tracks_list)
+			# this line necessary b/c artist_keys is a generator
 			artist_keys = [k for k in artist_keys]
-			selected_artists = random.sample(artist_keys,self.max_tracks)
+			
+			try:
+				artist_keys = random.sample(artist_keys,self.max_tracks)
+			except ValueError:
+				pass
+			random.shuffle(artist_keys)
 			time('select_random_artists')
-			random.shuffle(selected_artists)
-			artists = ndb.get_multi(selected_artists)
+			artists = ndb.get_multi(artist_keys)
 			tracks_list = [f(a) for a in artists]
 			self.sorted_tracks_list = tracks_list
 			time('n_clip_track_length')
