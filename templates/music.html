@@ -190,9 +190,9 @@ mixpanel.track_links("#genre","Genre dropdown link clicked")
     	mixpanel.track_links("#citybutton","City button clicked")
     	mixpanel.track_links("#btnSave","Save button clicked")
     	
-/*
 	    //enter sandman
 	    art = []
+/*
 	    
 	    
 	    init_artists = []
@@ -207,7 +207,7 @@ mixpanel.track_links("#genre","Genre dropdown link clicked")
 	    addtracks(init_artists)
 	    
 */
-	    $.get('/music/initialize',function(data){
+	    $.getJSON('/music/initialize',function(data){
 		    addtracks(data)
 		    //first values
 		    idx = 0
