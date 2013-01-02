@@ -78,12 +78,12 @@ body{
 
 #genre,#radius{
 	color: #6b9cd5;
-	text-decoration: none;
+	text-decoration: underline;
 	opacity: 0;
 }
 
 #genre:hover,#radius:hover{
-	text-decoration: none;
+	text-decoration: underline;
 	color: #2ba3e4;
 	cursor: pointer;
 }

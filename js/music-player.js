@@ -105,7 +105,7 @@ flashhelp = function(){
 	$("#genre,#radius").css({"text-decoration":"underline"})
 	
 	$("#genre,#radius,.clickchange").pulse({opacity:1},{"pulses":2,"duration":1500,"returnDelay":1000},function(){
-		$("#genre,#radius").css({"text-decoration":"none"})
+		$("#genre,#radius").css({"text-decoration":"underline"})
 		$("#genre,#radius").animate({opacity:1})
 	})
 }
@@ -233,6 +233,12 @@ bindevents = function(){
 /* 		elem = $(".sc-player")[idx+1] */
 /* 		$(elem).children(".sc-controls").children(".sc-play").click() */
 	});
+	
+	$("#genre,#radius").hover(function(){
+		$(".clickchange").animate({opacity:1},200)
+	},function(){
+		$(".clickchange").animate({opacity:0},200)
+	})
 	
 	/*
 $(document).bind('onMediaTimeUpdate.scPlayer', function(event){
