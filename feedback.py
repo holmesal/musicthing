@@ -9,19 +9,20 @@ class FeedbackHandler(handlers.BaseHandler):
 	def post(self):
 		body = self.request.get('body')
 		body = body.encode('ascii','ingore')
-		
+#		assert False, self.request.params
 		try:
 			message = mail.AdminEmailMessage(
 											sender = 'patrick@levr.com',
 											subject = 'New Merchant',
 											)
-			message.body += body
+			message.body = body
 			message.check_initialized()
 			message.send()
 			
-		except:
+		except Exception,e:
 			logging.critical('Feedback Message could not send')
 			logging.critical(body)
+			logging.critical(e)
 app = webapp2.WSGIApplication([
 							('/feedback',FeedbackHandler)
 							])
