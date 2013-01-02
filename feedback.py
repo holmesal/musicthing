@@ -15,7 +15,7 @@ class FeedbackHandler(handlers.BaseHandler):
 		try:
 			message = mail.AdminEmailMessage(
 											sender = 'patrick@levr.com',
-											subject = 'New Merchant',
+											subject = 'Feedback',
 											)
 			message.body = body
 			message.check_initialized()
