@@ -299,7 +299,7 @@ class ChooseTrackHandler(handlers.ArtistHandler):
 		logging.info(artist.artist_id)
 		
 		#write out the choosetrack page
-		template = jinja_environment.get_template('templates/artist/choosetrack.html')
+		template = jinja_environment.get_template('templates/artist/choosetrackv2.html')
 		self.response.out.write(template.render(template_values))
 		
 class StoreTrackHandler(handlers.ArtistHandler):

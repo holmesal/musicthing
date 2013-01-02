@@ -20,7 +20,7 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
   </head>
   
   <body>
-<!--       	<div id="loading"></div> -->
+      	<div id="loading"></div>
 		      	
         <div class="headerbar">
         	<p class="filtered"> 
@@ -147,8 +147,8 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 -->
         
     
-<!--     <script type="text/javascript" src="/js/spin.js"></script> -->
-<!--     <script type="text/javascript" src="/js/roundandround.js"></script> -->
+    <script type="text/javascript" src="/js/spin.js"></script>
+    <script type="text/javascript" src="/js/roundandround.js"></script>
     <script src="http://code.jquery.com/jquery.js"></script>
 <!--     <script src="/js/jquery.color.min.js"></script> -->
     <script src="/js/bootstrap.min.js"></script>
@@ -190,11 +190,12 @@ mixpanel.track_links("#genre","Genre dropdown link clicked")
     	mixpanel.track_links("#citybutton","City button clicked")
     	mixpanel.track_links("#btnSave","Save button clicked")
     	
+/*
 	    //enter sandman
-	    init_artists = []
 	    art = []
 	    
-/* 	    {{artists}} */
+	    
+	    init_artists = []
 	    {% for artist in artists %}
 	    	ta = {"username":"{{artist.username}}","track_id":"{{artist.track_id}}","city":"{{artist.city}}","facebook_url":"{{artist.facebook_url|default('None')}}","myspace_url":"{{artist.myspace_url|default('None')}}","twitter_url":"{{artist.twitter_url|default('None')}}","website_url":"{{artist.website_url|default('None')}}","youtube_url":"{{artist.youtube_url|default('None')}}","bandcamp_url":"{{artist.bandcamp_url|default('None')}}"}
 	    	init_artists.push(ta)
@@ -205,10 +206,19 @@ mixpanel.track_links("#genre","Genre dropdown link clicked")
 	    
 	    addtracks(init_artists)
 	    
-	    //first values
-	    idx = 0
-	    changetrackinfo($(".sc-player")[0])
-	    $('.sc-controls').animate({opacity:1},200)
+*/
+	    $.get('/music/initialize',function(data){
+		    addtracks(data)
+		    //first values
+		    idx = 0
+		    changetrackinfo($(".sc-player")[0])
+		    $('.sc-controls').animate({opacity:1},200)
+		    
+		    spinner.stop()
+		    $("#loading").hide()
+	    })
+	    
+	    
 	    
 	    
     </script>
