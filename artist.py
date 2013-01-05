@@ -407,7 +407,7 @@ class ViewArtistHandler(handlers.BaseHandler):
 # Development handlers
 #===============================================================================
 class SpoofArtistHandler(handlers.ArtistHandler):
-	def get_(self):
+	def post_(self):
 		'''
 		Spoof a lot of the data on the server
 		'''
@@ -436,7 +436,7 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 			self.say(f.get_result())
 		self.say('Done!')
 		
-	def post(self):
+	def get(self):
 		'''
 		For creating an artist account without soundcloud handshake
 		'''
