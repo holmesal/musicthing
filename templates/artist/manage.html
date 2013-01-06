@@ -62,7 +62,10 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 					<div id="alert-city" class="alert alert-warning">If you don't add a city, your tracks will only be played in the worldwide rotation</div>
 					{% endif %}
 					<p class="explain overhead">Adding a city helps locals find your music. Add the city where you play most of your shows.</p>
-					<p class="explain" style="text-align: left;">Your city:<input type="text" id="city" name="city" placeholder="Ex: Boston" value="{{artist.city or ''}}"></p>
+					<p class="explain" style="text-align: left;">Your city:
+						<!-- <input type="text" id="city" name="city" placeholder="Ex: Boston" value="{{artist.city or ''}}"> -->
+						<input type="text" id="city" name="city" placeholder="Start typing">
+					</p>
 					
 					
 					<hr class="overhead">
@@ -80,6 +83,13 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 					<p class="updates">We (very) occasionally send out updates about changes and new features.</p>
 					<p class="arow" id="email"><img class="sicon" src="/img/email.png"><input type="text" name="email" placeholder="Email" value="{{artist.email or ''}}"></p>
 					<input type="submit" class="btn btn-info" value="Save Changes">
+					
+<!-- 					Hidden inputs  -->
+					<input type="hidden" name="locality" id="locality">
+					<input type="hidden" name="administrative_area_level_1" id="administrative_area_level_1">
+					<input type="hidden" name="country" id="country">
+					<input type="hidden" name="lat" id="lat">
+					<input type="hidden" name="lon" id="lon">
 				</form>
 			</div>
 		</div>
@@ -88,65 +98,9 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 	</div>
 
 <script src="http://code.jquery.com/jquery-latest.js"></script>
-<script type="text/javascript">
-/* 	72047558 */
-	mixpanel.track("band manage page loaded")
-	
-	//register signup
-	mixpanel.track_links("#choosenew","manage choose new button clicked");
-	mixpanel.track_links("#scupload","manage soundcloud upload button clicked");
-	
-	console.log("{{artist.track_id}}")
-	
-	if ("{{artist.track_id}}" == "None"){
-		window.location = '/artist/choosetrack'
-	};
-	
-	$.get('https://api.soundcloud.com/tracks/{{artist.track_id}}.json?client_id=d03ca49fb6764663d0992eadc69f8bf1', function(data) {
-		
-		$(".artist_name").text(data.user.username)
-		$(".track_name").text(data.title)
-		
-		var artwork = data.artwork_url
-		var artwork_src = "track"
-/* 		console.log(data) */
-/* 		console.log(artwork) */
-		
-		if (artwork == null){
-			if (data.user.avatar_url.indexOf("default_avatar") == -1){
-				artwork = data.user.avatar_url
-				artwork_src = "avatar"
-			}
-		}
-		
-/* 		console.log(artwork) */
-		
-		if (artwork == null){
-			artwork = "/img/noartwork.jpg"
-			artwork_src = "fallback"
-		}else{
-/* 			console.log(artwork) */
-			artwork = artwork.replace("large","t300x300")
-/* 			console.log(artwork) */
-		}
-		
-		mixpanel.track("manage track loaded",{"artwork source":artwork_src})
-		
-		
-		
-		$('.artwork').css("background-image","url("+artwork+")")
-		
-/* 		console.log(data) */
-/*
-	  for (var key in data){
-		  var track = data[key];
-		  console.log(track.artwork_url)
-		  $('div:.sc-player').append('<a href="'+track.permalink_url+'" class="sc-player"></a>')
-	  }
-*/
-	  
-	});
-</script>
+<!-- Google places for autocomplete -->
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
+<script type="text/javascript" src="/js/artist/manage.js"></script>
 
 
 </body>
