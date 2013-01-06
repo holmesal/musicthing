@@ -6,6 +6,8 @@ from datetime import datetime
 import models
 from collections import defaultdict
 from google.appengine.ext import ndb
+from geo import geohash
+
 class Timer(object):
 	def __init__(self):
 		self.times_dict = {}
@@ -183,33 +185,56 @@ class StationPlayer(object):
 		session['station'] = self
 		session['idx'] = self.idx
 		return session,timer.get_times()
-#		return timer.get_times()
+
+def fetch_city_from_path(country,admin1,city,geo_point):
+	'''
+	Fetches a city from the ndb.
+	Properly creates any missing elements along the key path
+	@param country: e.g. United States
+	@type country: str
+	@param admin1: e.g. MA
+	@type admin1: str
+	@param city: e.g. Boston
+	@type city: str
+	@param geo_point: The cities geopoint as an ndb geopoint property
+	@type geo_point: ndb.GeoPt
 	
-#			if self.city:
-#				# also filter by city
-#				tags_to_keys = {tag:models.Artist.query(
-#										models.Artist.tags_.genre == tag,
-#										models.Artist.city == self.city
-#										).iter(batch_size=50,keys_only=True) \
-#							for tag in self.station_tags}
-#			else:
-#				# do not filter by city
-#				tags_to_keys = {tag:models.Artist.query(models.Artist.tags_.genre == tag
-#										).iter(batch_size=50,keys_only=True) \
-#							for tag in self.station_tags}
-#			# reverse key:val mappings, so tracks become unique and are mapped to lists of their tags
-#			# reduces number of gets required from the datastore
-#			keys_to_tags = defaultdict(list)
-#			for tag,tag_qit in tags_to_keys.iteritems():
-#				# each of the tags is mapped to an iterator for getting artist keys
-#				for key_result in tag_qit:
-#	#				# result: {ndb.Key:['tag','tag','tag']}
-#					keys_to_tags[key_result].append(tag)
-#			# make keys_to_tags static
-#			keys_to_tags.default_factory = None
-#			# fetch datastore entites asynchronously
-#			keys_to_be_fetched = [key for key in keys_to_tags]
-#			track_futures = ndb.get_multi_async(keys_to_be_fetched)
-#			tracks = (t.get_result() for t in track_futures)
-	#		f = lambda x: {'key':x.key,'artist':x,'tags_to_counts':x.tags_dict,'tags_to_ranks':{},'rank':0}
-#			assert False, tracks
+	@return: the city entity specified by the path provided
+	@rtype: models.City
+	'''
+	ghash = geohash.encode(geo_point.lat, geo_point.lon, precision=8)
+	country_entity = models.Country().get_or_insert(country.lower(),
+												name = country)
+	admin1_entity = models.Admin1().get_or_insert(
+						admin1.lower(),
+						parent = country_entity.key,
+						name = admin1)
+	city_entity = models.City().get_or_insert(
+					city.lower(),
+					parent = admin1_entity.key,
+					name = city,
+					ghash = ghash)
+	return city_entity
+
+def fetch_artist_keys_from_city_key(city_key):
+	'''
+	Fetches all artist keys from a city with key: city_key
+	@param city_key: the key of the city entity in question
+	@type city_key: ndb.Key
+	@return: 
+	'''
+	artists = models.Artist.query(
+								models.Artist.city_keys == city_key
+								).iter(
+									batch_size = 50,
+									keys_only = True)
+	return artists
+def fetch_artist_keys_from_ghash(ghash):
+	artists = models.Artist.query(
+					models.Artist.ghash >= ghash,
+					models.Artist.ghash <= ghash+"{"
+					).iter(
+						batch_size = 50,
+						keys_only = True)
+	return artists
+

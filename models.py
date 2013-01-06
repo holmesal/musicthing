@@ -8,15 +8,20 @@ class TagProperty(ndb.Model):
 	'''
 	genre = ndb.StringProperty()
 	count = ndb.FloatProperty()
+
+
 class Artist(ndb.Model):
 	created = ndb.DateProperty(auto_now_add=True)
+	
 	access_token = ndb.StringProperty()
 	username = ndb.StringProperty()
-	image_key = ndb.BlobKeyProperty()
-	external_image_url = ndb.StringProperty()
 	description = ndb.StringProperty()
 	email = ndb.StringProperty()
 	city = ndb.StringProperty()
+	
+	
+	city_keys = ndb.KeyProperty(repeated=True)
+	ghash = ndb.StringProperty()
 	
 	# music data/metadata
 	track_url = ndb.StringProperty()
@@ -32,9 +37,11 @@ class Artist(ndb.Model):
 	youtube_url = ndb.StringProperty()
 	website_url = ndb.StringProperty()
 	other_urls = ndb.StringProperty(repeated=True)
+	soundcloud_url = ndb.StringProperty()
 	
 	# deprecated
-	soundcloud_url = ndb.StringProperty()
+	external_image_url = ndb.StringProperty()
+	image_key = ndb.BlobKeyProperty()
 	genre = ndb.StringProperty() # deprecated
 	
 	@property
@@ -92,3 +99,24 @@ class Station(ndb.Model):
 	def tags_dict(self):
 		return {tag.genre:tag.count for tag in self.tags_}
 		
+
+
+#===============================================================================
+# Location Stuff
+#===============================================================================
+
+class Country(ndb.Model):
+	# need to make sure it is created with a country identifier
+	name = ndb.StringProperty(required = True)
+	name_lower = ndb.ComputedProperty(lambda self: self.name.lower())
+class Admin1(ndb.Model):
+	# this is the state or province
+	name = ndb.StringProperty(required = True)
+	name_lower = ndb.ComputedProperty(lambda self: self.name.lower())
+class City(ndb.Model):
+	ghash = ndb.StringProperty(required = True)
+	name = ndb.StringProperty(required = True)
+	name_lower = ndb.ComputedProperty(lambda self: self.name.lower())
+class GHash(ndb.Model):
+	pass
+
