@@ -18,6 +18,7 @@ class BaseHandler(webapp2.RequestHandler):
 	def say(self,stuff=''):
 		'''For debugging when I am too lazy to type
 		'''
+		self.set_plaintext()
 		self.response.out.write('\n')
 		self.response.out.write(stuff)
 	def get_artist(self,artist_id):
@@ -143,7 +144,7 @@ class UserHandler(BaseHandler):
 			raise self.SessionError(e)
 		except KeyError,e:
 			raise self.SessionError(e)
-	def hash_password(self,pw):
+	def hash_password(self,pw,salt=None):
 		'''
 		Hashes a password using a salt and hashlib
 		http://stackoverflow.com/questions/9594125/salt-and-hash-a-password-in-python
@@ -152,7 +153,8 @@ class UserHandler(BaseHandler):
 		@return: hashed_password (str), salt (str)
 		@rtype: tuple
 		'''
-		salt = uuid.uuid4().hex
+		if salt is not None:
+			salt = uuid.uuid4().hex
 		hashed_password = hashlib.sha512(pw + salt).hexdigest()
 		return hashed_password,salt
 	def log_in(self,uid,tags,serendipity):
@@ -228,9 +230,9 @@ class UserHandler(BaseHandler):
 		# index bookkeeping
 		idx = session['idx']
 		# reset station
-		logging.info('playlist length:'+str(station.sorted_tracks_list.__len__()))
+		logging.info('playlist length:'+str(station.playlist.__len__()))
 		logging.info('beginning idx: '+str(idx))
-		max_idx = station.sorted_tracks_list.__len__() -1
+		max_idx = station.playlist.__len__() -1
 		if idx == max_idx:
 			idx = 0
 		new_idx = idx+n
@@ -240,9 +242,9 @@ class UserHandler(BaseHandler):
 		session['idx'] = new_idx
 		
 		if new_idx > 0:
-			tracks = station.sorted_tracks_list[idx:new_idx]
+			tracks = station.playlist[idx:new_idx]
 		elif new_idx == 0:
-			tracks = station.sorted_tracks_list
+			tracks = station.playlist
 		elif new_idx == -1:
 			tracks = []
 		

@@ -45,6 +45,16 @@ class Artist(ndb.Model):
 	genre = ndb.StringProperty() # deprecated
 	
 	@property
+	def city_strings(self):
+		city_strings = []
+		for city_key in self.city_keys:
+			flat_key = city_key.flat()
+			country = flat_key[1]
+			admin1 = flat_key[3]
+			city = flat_key[5]
+			city_strings('{}, {}, {}'.format(city,admin1,country).title())
+		return city_strings
+	@property
 	def tags_dict(self):
 		return {tag.genre:tag.count for tag in self.tags_}
 	@property
@@ -88,6 +98,33 @@ class User(ndb.Model):
 		@rtype: int
 		'''
 		return self.key.id()
+	@staticmethod
+	@ndb.transactional
+	def add_favorite(user_key,artist_key):
+		'''
+		Adds a favorite track/artist to the user
+		The favorite has the same id as the artist.
+		@param key: reference key to the favorited track/artist
+		@type key: ndb.Key
+		'''
+		f = Favorite.get_or_insert(artist_key.id(), #@UnusedVariable
+				parent = user_key)
+	@staticmethod
+	@ndb.transactional
+	def remove_favorite(user_key,artist_key):
+		'''
+		Deletes a favorited track/artist
+		@param key: key of the track/artist
+		@type key: ndb.Key
+		'''
+		# TODO: make sure the favorite exists?
+		favorite_key = ndb.Key(artist_key.id(),parent = user_key)
+		favorite_key.delete()
+class Favorite(ndb.Model):
+	# Only create these using User.add_favorite
+	# parent must be a user entity
+	artist = ndb.ComputedProperty(lambda self: self.id())
+	
 class Station(ndb.Model):
 	serendipity = ndb.IntegerProperty()
 	tags_ = ndb.StructuredProperty(TagProperty,repeated=True)
@@ -117,6 +154,17 @@ class City(ndb.Model):
 	ghash = ndb.StringProperty(required = True)
 	name = ndb.StringProperty(required = True)
 	name_lower = ndb.ComputedProperty(lambda self: self.name.lower())
+	def to_dict(self):
+		flat_key = self.key.flat()
+		country = flat_key[1]
+		admin1 = flat_key[3]
+		city = flat_key[5]
+		return {
+			'country' : country,
+			'admin1' : admin1,
+			'city' : city,
+			'ghash' : self.ghash
+			}
 class GHash(ndb.Model):
 	pass
 

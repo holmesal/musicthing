@@ -14,6 +14,8 @@ import random
 import soundcloud
 import urllib2
 import webapp2
+from google.appengine.ext import ndb
+import utils
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
@@ -356,6 +358,7 @@ class UploadUrlsHandler(handlers.ArtistHandler):
 			artist = self.get_artist_from_session()
 		except self.SessionError:
 			return self.redirect(ARTIST_LOGIN)
+		
 		# fuck bitches, accumulate urls
 		defined_urls = {
 			'bandcamp_url' : self.request.get('bandcamp_url',None),
@@ -379,10 +382,24 @@ class UploadUrlsHandler(handlers.ArtistHandler):
 		if email is not None:
 			artist.email = email
 		
-		# store the city
-		city = self.request.get('city',None)
-		if city is not None:
-			artist.city = city
+		#=======================================================================
+		# Update city information
+		#=======================================================================
+		
+		
+		city_name = self.request.get('locality')
+		if city_name is not None:
+			admin1 = self.request.get('administrative_area_level_1')
+			country = self.request.get('country')
+			lat = self.request.get('lat')
+			lon = self.request.get('lon')
+			geo_point = ndb.GeoPt('{},{}'.format(lat,lon))
+			
+			city = utils.fetch_city_from_path(country, admin1, city_name, geo_point)
+			assert False, city.strpath
+			artist.city_keys.append(city.key)
+			# store the city
+			artist.city = city_name
 		# store changes
 		artist.put()
 		
@@ -407,10 +424,13 @@ class ViewArtistHandler(handlers.BaseHandler):
 # Development handlers
 #===============================================================================
 class SpoofArtistHandler(handlers.ArtistHandler):
-	def post_(self):
+	def get_all(self):
 		'''
 		Spoof a lot of the data on the server
 		'''
+		if os.environ['SERVER_SOFTWARE'].startswith('Development') == False:
+			self.say('This handler can not be accessed')
+			return
 		self.set_plaintext()
 		remote_url = 'http://pattest.radius-levr.appspot.com/artist/test'
 		data = json.loads(urllib2.urlopen(remote_url).read())
@@ -436,7 +456,7 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 			self.say(f.get_result())
 		self.say('Done!')
 		
-	def get(self):
+	def get_one(self):
 		'''
 		For creating an artist account without soundcloud handshake
 		'''
@@ -450,7 +470,7 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 		self.say('Done!')
 		
 class TestHandler(handlers.ArtistHandler):
-	def post(self):
+	def get_all(self):
 		'''
 		A spoof api call to exist on the server to retrieve artist information
 		for use on the dev server
