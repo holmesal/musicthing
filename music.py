@@ -17,7 +17,8 @@ class MusicHandler(handlers.UserHandler):
 	'''
 	The big main music player. Awwww yeah.
 	'''
-	def get(self):
+	
+	def get_old(self):
 		'''
 		The page for playing music on. Tracks are fetched with an ajax call to another handler
 		'''

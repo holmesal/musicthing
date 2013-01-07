@@ -153,7 +153,7 @@ class UserHandler(BaseHandler):
 		@return: hashed_password (str), salt (str)
 		@rtype: tuple
 		'''
-		if salt is not None:
+		if salt is None:
 			salt = uuid.uuid4().hex
 		hashed_password = hashlib.sha512(pw + salt).hexdigest()
 		return hashed_password,salt

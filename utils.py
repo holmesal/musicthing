@@ -29,32 +29,94 @@ class StationPlayer(object):
 	_all_mode = 'all'
 	available_modes = [_city_mode,_location_mode,_favorites_mode,_all_mode]
 	
-	def __init__(self,station_tags,serendipity,mode,mode_data=None):
+	def __init__(self,mode,mode_data = None,station_tags = None):
 		
-		assert serendipity or serendipity < 0.01, 'serendipity is empty'
-		assert serendipity <= 1., 'serendipity is too large, (0 < serendipity < 1), {}'.format(serendipity)
-		if serendipity < 0.1:
-			serendipity = 0.1
-		self.serendipity = serendipity
+		# assign the station mode
+		self.set_mode(mode,mode_data)
 		
 		# set the station tags
+		self.set_station_tags(station_tags)
+		
+		# init the station track list index variable
+		self.idx = 0
+		
+		# limit the number of tracks that can be played in one station
+		warnings.warn('Max tracks is not set to the production value')
+		self.max_tracks = 10#150
+		
+#		assert serendipity or serendipity < 0.01, 'serendipity is empty'
+#		assert serendipity <= 1., 'serendipity is too large, (0 < serendipity < 1), {}'.format(serendipity)
+#		if serendipity < 0.1:
+#			serendipity = 0.1
+#		self.serendipity = serendipity
+		
+	
+	def artists(self):
+		# fetch all the artist ENTITIES from the tracks list
+		return [t['artist'] for t in self.playlist]
+	def set_mode(self,mode,mode_data):
+		'''
+		Use to set the station mode
+		@param mode: station mode
+		@type mode: str
+		'''
+		assert mode in self.available_modes, 'Station mode not supported, {}'.format(mode)
+		self._mode = mode
+		self.mode_data = mode_data
+	def set_station_tags(self,station_tags = None):
+		'''
+		Updates the stations tags
+		@param station_tags:
+		@type station_tags:
+		'''
+		# this is necessary in the even that an empty dict is passed as station tags
+		if not station_tags:
+			station_tags = None
+		# set the station tags to the station
 		self.station_tags = station_tags
-		logging.info(self.station_tags)
-		if station_tags:
+		
+		# if tags exist, calculate some necessary values for the station calculations
+		if station_tags is not None:
 			keyfunc = lambda x: x[1]
 			# calc the max count for the station tags
 			self.station_max_count = keyfunc(max(station_tags.iteritems(),key=keyfunc))
 			# calc the total count for the station tags
 			self.station_total_count = sum(station_tags.values())
+	@property
+	def mode(self):
+		return self._mode
+	def fetch_artist_keys(self):
+		modes = {
+				self._city_mode : {
+								'func' : fetch_artist_keys_from_city,
+								'params' : ('city',)#(self.mode_data['city'],self.mode_data['radius'])
+								},
+				self._favorites_mode : {
+								'func' : fetch_artist_keys_from_favorites,
+								'params' : ('user_key',)#(self.mode_data['user_key'])
+								},
+				self._location_mode : {
+								'func' : fetch_artist_keys_from_location,
+								'params' : ('ghash',)#(self.mode_data['city'],self.mode_data['radius'])
+								},
+				self._all_mode : {
+								'func' : fetch_all_artist_keys,
+								'params' : None,
+								}
+				}
+		# fetch the function and its params from the dict
+		action = modes[self.mode]
+		func = action['func']
+		param_keys = action['params']
+		try:
+			params = (self.mode_data[p] for p in param_keys)
+		except TypeError:
+			# will catch exception where params is None
+			params = None
+		# fetch the artist keys using the func and params in the modes dict
+		artist_keys = func(*params) if params is not None else func()
 		
-		# assign the station mode
-		self.set_mode(mode,mode_data)
-		
-		# init the station track list index variable
-		self.idx = 0
-		# limit the number of tracks that can be played in one station
-		self.max_tracks = 10#150
-		
+		return artist_keys
 	def calc_tag_rank(self,track_count,station_count):
 		'''
 		Compares the tag counts for station tags and track tags.
@@ -80,65 +142,6 @@ class StationPlayer(object):
 		'''
 		track_total_rank = sum(tags_to_rank.values())
 		return float(track_total_rank)/float(self.station_total_count)*100
-	def artists(self):
-		# fetch all the artist ENTITIES from the tracks list
-		return [t['artist'] for t in self.playlist]
-	def playlist_json_friendly(self):
-		to_return = []
-		for track in self.playlist:
-			to_return.append({
-				'key' : track['key'],
-				'rank' : track['rank']
-				})
-	def set_mode(self,mode,mode_data):
-		'''
-		Use to set the station mode
-		@param mode: station mode
-		@type mode: str
-		'''
-		assert mode in self.available_modes, 'Station mode not supported, {}'.format(mode)
-		logging.info(mode)
-		logging.info(mode_data)
-		self._mode = mode
-		self.mode_data = mode_data
-		
-	@property
-	def mode(self):
-		return self._mode
-	def fetch_artist_keys(self):
-		modes = {
-				self._city_mode : {
-								'func' : fetch_artist_keys_from_city,
-								'params' : ('city','radius')#(self.mode_data['city'],self.mode_data['radius'])
-								},
-				self._favorites_mode : {
-								'func' : fetch_favorite_artist_keys,
-								'params' : ('user_key')#(self.mode_data['user_key'])
-								},
-				self._location_mode : {
-								'func' : fetch_artist_keys_from_ghash,
-								'params' : ('city','radius')#(self.mode_data['city'],self.mode_data['radius'])
-								},
-				self._all_mode : {
-								'func' : fetch_all_artist_keys,
-								'params' : None,
-								}
-				}
-		# fetch the function and its params from the dict
-		action = modes[self.mode]
-		func = action['func']
-		param_keys = action['params']
-		try:
-			params = (self.mode_data[p] for p in param_keys)
-		except TypeError,e:
-			raise TypeError(e)
-		# get the attribute from self specified in the modes dict
-#		params = getattr(self,param_attr) if param_attr is not None else None
-		
-		# fetch the artist keys using the func and params in the modes dict
-		artist_keys = func(*params) if params is not None else func()
-		
-		return artist_keys
 	@staticmethod
 	def convert_artist_to_track(artist):
 		return {
@@ -164,9 +167,9 @@ class StationPlayer(object):
 		# fetch the applicable artist keys
 		artist_keys = self.fetch_artist_keys()
 		# TODO: filter out tacks that should not be played
+		time('b fetch_keys')
 		
-		time('b_fetch_keys')
-		if not self.station_tags:
+		if self.station_tags is None:
 			logging.info('empty station')
 			artist_keys = [k for k in artist_keys]
 			# Try to fetch a sample of artists from the list of available artists
@@ -185,21 +188,21 @@ class StationPlayer(object):
 			tracks_list = [self.convert_artist_to_track(a) for a in artists]
 			# set tracks to station
 			self.playlist = tracks_list
-			time('n_clip_track_length')
+			time('n clip_track_length')
 		else:
 			logging.info('not empty station')
 			# create artist future objects
 			artist_futures = ndb.get_multi_async(artist_keys)
-			time('c_get_futures')
+			time('c get futures')
 			# create generator for getting artist results
 			tracks = (f.get_result() for f in artist_futures)
-			time('d_get_results')
+			time('d get results')
 			# convert tracks to station form
 			tracks_list = (self.convert_artist_to_track(t) for t in tracks)
-			time('e_parse_artist to track')
+			time('e parse artist to track')
 			# Rank the tracks based on their tags
 			tracks_list = [self.rank_track(track) for track in tracks_list]
-			time('m_rank_tracks')
+			time('m rank tracks')
 			# add entropy
 			
 			
@@ -233,6 +236,8 @@ class StationPlayer(object):
 		track['rank'] = self.calc_total_rank(track['tags_to_ranks'])
 		return track
 	def add_entropy(self,tracks_list,time):
+		self.serendipity = 0.2
+		warnings.warn('serendipity is hardcoded to 0.2')
 		keyfunc = lambda x: x['rank']
 		max_rank = keyfunc(max(tracks_list,key=keyfunc))
 		time('n_calc_max_rank')
@@ -306,13 +311,12 @@ def fetch_city_from_path(country,admin1,city_name,geo_point):
 					name = city_name,
 					ghash = ghash)
 	return city_entity
-def fetch_favorite_artist_keys(user_key):
+def fetch_artist_keys_from_favorites(user_key):
 	'''
 	Fetches the keys of all artists that the user has favorited
 	@param user_key:
 	@type user_key:
 	'''
-	assert False, user_key
 	# fetch all the keys for the Favorite entities that relate user --> artist
 	favorite_keys = models.Favorite.query(ancestor = user_key).iter(batch_size = 50,keys_only = True)
 	# favorite ids are the same as the artist ids - collect the ids from the favorite keys
@@ -328,77 +332,51 @@ def fetch_all_artist_keys():
 	'''
 	artist_keys = models.Artist.query().iter(batch_size=50,keys_only=True)
 	return artist_keys
-def fetch_artist_keys_from_city(city,radius):
-	precision = 4
-	ghash = city.ghash[:4]
-	ghash_list = expand_ghash_list(ghash, n=3)
-	artist_keys = fetch_artist_keys_from_ghash_list(ghash_list)
-	return artist_keys
-def fetch_artist_keys_from_ghash_list(ghash_list):
-	ghash_list = set(ghash_list)
-	artist_keys = set([])
-	for ghash in ghash_list:
-		keys = models.Artist.query(
-						models.Artist.ghash >= ghash,
-						models.Artist.ghash <= ghash+"{"
-						).iter(
-							batch_size = 50,
-							keys_only = True)
-		artist_keys.update(keys)
-	return artist_keys
-def fetch_artist_keys_from_city_key(city_key):
-	'''
-	Fetches all artist keys from a city with key: city_key
-	@param city_key: the key of the city entity in question
-	@type city_key: ndb.Key
-	@return: An iterable that returns all artist keys
-	@rtype: ndb.QueryIterator 
-	'''
-	artists = models.Artist.query(
-								models.Artist.city_keys == city_key
-								).iter(
-									batch_size = 50,
-									keys_only = True)
-	return artists
-def fetch_city_keys_from_ghash_list(ghash_list):
-	'''
+def fetch_artist_keys_from_city(city):
 	'''
 	
-	
-def fetch_artist_keys_from_ghash(ghash,n):
+	@param city:
+	@type city:
+	@param radius:
+	@type radius:
 	'''
-	Fetches all artists in a given ghash. The ghash can be of any length
+	return fetch_artist_keys_from_location(city.ghash)
+#	ghash = chop_ghash(city.ghash)
+#	ghash_list = create_ghash_list(ghash)
+#	artist_keys = fetch_artist_keys_from_ghash_list(ghash_list)
+#	return artist_keys
+def fetch_artist_keys_from_location(ghash):
+	'''
 	@param ghash: unicode ghash string of any length
 	@type ghash: str
 	@return: An iterable that returns all artist keys
 	@rtype: ndb.QueryIterator
 	'''
-	assert False, ghash
-	artist_keys = models.Artist.query(
-					models.Artist.ghash >= ghash,
-					models.Artist.ghash <= ghash+"{"
-					).iter(
-						batch_size = 50,
-						keys_only = True)
+	ghash = chop_ghash(ghash)
+	ghash_list = create_ghash_list(ghash)
+	artist_keys = fetch_artist_keys_from_ghash_list(ghash_list)
 	return artist_keys
 
-def expand_ghash_list(ghash_list,n):
-	'''
-	Expands self.ghash n times
-	@param n: number of expansions
-	@type n: int
-	'''
-	if isinstance(ghash_list,basestring):
-		ghash_list = [ghash_list,]
+def fetch_artist_keys_from_ghash_list(ghash_list):
 	ghash_list = set(ghash_list)
-	for _ in range(0,n):
-		# expand each ghash, and remove duplicates to expand a ring
-		new_ghashes = set([])
-		for ghash in ghash_list:
-			new_ghashes.update(geohash.expand(ghash))
-		# add new hashes to master list
-		ghash_list.update(new_ghashes)
-	return ghash_list
+	artist_keys = set([])
+	for ghash in ghash_list:
+		keys = models.Artist.query(
+						models.Artist.cities.ghash >= ghash,
+						models.Artist.cities.ghash <= ghash+"{"
+						).iter(
+							batch_size = 50,
+							keys_only = True)
+		artist_keys.update(keys)
+	return artist_keys
+def chop_ghash(ghash,precision=4):
+	'''
+	Returns only the number of chars specified by precision
+	'''
+	return ghash[:precision]
+	
+
+	
 def create_ghash_list(ghash,n=3):
 	'''
 	Creates a list of ghashes from the provided geo_point
@@ -412,11 +390,28 @@ def create_ghash_list(ghash,n=3):
 	@return: A unique list of ghashes
 	@rtype: list
 	'''
-	ghash_list = [ghash]
+	ghash_list = set([ghash])
 	
 	# determine number of iterations based on the precision
-	ghash_list = expand_ghash_list(ghash_list, n)
+	for _ in range(0,n):
+		# expand each ghash, and remove duplicates to expand a ring
+		new_ghashes = set([])
+		for ghash in ghash_list:
+			new_ghashes.update(geohash.expand(ghash))
+		# add new hashes to master list
+		ghash_list.update(new_ghashes)
 	return ghash_list
+
+def filter_artists_by_radius(center_GeoPt,radius):
+	'''
+	
+	@param center_GeoPt:
+	@type center_GeoPt:
+	@param radius:
+	@type radius:
+	'''
+	
+	
 
 def calc_bounding_box(ghash_list):
 	'''
