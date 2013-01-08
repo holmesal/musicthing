@@ -131,41 +131,45 @@ class User(ndb.Model):
 	email = ndb.StringProperty()
 	pw = ndb.StringProperty()
 	salt = ndb.StringProperty() # salt for the pw hash
-	@property
-	def intkey(self):
-		'''Returns the integer id from the users key
-		@return: the users numeric id
-		@rtype: int
-		'''
-		return self.key.id()
 	@ndb.transactional
-	def add_favorite(self,artist_key):
+	def add_interaction(self,model,artist_key):
 		'''
-		Adds a favorite track/artist to the user
-		The favorite has the same id as the artist.
-		@param key: reference key to the favorited track/artist
-		@type key: ndb.Key
+		Creates a link between the user (self) and an artist.
+		Does nothing if the interaction already exists
+		@param model: The type of interaction being created
+		@type model: Favorite or Follow or NeverPlay
+		@param artist_key: The key of the artist to be interacted with
+		@type artist_key: ndb.Key
 		'''
-		existing_favorite = Favorite.get_by_id(artist_key.id(), parent = self.key)
-		if existing_favorite is None:
-			Favorite(id = artist_key.id(), parent = self.key, artist_key = artist_key).put()
-#		f = Favorite.get_or_insert(artist_key.id(),parent = self.key, artist_key = artist_key)
+		existing_enitity = model.get_by_id(artist_key.id(),parent=self.key)
+		if existing_enitity is None:
+			model(id=artist_key.id(),parent=self.key,artist_key=artist_key).put()
 	@ndb.transactional
-	def remove_favorite(self,artist_key):
+	def remove_interaction(self,model,artist_key):
 		'''
-		Deletes a favorited track/artist
-		@param key: key of the track/artist
-		@type key: ndb.Key
+		Removes an interaction created by self.add_interaction
+		Does nothing if the interaction doesn't exist
+		@param model: The model of the interaction being deleted
+		@type model: Favorite or Follow or NeverPlay
+		@param artist_key: The key of the artist in question
+		@type artist_key: ndb.Key
 		'''
-		# TODO: make sure the favorite exists?
-		favorite_key = ndb.Key(Favorite,artist_key.id(),parent = self.key)
-		
-		favorite_key.delete()
+		key = ndb.Key(model,artist_key.id(),parent=self.key)
+		key.delete()
+
 class Favorite(ndb.Model):
-	# Only create these using User.add_favorite
-	# parent must be a user entity
-	artist_key = ndb.KeyProperty(required = True)
-	created = ndb.DateTimeProperty(auto_now_add = True)
+	# interaction
+	artist_key = ndb.KeyProperty(required=True)
+	created = ndb.DateTimeProperty(auto_now_add=True)
+class Follow(ndb.Model):
+	# interaction
+	artist_key = ndb.KeyProperty(required=True)
+	created = ndb.DateTimeProperty(auto_now_add=True)
+class NeverPlay(ndb.Model):
+	# interaction
+	artist_key = ndb.KeyProperty(required=True)
+	create = ndb.DateTimeProperty(auto_now_add=True)
+
 class Station(ndb.Model):
 	serendipity = ndb.IntegerProperty()
 	tags_ = ndb.StructuredProperty(TagProperty,repeated=True)

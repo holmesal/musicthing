@@ -1,17 +1,11 @@
-from collections import defaultdict
-from datetime import datetime as dt
-from gaesessions import get_current_session
-from google.appengine.ext import ndb
+from geo import geohash
 import handlers
 import jinja2
 import json
 import logging
-import models
 import os
-import random
 import utils
 import webapp2
-from geo import geohash
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 class MusicHandler(handlers.UserHandler):
@@ -131,34 +125,12 @@ class UpdateStationHandler(handlers.UserHandler):
 		# set the station to session to be passed on to /music
 		session = station.add_to_session()
 		return self.redirect('/music')
-class FavoriteArtistHandler(handlers.UserHandler):
-	def post(self):
-		'''User favorites an artist
-		'''
-		artist_id = self.request.get('artist_id')
-		
-class UnFavoriteArtistHandler(handlers.UserHandler):
-	def post(self):
-		'''User unfavorites an artist
-		'''
-class FollowArtistHandler(handlers.UserHandler):
-	def post(self):
-		'''User follows an artist
-		'''
-class UnFollowArtistHandler(handlers.UserHandler):
-	def post(self):
-		'''User stops following an artist
-		'''
-class NeverPlayAgainHandler(handlers.UserHandler):
-	def post(self):
-		'''User has decided that they never want to hear the track again
-		'''
-		
+
 app = webapp2.WSGIApplication([
 							('/music', MusicHandler),
 							('/music/gettracks',GetTracksHandler),
 							('/music/updateStation',UpdateStationHandler),
-							('/music/initialize',InitializeStationHandler)
+							('/music/initialize',InitializeStationHandler),
 							])
 
 

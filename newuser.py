@@ -106,7 +106,7 @@ class NewUserHandler(handlers.UserHandler):
 						pw = pw,
 						salt = salt,
 						)
-				self.log_in(user.intkey, tags, serendipity)
+				self.log_in(user.key.id(), tags, serendipity)
 				self.save_station_meta(user.key, tags, serendipity)
 				user.put()
 			
@@ -132,8 +132,3 @@ class NewUserHandler(handlers.UserHandler):
 			
 			
 app = webapp2.WSGIApplication([('/new',NewUserHandler)])
-
-
-
-
-	

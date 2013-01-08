@@ -39,13 +39,16 @@ class BaseHandler(webapp2.RequestHandler):
 		@rtype: models.Artist
 		'''
 		try:
-			artist_id = str(artist_id)
+#			artist_id = str(artist_id)
+			artist_id = int(artist_id)
 			logging.info(artist_id)
 			artist = models.Artist.get_by_id(artist_id)
 			assert artist, 'Artist does not exist'
-			return artist
 		except AssertionError,e:
 			raise self.SessionError(e)
+		else:
+			return artist
+			
 	def get_user_by_id(self,user_id):
 		'''
 		Fetches a user by their id, not to be confused with key.
