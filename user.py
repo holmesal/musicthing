@@ -4,6 +4,23 @@ import logging
 import models
 import webapp2
 
+class LoginHandler(handlers.UserHandler):
+	def post(self):
+		'''
+		User is logging in
+		'''
+		self.say('Log in is just a stub right now!')
+#		return self.redirect('/music')
+class LogoutHandler(handlers.UserHandler):
+	def get(self):
+		'''
+		User is logging out
+		'''
+		# destroy session
+		self.log_out()
+		# redirect to home page
+		return self.redirect('/')
+		
 class FavoriteArtistHandler(handlers.UserHandler):
 	def post(self):
 		'''User favorites an artist
@@ -103,6 +120,8 @@ class NeverPlayAgainHandler(handlers.UserHandler):
 			self.response.out.write(json.dumps({'status':200,'message':'OK'}))
 
 app = webapp2.WSGIApplication([
+							('/user/login',),
+							('/user/logout',),
 							('/user/favorite',FavoriteArtistHandler),
 							('/user/unfavorite',UnFavoriteArtistHandler),
 							('/user/follow',FollowArtistHandler),
