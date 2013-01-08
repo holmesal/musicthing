@@ -23,19 +23,18 @@ class Timer(object):
 		times_dict.update({'_total':str(datetime.now()-self.init_time)})
 		return times_dict
 class StationPlayer(object):
-	_city_mode = 'city'
-	_location_mode = 'location'
-	_favorites_mode = 'favorites'
-	_all_mode = 'all'
+	_city_mode = 'city_mode'
+	_location_mode = 'location_mode'
+	_favorites_mode = 'favorites_mode'
+	_all_mode = 'all_mode'
 	available_modes = [_city_mode,_location_mode,_favorites_mode,_all_mode]
 	
-	def __init__(self,mode,mode_data = None,station_tags = None):
-		
+	def __init__(self,mode,mode_data = None,station_tags = None, client_tags = None):
 		# assign the station mode
 		self.set_mode(mode,mode_data)
 		
 		# set the station tags
-		self.set_station_tags(station_tags)
+		self.set_station_tags(station_tags,client_tags)
 		
 		# init the station track list index variable
 		self.idx = 0
@@ -43,27 +42,50 @@ class StationPlayer(object):
 		# limit the number of tracks that can be played in one station
 		warnings.warn('Max tracks is not set to the production value')
 		self.max_tracks = 10#150
-		
-#		assert serendipity or serendipity < 0.01, 'serendipity is empty'
-#		assert serendipity <= 1., 'serendipity is too large, (0 < serendipity < 1), {}'.format(serendipity)
-#		if serendipity < 0.1:
-#			serendipity = 0.1
-#		self.serendipity = serendipity
-		
-	
-	def artists(self):
-		# fetch all the artist ENTITIES from the tracks list
-		return [t['artist'] for t in self.playlist]
+	@property
+	def city(self):
+		return self.mode_data['city']
+	@property
+	def ghash(self):
+		return self.mode_data['ghash']
+	@property
+	def geo_point(self):
+		ghash = self.mode_data['ghash']
+		geo_point = geohash.decode(ghash)
+		return {
+			'lat' : geo_point[0],
+			'lon' : geo_point[1]
+			}
+	@property
+	def user_key(self):
+		return self.mode_data['user_key']
+	@property
+	def mode(self):
+		return self._mode
 	def set_mode(self,mode,mode_data):
 		'''
 		Use to set the station mode
 		@param mode: station mode
 		@type mode: str
 		'''
+		# assure mode is supported
 		assert mode in self.available_modes, 'Station mode not supported, {}'.format(mode)
+		
+		# set mode
 		self._mode = mode
+		
+		# mode_data must be a dict
+		if mode_data is None:
+			mode_data = {}
+		
+		# mode_data must have keys for all possible keys for client communication
+		mode_data_keys = ['city','user_key','ghash',]
+		for key in mode_data_keys:
+			if key not in mode_data:
+				mode_data[key] = None
+		# assign mode data
 		self.mode_data = mode_data
-	def set_station_tags(self,station_tags = None):
+	def set_station_tags(self,station_tags = None,client_tags = None):
 		'''
 		Updates the stations tags
 		@param station_tags:
@@ -72,19 +94,22 @@ class StationPlayer(object):
 		# this is necessary in the even that an empty dict is passed as station tags
 		if not station_tags:
 			station_tags = None
+		
+		# make sure that if tags are passed, the original form is preserved
+		if station_tags is not None:
+			assert client_tags is not None, 'If passing tags, must also pass in client form.'
+		
 		# set the station tags to the station
 		self.station_tags = station_tags
+		self.client_tags = client_tags
 		
 		# if tags exist, calculate some necessary values for the station calculations
 		if station_tags is not None:
-			keyfunc = lambda x: x[1]
 			# calc the max count for the station tags
+			keyfunc = lambda x: x[1]
 			self.station_max_count = keyfunc(max(station_tags.iteritems(),key=keyfunc))
 			# calc the total count for the station tags
 			self.station_total_count = sum(station_tags.values())
-	@property
-	def mode(self):
-		return self._mode
 	def fetch_artist_keys(self):
 		modes = {
 				self._city_mode : {
@@ -151,6 +176,45 @@ class StationPlayer(object):
 				'tags_to_ranks' : {},
 				'rank' : 0
 				}
+	def fetch_next_n_tracks(self,n):
+		'''
+		
+		@param n:
+		@type n:
+		@return: self
+		@rtype: self
+		'''
+		idx = self.idx
+		logging.info('playlist length:'+str(self.playlist.__len__()))
+		logging.info('beginning idx: '+str(idx))
+		# calc maximum possible index
+		max_idx = self.playlist.__len__() -1
+		# reset the playlist if all tracks have been played
+		if idx == max_idx:
+			idx = 0
+		
+		# calc the posterior index
+		new_idx = idx+n
+		# limit the posterior index to the length of the playlist
+		if new_idx > max_idx:
+			new_idx = max_idx
+		logging.info('new_index: '+str(new_idx))
+		# set the posterior index to the next iterations anterior index
+		self.idx = new_idx
+		
+		# normal case, where playlist is at least two elements long
+		if new_idx > 0:
+			tracks = self.playlist[idx:new_idx]
+		# special cases
+		# playlist is one element long
+		elif new_idx == 0:
+			tracks = self.playlist
+		# playlist is empty
+		elif new_idx == -1:
+			tracks = []
+		
+		return tracks
+		
 	def create_station(self):
 		'''
 		Creates a station using the station meta properties.
@@ -170,8 +234,9 @@ class StationPlayer(object):
 		time('b fetch_keys')
 		
 		if self.station_tags is None:
-			logging.info('empty station')
-			artist_keys = [k for k in artist_keys]
+			logging.info('Station does not have tags')
+			# artist keys cannot be a generator object
+			artist_keys = list(artist_keys)
 			# Try to fetch a sample of artists from the list of available artists
 			try:
 				artist_keys = random.sample(artist_keys,self.max_tracks)
@@ -190,7 +255,7 @@ class StationPlayer(object):
 			self.playlist = tracks_list
 			time('n clip_track_length')
 		else:
-			logging.info('not empty station')
+			logging.info('Station has tags')
 			# create artist future objects
 			artist_futures = ndb.get_multi_async(artist_keys)
 			time('c get futures')
@@ -203,23 +268,20 @@ class StationPlayer(object):
 			# Rank the tracks based on their tags
 			tracks_list = [self.rank_track(track) for track in tracks_list]
 			time('m rank tracks')
-			# add entropy
-			
-			
 			
 			### DEV
-			warnings.warn('Playlist is not affected by serendipity')
+			warnings.warn('Playlist is not affected by entropy')
 			self.playlist = sorted(tracks_list,key=lambda x: x['rank'],reverse=True)
+			# add entropy
 #			self.playlist = self.add_entropy(tracks_list, time)
 			###
+		return timer.get_times()
 #		logging.info(', '.join([str(t['rank']) for t in self.playlist]))
-		#=======================================================================
-		# add station to current session
-		#=======================================================================
-		session = get_current_session()
+	def add_to_session(self,session = None):
+		if session is None:
+			session = get_current_session()
 		session['station'] = self
-		session['idx'] = self.idx
-		return session,timer.get_times()
+		return session
 	def rank_track(self,track):
 		for station_tag,station_count in self.station_tags.iteritems(): # for each tag in the station
 			try:

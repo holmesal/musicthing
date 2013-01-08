@@ -11,42 +11,39 @@ import os
 import random
 import utils
 import webapp2
+from geo import geohash
 
-
+jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 class MusicHandler(handlers.UserHandler):
 	'''
-	The big main music player. Awwww yeah.
+	The big main music player.
 	'''
-	
-	def get_old(self):
+	def get(self):
 		'''
-		The page for playing music on. Tracks are fetched with an ajax call to another handler
+		The music page. Station is created in ajax.
 		'''
-#		self.set_plaintext()
-		station_tags,serendipity,city = self.get_station_meta_from_session()
+		# fetch the user from the session
+		user_key = self.get_user_key_from_session()
 		
-		# format the tags for the client
-		tags = [{'name':t,'count':c} for t,c in station_tags.iteritems()]
-		tags = sorted(tags,key=lambda x: x['count'],reverse=True)
+		# fetch the station from the session
+		try:
+			station = self.get_station_from_session()
+		except self.SessionError:
+			# if there is no station in the session, create a new one with defaults.
+			station = utils.StationPlayer(utils.StationPlayer._all_mode,{'user_key':user_key},None,None)
 		
+		# add the station to the session
+		station.add_to_session()
+		
+		# grab the city if there is one
 		template_values = {
-			'city' : city,
-			'tags' : tags,
-			'serendipity' : int(serendipity*utils.StationPlayer.max_serendipity),
-			'cities' : ['Boston']
-		}
-#		self.say(template_values)
-		jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
+						'mode' : station.mode,
+						'city' : station.city,
+						'tags' : station.client_tags,
+						'geo_point' : station.geo_point
+						}
 		template = jinja_environment.get_template('templates/music.html')
 		self.response.out.write(template.render(template_values))
-		
-	def post(self):
-		'''
-		This handler takes care of updating user preferences that are available on the player page
-		There's nothing here yet
-		'''
-		
-		pass
 class InitializeStationHandler(handlers.UserHandler):
 	def get(self):
 		'''
@@ -55,31 +52,45 @@ class InitializeStationHandler(handlers.UserHandler):
 		'''
 		timer = utils.Timer()
 		time = timer.time
-		
-		station_tags,serendipity,city = self.get_station_meta_from_session()
-		time('b_get_station_meta')
+		try:
+			# grab the existing station
+			station = self.get_station_from_session()
+		except:
+			# default station
+			user_key = self.get_user_key_from_session()
+			station = utils.StationPlayer(utils.StationPlayer._all_mode,{'user_key':user_key},None,None)
+		time('get or create station')
 		
 		# create the station!!
-		station = utils.StationPlayer(station_tags,serendipity,city)
-		session,algo_times = station.create_station()
+		algo_times = station.create_station()
+		# add the station to the session
+		time('create_station')
 		
-		time('d_create_station')
 		# pull the first 10 tracks
-		artists = self.fetch_next_n_artists(10,session)
+		tracks = station.fetch_next_n_tracks(10)
+		time('fetch tracks')
+		artists = [t['artist'] for t in tracks]
 		packaged_artists = self.package_artist_multi(artists)
 		
-		time('e_package_artists')
+		time('package_artists')
 		global_times = timer.get_times()
 		
 		logging.info('{} tracks in the playlist'.format(station.playlist.__len__()))
 		logging.info(json.dumps({'global':global_times,'algo':algo_times}))
+		
+		# return with the packaged artist list
 		self.response.out.write(json.dumps(packaged_artists))
 class GetTracksHandler(handlers.UserHandler):
 	def get(self):
 		'''
 		For an ajax call to get the next n tracks
 		'''
-		artists = self.fetch_next_n_artists(10)
+		try:
+			station = self.get_station_from_session()
+		except self.SessionError:
+			return self.response.out.write(json.dumps({'status':204}))
+		tracks = station.fetch_next_n_tracks(10)
+		artists = [t['artist'] for t in tracks]
 		packaged_artists = self.package_artist_multi(artists)
 		self.response.out.write(json.dumps(packaged_artists))
 class UpdateStationHandler(handlers.UserHandler):
@@ -87,38 +98,66 @@ class UpdateStationHandler(handlers.UserHandler):
 		'''
 		Updates the station playlist with new variables
 		'''
-		max_serendipity = utils.StationPlayer.max_serendipity
-		serendipity = self.request.get("serendipity",2)
-		serendipity = float(serendipity)/max_serendipity
+		# grab station variables from the client
+		mode = self.request.get('mode')
+		city = self.request.get('city')
+		lat = self.request.get('lat')
+		lon = self.request.get('lon')
 		try:
-			raw_tags = json.loads(self.request.get("tags","{}")) #NOTE - this currently crashes if tags is empty
-			tags = self.parse_tags(raw_tags)
+			ghash = geohash.encode(lat,lon)
+		except Exception:
+			ghash = None
+		user_key = self.get_user_key_from_session()
+		# create mode_data from station variables
+		mode_data = {
+					'user_key' : user_key,
+					'city' : city,
+					'ghash' : ghash,
+					}
+		
+		# convert the client_tags to station_tags
+		try:
+			client_tags = json.loads(self.request.get("tags","{}")) #NOTE - this currently crashes if tags is empty
+			station_tags = self.convert_client_tags_to_tags_dict(client_tags)
 		except:
-			tags = {}
+			client_tags = None
+			station_tags = None
 			logging.info('empty tags')
-#			logging.error('tags are not being handled correctly when not passed in post')
-		# Clean tags
-		# preferences are only stored in the session
-		self.add_station_meta_to_session(tags,serendipity)
+		
+		# create the station
+		station = utils.StationPlayer(mode,mode_data,station_tags,client_tags)
+		algo_times = station.create_station()
+		logging.info(algo_times)
+		# set the station to session to be passed on to /music
+		session = station.add_to_session()
 		return self.redirect('/music')
-	
-class UpdateCityHandler(handlers.UserHandler):
-	def get(self):
+class FavoriteArtistHandler(handlers.UserHandler):
+	def post(self):
+		'''User favorites an artist
 		'''
-		Updates the station playlist with a new city
+		artist_id = self.request.get('artist_id')
+		
+class UnFavoriteArtistHandler(handlers.UserHandler):
+	def post(self):
+		'''User unfavorites an artist
 		'''
-		city = self.request.get('city',None)
-		session = get_current_session()
-		if city.lower() == 'none' or city.lower() == 'all':
-			city = None
-		session['city'] = city
-		return self.redirect('/music')
-
+class FollowArtistHandler(handlers.UserHandler):
+	def post(self):
+		'''User follows an artist
+		'''
+class UnFollowArtistHandler(handlers.UserHandler):
+	def post(self):
+		'''User stops following an artist
+		'''
+class NeverPlayAgainHandler(handlers.UserHandler):
+	def post(self):
+		'''User has decided that they never want to hear the track again
+		'''
+		
 app = webapp2.WSGIApplication([
 							('/music', MusicHandler),
 							('/music/gettracks',GetTracksHandler),
 							('/music/updateStation',UpdateStationHandler),
-							('/music/updateCity',UpdateCityHandler),
 							('/music/initialize',InitializeStationHandler)
 							])
 

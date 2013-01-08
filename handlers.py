@@ -13,15 +13,20 @@ from collections import Counter
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
 class BaseHandler(webapp2.RequestHandler):
-	def set_plaintext(self):
-		self.response.headers['Content-Type'] = 'text/plain'
+	class SessionError(Exception):
+		'''Session is invalid'''
 	def say(self,stuff=''):
 		'''For debugging when I am too lazy to type
 		'''
-		self.set_plaintext()
+		self.response.headers['Content-Type'] = 'text/plain'
 		self.response.out.write('\n')
 		self.response.out.write(stuff)
-	def get_artist(self,artist_id):
+	def log_out(self):
+		'''Terminates the session
+		'''
+		session = get_current_session()
+		session.terminate()
+	def get_artist_by_id(self,artist_id):
 		'''
 		Fetches an artist from the ndb.
 		@raise SessionError: 
@@ -42,43 +47,75 @@ class BaseHandler(webapp2.RequestHandler):
 		except AssertionError,e:
 			raise self.SessionError(e)
 	def get_user_by_id(self,user_id):
+		'''
+		Fetches a user by their id, not to be confused with key.
+		@param user_id: the users id
+		@type user_id: int
+		@return: the user referenced by the id
+		@rtype: models.User
+		'''
 		try:
 			user_id = long(user_id)
 			user = models.User.get_by_id(user_id)
 			assert user, 'User does not exist'
-			return user
 		except AssertionError,e:
 			raise self.SessionError(e)
+		else:
+			return user
+			
 	def complete_rpc(self,rpc):
+		'''
+		Completes an rpc call for an asynchronous mixpanel event log.
+		@param rpc: the mixpanel url fetch rpc
+		@type rpc: ??rpc??
+		'''
 		try:
 			mp_result = rpc.get_result()
 			assert mp_result.content == '1', \
 				'mixpanel rpc failed'
 		except Exception,e:
 			logging.error(e)
-	class SessionError(Exception):
-		'''Session is invalid'''
-	def parse_tags(self,raw_tags):
+	def convert_client_tags_to_tags_dict(self,raw_tags):
+		'''
+		Converts a list of objects in form 
+			[{
+				'artist':'Radiohead',
+				'tags':[
+					{'name':'rock','count':100},
+					]
+			},]
+		@param raw_tags: list of lastfm tag objects
+		@type raw_tags: list
+		@return: dict mapping of {tag:count,}
+		@rtype: dict
+		'''
 		# combine duplicates
 		tags = defaultdict(int)
-		for item in raw_tags:
-			tag = item['name']
-			count = int(item['count'])
-			tags[tag] += count
+		for group in raw_tags:
+			for item in group['tags']:
+				tag = item['name']
+				count = int(item['count'])
+				tags[tag] += count
 		# make tags static
 		tags.default_factory = None
 		# calc max count for all the tags
 		max_count = max([tags[tag] for tag in tags])
 		# update the tags dict
 		tags = {key:int(float(count)/float(max_count)*100) for key,count in tags.iteritems()}
-		
 		return tags
-	def prep_tags_for_datastore(self,parsed_tags):
+	def prep_tags_for_datastore(self,tag_to_count_mapping):
+		'''
+		Converts a dict of tags:count to a list of TagProperties
+		@param parsed_tags: dict mapping {tag:count,}
+		@type parsed_tags: dict
+		@return: a list of models.TagProperty objects
+		@rtype: list
+		'''
 		return [models.TagProperty(
 									genre = tag,
 									count = count
 									)
-					for tag,count in parsed_tags.iteritems() if count > 0
+					for tag,count in tag_to_count_mapping.iteritems() if count > 0
 					]
 	
 class ArtistHandler(BaseHandler):
@@ -92,18 +129,6 @@ class ArtistHandler(BaseHandler):
 		session = get_current_session()
 		session['logged_in'] = True
 		session['artist_id'] = str(artist_id)
-	def log_out(self):
-		'''
-		Changes the session to a logged out status, setting logged_in to false,
-		and deleting other session variables
-		'''
-		session = get_current_session()
-		session.terminate()
-#		session['logged_in'] = False
-#		try:
-#			del session['artist_id']
-#		except Exception,e:
-#			logging.error(e)
 	def get_artist_from_session(self):
 		'''
 		Assures that the artist is logged in
@@ -139,11 +164,12 @@ class UserHandler(BaseHandler):
 			user_id = session['id']
 			user = models.User.get_by_id(user_id)
 			assert user, 'User does not exist'
-			return user
 		except AssertionError,e:
 			raise self.SessionError(e)
 		except KeyError,e:
 			raise self.SessionError(e)
+		else:
+			return user
 	def hash_password(self,pw,salt=None):
 		'''
 		Hashes a password using a salt and hashlib
@@ -157,57 +183,56 @@ class UserHandler(BaseHandler):
 			salt = uuid.uuid4().hex
 		hashed_password = hashlib.sha512(pw + salt).hexdigest()
 		return hashed_password,salt
-	def log_in(self,uid,tags,serendipity):
+	def log_in(self,uid):
 		session = get_current_session()
 		session['logged_in'] = True
 		session['id'] = uid
-		session['tags'] = tags
-		session['serendipity'] = serendipity
-	def add_station_meta_to_session(self,tags=None,serendipity=None,city=None):
-		session = get_current_session()
-		if tags is not None:
-			session['tags'] = tags
-		if serendipity is not None:
-			session['serendipity'] = serendipity
-		if city is not None:
-			session['city'] = city
-	def get_station_meta_from_session(self):
-		session = get_current_session()
-		tags = session.get('tags',{})
-		serendipity = session.get('serendipity',.4)
-		city = session.get('city',None)
-		return tags, serendipity, city
+#	def set_station_meta_to_station(self,mode,mode_data,station_tags=None,client_tags=None):
+#		# assure the original artist --> tags:counts mappings are preserved
+#		if station_tags is not None:
+#			assert client_tags is not None, 'If passing tags, must preserve client tags.'
+#		session = get_current_session()
+#		session['mode'] = mode
+#		session['mode_data'] = mode_data
+#		session['station_tags'] = station_tags
+#		session['client_tags'] = client_tags
+#		
+#	def get_station_meta_from_session(self):
+#		session = get_current_session()
+#		try:
+#			mode = session['mode']
+#			mode_data = session['mode_data']
+#			station_tags = session['station_tags']
+#			client_tags = session['client_tags']
+#		except KeyError,e:
+#			raise self.SessionError(e)
+#		else:
+#			return mode,mode_data,station_tags,client_tags
+	def get_user_key_from_session(self):
+		'''
+		Fetches the users key from the session.
+		If the user does not exist, or if there is no user in the session,
+		user key is returned as None
+		@return: user_key
+		@rtype: ndb.Key or None
+		'''
+		try:
+			user = self.get_user_from_session()
+			user_key = user.key
+		except self.SessionError:
+			user_key = None
+		return user_key
+		
 	def get_station_from_session(self):
 		session = get_current_session()
 		try:
 			station = session['station']
-			return station
 		except KeyError,e:
 			raise self.SessionError(e)
-	def destroy_session(self):
-		session = get_current_session()
-		session.terminate()
-#		session['logged_in'] = False
-#		try:
-#			del session['id']
-#		except KeyError:
-#			pass
-#		try:
-#			del session['tags']
-#		except KeyError:
-#			logging.error('tags not in a session that is being destroyed')
-#		try:
-#			del session['serendipity']
-#		except KeyError:
-#			logging.error('serendipity not in a session that is being destroyed')
-	def save_station_meta(self,parent_key,parsed_tags,serendipity,name='default'):
-		# creates the station object
-		models.Station(id=name,
-					parent = parent_key,
-					serendipity = serendipity,
-					tags_ = self.prep_tags_for_datastore(parsed_tags)
-					).put()
+		else:
+			return station
 	def calc_major_cities(self,artists):
+		# TODO: redo this?
 		'''
 		@param artists: a list of artist entities
 		@type artists: list
@@ -223,38 +248,14 @@ class UserHandler(BaseHandler):
 		cities = [c[0].title() for c in cities]
 		logging.info(cities)
 		return cities
-	def fetch_next_n_artists(self,n,session=None):
-		if not session:
-			session = get_current_session()
-		station = session['station']
-		# index bookkeeping
-		idx = session['idx']
-		# reset station
-		logging.info('playlist length:'+str(station.playlist.__len__()))
-		logging.info('beginning idx: '+str(idx))
-		max_idx = station.playlist.__len__() -1
-		if idx == max_idx:
-			idx = 0
-		new_idx = idx+n
-		if new_idx > max_idx:
-			new_idx = max_idx
-		logging.info('new_index: '+str(new_idx))
-		session['idx'] = new_idx
-		
-		if new_idx > 0:
-			tracks = station.playlist[idx:new_idx]
-		elif new_idx == 0:
-			tracks = station.playlist
-		elif new_idx == -1:
-			tracks = []
-		
-		to_send = [t['artist'] for t in tracks]
-		# store the tracks that have been listened to
-		listened_to = [t['key'] for t in tracks]
-		session['listened_to'] = listened_to
-		
-		return to_send
 	def package_artist_multi(self,artists):
+		'''
+		Packages a list of artists into dictionary form
+		@param artists: a list of artist entities
+		@type artists: list
+		@return: a list of artists in dictionary form
+		@rtype: list
+		'''
 		to_send = []
 		for artist in artists:
 			artist_dict = artist.to_dict(exclude=('created',))

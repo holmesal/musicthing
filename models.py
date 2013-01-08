@@ -166,7 +166,6 @@ class Favorite(ndb.Model):
 	# parent must be a user entity
 	artist_key = ndb.KeyProperty(required = True)
 	created = ndb.DateTimeProperty(auto_now_add = True)
-	
 class Station(ndb.Model):
 	serendipity = ndb.IntegerProperty()
 	tags_ = ndb.StructuredProperty(TagProperty,repeated=True)

@@ -91,7 +91,7 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 		# check for an existing user 
 		try:
 			# will raise SessionError if artist doesnt exist in db
-			artist = self.get_artist(artist_id)
+			artist = self.get_artist_by_id(artist_id)
 		except self.SessionError:
 			# artist does not exist yet. Create one
 			# log some mixpanel shiiiiit!
@@ -230,7 +230,7 @@ class AddTagsHandler(handlers.ArtistHandler):
 		except ValueError:
 			raw_tags = []
 		if raw_tags:
-			parsed_tags = self.parse_tags(raw_tags)
+			parsed_tags = self.convert_client_tags_to_tags_dict(raw_tags)
 			prepped_tags = self.prep_tags_for_datastore(parsed_tags)
 		else:
 			# empty list if raw_tags is empty
@@ -410,7 +410,7 @@ class ViewArtistHandler(handlers.BaseHandler):
 		'''For viewing an artists page as a user
 		'''
 		try:
-			artist = self.get_artist(artist_id)
+			artist = self.get_artist_by_id(artist_id)
 		except:
 			self.say('Artist {} does not exist'.format(artist_id))
 			artist = None
@@ -431,7 +431,6 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 		if os.environ['SERVER_SOFTWARE'].startswith('Development') == False:
 			self.say('This handler can not be accessed')
 			return
-		self.set_plaintext()
 		remote_url = 'http://pattest.radius-levr.appspot.com/artist/test'
 		data = json.loads(urllib2.urlopen(remote_url).read())
 		
@@ -481,13 +480,11 @@ class TestHandler(handlers.ArtistHandler):
 		'''
 		Gets all the access tokens of the artists on the server.
 		'''
-		self.set_plaintext()
 		artists = models.Artist.query().fetch(None)
 #		tokens = [artist.access_token for artist in artists]
 		for a in artists:
 			self.say('"'+a.username.encode('ascii','ignore')+'" : "'+a.access_token+'",')
 	def get_1(self):
-		self.set_plaintext()
 		artist = self.get_artist_from_session()
 		artist_id = artist.strkey
 		
