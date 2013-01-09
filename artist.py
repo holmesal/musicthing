@@ -185,7 +185,8 @@ class ManageArtistHandler(handlers.ArtistHandler):
 			return self.redirect(ARTIST_LOGIN)
 		
 		template_values = {
-						'artist'	: artist
+						'artist' : artist,
+						'cities' : artist.city_dicts
 		}
 		logging.info(template_values)
 		

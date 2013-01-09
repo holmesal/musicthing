@@ -1,5 +1,6 @@
 from google.appengine.ext import ndb
 from google.appengine.api import images
+from geo import geohash
 BASEURL = 'http://local-music.appspot.com'
 DEFAULT_IMAGE_URL = '{}/img/default_artwork.jpeg'.format(BASEURL)
 #===============================================================================
@@ -25,9 +26,10 @@ class City(ndb.Model):
 		city = flat_key[5]
 		return {
 			'country' : country,
-			'admin1' : admin1,
-			'city' : city,
-			'ghash' : self.ghash
+			'administrative_area_level_1' : admin1,
+			'locality' : city,
+			'ghash' : self.ghash,
+			'geo_point' : geohash.decode(self.ghash)
 			}
 class GHash(ndb.Model):
 	pass
@@ -45,7 +47,7 @@ class CityProperty(ndb.Model):
 	'''
 	city_key = ndb.KeyProperty(City)
 	ghash = ndb.StringProperty()
-
+	
 class Artist(ndb.Model):
 	created = ndb.DateProperty(auto_now_add=True)
 	

@@ -43,8 +43,12 @@ class StationPlayer(object):
 		warnings.warn('Max tracks is not set to the production value')
 		self.max_tracks = 10#150
 	@property
-	def city(self):
+	def city_entity(self):
+		# city is a models.City entity
 		return self.mode_data['city']
+	@property
+	def city_dict(self):
+		return self.city_entity.to_dict()
 	@property
 	def ghash(self):
 		return self.mode_data['ghash']
@@ -394,7 +398,7 @@ def fetch_all_artist_keys():
 	'''
 	artist_keys = models.Artist.query().iter(batch_size=50,keys_only=True)
 	return artist_keys
-def fetch_artist_keys_from_city(city):
+def fetch_artist_keys_from_city(city_entity):
 	'''
 	
 	@param city:
@@ -402,7 +406,7 @@ def fetch_artist_keys_from_city(city):
 	@param radius:
 	@type radius:
 	'''
-	return fetch_artist_keys_from_location(city.ghash)
+	return fetch_artist_keys_from_location(city_entity.ghash)
 #	ghash = chop_ghash(city.ghash)
 #	ghash_list = create_ghash_list(ghash)
 #	artist_keys = fetch_artist_keys_from_ghash_list(ghash_list)

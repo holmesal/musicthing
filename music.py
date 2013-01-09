@@ -32,7 +32,7 @@ class MusicHandler(handlers.UserHandler):
 		# grab the city if there is one
 		template_values = {
 						'mode' : station.mode,
-						'city' : station.city,
+						'city' : station.city_dict,
 						'tags' : station.client_tags,
 						'geo_point' : station.geo_point
 						}
