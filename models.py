@@ -48,6 +48,7 @@ class CityProperty(ndb.Model):
 	city_key = ndb.KeyProperty(City)
 	ghash = ndb.StringProperty()
 	
+	
 class Artist(ndb.Model):
 	created = ndb.DateProperty(auto_now_add=True)
 	
@@ -143,6 +144,8 @@ class User(ndb.Model):
 		@param artist_key: The key of the artist to be interacted with
 		@type artist_key: ndb.Key
 		'''
+		assert model in [Favorite,Follow,NeverPlay], \
+			'Unsupported interaction: {}'.format(model)
 		existing_enitity = model.get_by_id(artist_key.id(),parent=self.key)
 		if existing_enitity is None:
 			model(id=artist_key.id(),parent=self.key,artist_key=artist_key).put()
@@ -156,6 +159,8 @@ class User(ndb.Model):
 		@param artist_key: The key of the artist in question
 		@type artist_key: ndb.Key
 		'''
+		assert model in [Favorite,Follow,NeverPlay], \
+			'Unsupported interaction: {}'.format(model)
 		key = ndb.Key(model,artist_key.id(),parent=self.key)
 		key.delete()
 

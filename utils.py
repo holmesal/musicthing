@@ -38,10 +38,14 @@ class StationPlayer(object):
 		
 		# init the station track list index variable
 		self.idx = 0
+		self.previous_idx = 0
 		
 		# limit the number of tracks that can be played in one station
 		warnings.warn('Max tracks is not set to the production value')
-		self.max_tracks = 10#150
+		self.max_tracks = 150
+		
+		self.skipped_artist_keys = []
+		
 	@property
 	def city_entity(self):
 		# city is a models.City entity
@@ -69,8 +73,11 @@ class StationPlayer(object):
 	def set_mode(self,mode,mode_data):
 		'''
 		Use to set the station mode
+		All params that are not sent in mode_data are set to None by default
 		@param mode: station mode
 		@type mode: str
+		@param mode_data: all the information needed to play a station in the specified mode
+		@type mode_data: dict
 		'''
 		# assure mode is supported
 		assert mode in self.available_modes, 'Station mode not supported, {}'.format(mode)
@@ -83,17 +90,24 @@ class StationPlayer(object):
 			mode_data = {}
 		
 		# mode_data must have keys for all possible keys for client communication
-		mode_data_keys = ['city','user_key','ghash',]
+		mode_data_keys = ['city','user_key','ghash','radius']
 		for key in mode_data_keys:
 			if key not in mode_data:
 				mode_data[key] = None
+		# if have a city but not ghash, convert city to ghash
+		if mode_data['city'] is not None:
+			mode_data['ghash'] = mode_data['city'].ghash
+			
+		
 		# assign mode data
 		self.mode_data = mode_data
 	def set_station_tags(self,station_tags = None,client_tags = None):
 		'''
 		Updates the stations tags
-		@param station_tags:
-		@type station_tags:
+		@param station_tags: dict of tag:count that is used in the station calc
+		@type station_tags: dict
+		@param client_tags: the original list of artist dicts that the client uses
+		@type client_tags: list
 		'''
 		# this is necessary in the even that an empty dict is passed as station tags
 		if not station_tags:
@@ -114,7 +128,14 @@ class StationPlayer(object):
 			self.station_max_count = keyfunc(max(station_tags.iteritems(),key=keyfunc))
 			# calc the total count for the station tags
 			self.station_total_count = sum(station_tags.values())
+	def record_skipped_tracks(self):
+		pass
 	def fetch_artist_keys(self):
+		'''
+		Fetches all of the artist keys that apply to the stations current mode
+		@return: a list of artist keys
+		@rtype: list
+		'''
 		modes = {
 				self._city_mode : {
 								'func' : fetch_artist_keys_from_city,
@@ -145,7 +166,29 @@ class StationPlayer(object):
 		# fetch the artist keys using the func and params in the modes dict
 		artist_keys = func(*params) if params is not None else func()
 		
+		# filter out the hard blacklisted keys
+		blacklisted_keys = self.fetch_hard_blacklist()
+		if blacklisted_keys:
+			artist_keys = [a for a in artist_keys if a not in blacklisted_keys]
+		
 		return artist_keys
+	def fetch_hard_blacklist(self):
+		'''
+		Some tracks should not be played. EVER.
+		@return: a set of keys that the user has requested 
+		@rtype: set
+		'''
+		user_key = self.user_key
+		if user_key is None:
+			# if there is no user tied to the station, return None
+			return None
+		# fetch all the NeverPlay artists
+		never_plays = models.NeverPlay.query(ancestor = user_key).iter(batch_size=50,keys_only=True)
+		# convert NeverPlay entities to artist entities with the same ids
+		blacklisted_keys = set([ndb.Key(models.Artist,n.id()) for n in never_plays])
+		
+		return blacklisted_keys
+		
 	def calc_tag_rank(self,track_count,station_count):
 		'''
 		Compares the tag counts for station tags and track tags.
@@ -182,11 +225,14 @@ class StationPlayer(object):
 				}
 	def fetch_next_n_tracks(self,n):
 		'''
-		
-		@param n:
-		@type n:
-		@return: self
-		@rtype: self
+		Fetches next n tracks from the playlist
+		Updates the station self.idx value so the next time this method
+		is called, the first track fetched is the next track after the
+		last track returned by the previous call
+		@param n: the number of tracks to be fetched
+		@type n: int
+		@return: a list of n tracks
+		@rtype: list
 		'''
 		idx = self.idx
 		logging.info('playlist length:'+str(self.playlist.__len__()))
@@ -203,6 +249,8 @@ class StationPlayer(object):
 		if new_idx > max_idx:
 			new_idx = max_idx
 		logging.info('new_index: '+str(new_idx))
+		# store the previous index
+		self.previous_idx = idx
 		# set the posterior index to the next iterations anterior index
 		self.idx = new_idx
 		
@@ -222,10 +270,7 @@ class StationPlayer(object):
 	def create_station(self):
 		'''
 		Creates a station using the station meta properties.
-		Does not return anything.
 		Saves a list of track objects to self
-		Adds self to the current session
-		
 		@todo: need to handle a case where there are no artist keys returned. this is not a trivial case
 		'''
 		# query each of the tags from the station meta
@@ -234,7 +279,6 @@ class StationPlayer(object):
 		time = timer.time
 		# fetch the applicable artist keys
 		artist_keys = self.fetch_artist_keys()
-		# TODO: filter out tacks that should not be played
 		time('b fetch_keys')
 		
 		if self.station_tags is None:
@@ -273,11 +317,17 @@ class StationPlayer(object):
 			tracks_list = [self.rank_track(track) for track in tracks_list]
 			time('m rank tracks')
 			
+			success_tracks,fail_tracks = self.clip_low_ranked_tracks(tracks_list)
+#			if success_tracks.__len__() != self.max_tracks:
+#				fail_tracks = random.shuffle(fail_tracks)
+			
+			
 			### DEV
-			warnings.warn('Playlist is not affected by entropy')
-			self.playlist = sorted(tracks_list,key=lambda x: x['rank'],reverse=True)
+#			warnings.warn('Playlist is not affected by entropy')
+			success_tracks = self.add_entropy(success_tracks, time)
+			self.playlist = sorted(success_tracks,key=lambda x: x['rank'],reverse=True)[:self.max_tracks]
 			# add entropy
-#			self.playlist = self.add_entropy(tracks_list, time)
+#			self.playlist = self.add_entropy(success_tracks, time)
 			###
 		return timer.get_times()
 #		logging.info(', '.join([str(t['rank']) for t in self.playlist]))
@@ -286,7 +336,40 @@ class StationPlayer(object):
 			session = get_current_session()
 		session['station'] = self
 		return session
+	def clip_low_ranked_tracks(self,tracks):
+		'''
+		Splits a list into two lists: success and fail
+		Success is all tracks that have a rank greater than the minimum rank
+		Fail is all tracks that have a rank less than the minimum rank
+		min_rank is taken as a certain percentage of the max_rank
+		@param tracks: the list of track dicts
+		@type tracks: list
+		@return: success_list,fail_list
+		@rtype: tuple
+		'''
+		keyfunc = lambda x: x['rank']
+		max_rank = keyfunc(max(tracks,key=keyfunc))
+		# only take the top 70% of the tracks
+		min_rank = 0.3*float(max_rank)
+		
+		success_list = []
+		fail_list = []
+		for t in tracks:
+			if t['rank'] >= min_rank:
+				success_list.append(t)
+			else:
+				fail_list.append(t)
+		
+		return success_list,fail_list
+		
 	def rank_track(self,track):
+		'''
+		Calculates an overall rank for a track by ranking each of its constituent tags
+		@param track: track dict, not an artist
+		@type track: dict
+		@return: the same track that was passed, updated with rank info
+		@rtype: dict
+		'''
 		for station_tag,station_count in self.station_tags.iteritems(): # for each tag in the station
 			try:
 				# pull the track affinity for the station tag
@@ -386,9 +469,7 @@ def fetch_artist_keys_from_favorites(user_key):
 	# fetch all the keys for the Favorite entities that relate user --> artist
 	favorite_keys = models.Favorite.query(ancestor = user_key).iter(batch_size = 50,keys_only = True)
 	# favorite ids are the same as the artist ids - collect the ids from the favorite keys
-	artist_ids = (key.id() for key in favorite_keys)
-	# create artist keys from the ids collected from favorites
-	artist_keys = (ndb.Key(models.Artist, i) for i in artist_ids)
+	artist_keys = (ndb.Key(models.Artist, k.id()) for k in favorite_keys)
 	return artist_keys
 def fetch_all_artist_keys():
 	'''

@@ -6,6 +6,8 @@ import logging
 import os
 import utils
 import webapp2
+from google.appengine.ext import ndb
+import models
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 class MusicHandler(handlers.UserHandler):
@@ -126,11 +128,37 @@ class UpdateStationHandler(handlers.UserHandler):
 		session = station.add_to_session()
 		return self.redirect('/music')
 
+class ChirpHandler(handlers.UserHandler):
+	def get(self):
+		'''
+		Called before fetching next set of tracks, s
+		'''
+		skipped_track_ids = self.request.get_all('skipped_track_ids')
+		played_track_ids = self.request.get_all('played_track_ids')
+		try:
+			skipped_track_keys = (ndb.Key(models.Artist,i) for i in skipped_track_ids)
+			skipped_artists = ndb.get_multi(skipped_track_keys)
+			
+			station = self.get_station_from_session()
+			station.skipped_artist_keys.append(skipped_artists)
+			station.add_to_session()
+			
+		except self.SessionError,e:
+			logging.error(e)
+			logging.error('Could not find station')
+			return self.response.out.write(json.dumps({
+													'status' : 404,
+													'message' :'Could not find station'}))
+		else:
+			return self.response.out.write(json.dumps({'status' : 200,
+													'message' : 'OK'
+													}))
 app = webapp2.WSGIApplication([
 							('/music', MusicHandler),
 							('/music/gettracks',GetTracksHandler),
 							('/music/updateStation',UpdateStationHandler),
 							('/music/initialize',InitializeStationHandler),
+							('/music/chirp',ChirpHandler)
 							])
 
 
