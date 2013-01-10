@@ -473,7 +473,7 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 			self.say(f.get_result())
 		self.say('Done!')
 		
-	def get(self):
+	def get_one(self):
 		'''
 		For creating an artist account without soundcloud handshake
 		'''
