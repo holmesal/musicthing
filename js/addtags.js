@@ -82,7 +82,7 @@ updatetagshtml = function(){
 			}
 		})
 		//update the hidden input field
-		$("#tags").val(JSON.stringify(orig_tags))
+		$("#tags").val(JSON.stringify(tags))
 	})
 	
 	//remove the html duplicates
