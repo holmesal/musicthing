@@ -35,7 +35,7 @@ var addtag = function(){
 var postform = function(signup){
 	
 	to_post = {
-		"tags"			:	tags,
+		"tags"			:	orig_tags,
 		"serendipity"	:	$("#serendipity").val(),
 		"email"			:	$("#email").val(),
 		"pw"			:	$("#pw").val()
@@ -122,7 +122,7 @@ var grabtags = function(){
 		
 		try{
 		
-			var orig_tags = data.toptags.tag
+			orig_tags = data.toptags.tag
 	/* 		console.log(orig_tags) */
 			//take the top 90% of tags
 			high = orig_tags[0].count
