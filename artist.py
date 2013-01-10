@@ -184,12 +184,13 @@ class ManageArtistHandler(handlers.ArtistHandler):
 		except self.SessionError:
 			return self.redirect(ARTIST_LOGIN)
 		
+		# for right now, we only handle one city at a time. 
 		template_values = {
 						'artist' : artist,
-						'cities' : artist.city_dicts
+						'city' : artist.city_dict
 		}
 		logging.info(template_values)
-		
+		assert False, template_values
 		template = jinja_environment.get_template('templates/artist/manage.html')
 		self.response.out.write(template.render(template_values))
 		
@@ -396,10 +397,14 @@ class UploadUrlsHandler(handlers.ArtistHandler):
 			lon = self.request.get('lon')
 			geo_point = ndb.GeoPt('{},{}'.format(lat,lon))
 			
+			# create the global city entity in the db
 			city = utils.fetch_city_from_path(country, admin1, city_name, geo_point)
-			assert False, city.strpath
-			artist.city_keys.append(city.key)
-			# store the city
+			
+			# create a version of the city to be stored on the artist
+			city_property = city.to_city_property()
+			# artist.cities is a list, pass city_property as a singleton
+			artist.cities = [city_property,]
+			# store the city name because, shit will break if we dont
 			artist.city = city_name
 		# store changes
 		artist.put()
@@ -456,7 +461,7 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 			self.say(f.get_result())
 		self.say('Done!')
 		
-	def get_one(self):
+	def get(self):
 		'''
 		For creating an artist account without soundcloud handshake
 		'''

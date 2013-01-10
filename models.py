@@ -31,6 +31,18 @@ class City(ndb.Model):
 			'ghash' : self.ghash,
 			'geo_point' : geohash.decode(self.ghash)
 			}
+	def to_city_property(self):
+		'''
+		Method to convert a City entity to a CityProperty entity
+		to be stored on an artist
+		@return: a CityProperty version of self
+		@rtype: CityProperty
+		'''
+		return CityProperty(
+						city_key=self.key,
+						ghash=self.ghash,
+						name=self.name
+						)
 class GHash(ndb.Model):
 	pass
 
@@ -47,6 +59,7 @@ class CityProperty(ndb.Model):
 	'''
 	city_key = ndb.KeyProperty(City)
 	ghash = ndb.StringProperty()
+	name = ndb.StringProperty()
 	
 	
 class Artist(ndb.Model):
@@ -84,19 +97,43 @@ class Artist(ndb.Model):
 	genre = ndb.StringProperty() # deprecated
 	
 	@property
-	def city_dicts(self):
-		city_strings = []
-		for city_key in self.city_keys:
+	def city_dict(self):
+		'''
+		Creates a dict form of the artists city for manage page, etc...
+		@warning: This method assumes that each artist has a max of one city
+		@return: All the fields that the manage page posts when the server receives a manage post
+		@rtype: dict
+		'''
+		try:
+			city = self.cities[0]
+		except IndexError:
+			# the artist does not have any cities
+			# return an empty dict
+			return {}
+		else:
+			# get the full city path
+			city_key = city.city_key
+			# flatten the key to get the whole path
 			flat_key = city_key.flat()
-			country = flat_key[1]
-			admin1 = flat_key[3]
-			city = flat_key[5]
-			city_strings.append({
-								'country' : country,
-								'admin1' : admin1,
-								'city' : city,
-								})
-		return city_strings
+			country = flat_key[1].title()
+			admin1 = flat_key[3].title()
+			locality = flat_key[5].title()
+			
+			# get the lat,lon from the ghash
+			lat,lon = geohash.decode(city.ghash)
+			
+			# create a string version for display purposes
+			city_string = '{}, {}'.format(locality,admin1)
+			
+			city_dict = {
+						'country' : country,
+						'administrative_area_level_1' : admin1,
+						'locality' : locality,
+						'lat' : lat,
+						'lon' : lon,
+						'city_string' : city_string
+						}
+		return city_dict
 	@property
 	def tags_dict(self):
 		return {tag.genre:tag.count for tag in self.tags_}
