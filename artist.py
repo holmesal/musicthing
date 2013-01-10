@@ -190,7 +190,6 @@ class ManageArtistHandler(handlers.ArtistHandler):
 						'city' : artist.city_dict
 		}
 		logging.info(template_values)
-		assert False, template_values
 		template = jinja_environment.get_template('templates/artist/manage.html')
 		self.response.out.write(template.render(template_values))
 		
