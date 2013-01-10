@@ -32,6 +32,7 @@ var addtag = function(){
 	
 }
 
+/*
 var postform = function(signup){
 	
 	to_post = {
@@ -50,6 +51,7 @@ var postform = function(signup){
 	console.log(to_post)
 
 }
+*/
 
 
 updatetagshtml = function(){
@@ -80,7 +82,7 @@ updatetagshtml = function(){
 			}
 		})
 		//update the hidden input field
-		$("#tags").val(JSON.stringify(tags))
+		$("#tags").val(JSON.stringify(orig_tags))
 	})
 	
 	//remove the html duplicates
