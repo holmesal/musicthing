@@ -87,6 +87,8 @@ $(document).ready(function(){
 	  	$("#lat").val("")
 	  	$("#lon").val("")
 	  	
+	  	console.log(place.address_components)
+	  	
 	  	$.each(place.address_components,function(idx,comp){
 		  	
 		  	//check if type, and do stuff
