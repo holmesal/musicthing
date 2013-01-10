@@ -64,7 +64,7 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 					<p class="explain overhead">Adding a city helps locals find your music. Add the city where you play most of your shows.</p>
 					<p class="explain" style="text-align: left;">Your city:
 						<!-- <input type="text" id="city" name="city" placeholder="Ex: Boston" value="{{artist.city or ''}}"> -->
-						<input type="text" id="city" name="city" placeholder="Start typing">
+						<input type="text" id="city" placeholder="Ex: Boston" value="{{city.city_string | default('')}}">
 					</p>
 					
 					
@@ -85,11 +85,11 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 					<input type="submit" class="btn btn-info" value="Save Changes">
 					
 <!-- 					Hidden inputs  -->
-					<input type="hidden" name="locality" id="locality" value="{{locality}}">
-					<input type="hidden" name="administrative_area_level_1" id="administrative_area_level_1" value="{{administrative_area_level_1}}">
-					<input type="hidden" name="country" id="country" value="{{country}}">
-					<input type="hidden" name="lat" id="lat" value="{{lat}}">
-					<input type="hidden" name="lon" id="lon" value="{{lon}}">
+					<input type="hidden" name="locality" id="locality" value="{{city.locality}}">
+					<input type="hidden" name="administrative_area_level_1" id="administrative_area_level_1" value="{{city.administrative_area_level_1}}">
+					<input type="hidden" name="country" id="country" value="{{city.country}}">
+					<input type="hidden" name="lat" id="lat" value="{{city.lat}}">
+					<input type="hidden" name="lon" id="lon" value="{{city.lon}}">
 				</form>
 			</div>
 		</div>
