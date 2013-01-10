@@ -15,15 +15,15 @@ $(document).ready(function(){
 	mixpanel.track_links("#choosenew","manage choose new button clicked");
 	mixpanel.track_links("#scupload","manage soundcloud upload button clicked");
 	
-	console.log("{{artist.track_id}}")
+	console.log(track_id)
 	
-	if ("{{artist.track_id}}" == "None"){
+	if (track_id == "None"){
 		window.location = '/artist/choosetrack'
 	};
 	
 	
 	//get track stuff from soundcloud
-	$.get('https://api.soundcloud.com/tracks/{{artist.track_id}}.json?client_id=d03ca49fb6764663d0992eadc69f8bf1', function(data) {
+	$.get('https://api.soundcloud.com/tracks/'+track_id+'.json?client_id=d03ca49fb6764663d0992eadc69f8bf1', function(data) {
 		
 		$(".artist_name").text(data.user.username)
 		$(".track_name").text(data.title)
