@@ -174,6 +174,7 @@ class LogOutHandler(handlers.ArtistHandler):
 		'''
 		# log out of session
 		self.log_out()
+		
 		# redirect to landing page
 		return self.redirect('/')
 
@@ -336,7 +337,6 @@ class StoreTrackHandler(handlers.ArtistHandler):
 		
 		
 		# do stuff
-		
 		track_url = self.request.get('track_url')
 		track_id = self.request.get('track_id')
 		genre = self.request.get('genre')
@@ -397,16 +397,21 @@ class UploadUrlsHandler(handlers.ArtistHandler):
 		
 		
 		city_name = self.request.get('locality')
+		if city_name == '':
+			city_name = ' '
 		if city_name is not None:
-			admin1 = self.request.get('administrative_area_level_1')
-			country = self.request.get('country')
+			admin1 = self.request.get('administrative_area_level_1','')
+			if admin1 == '':
+				admin1 = ' '
+			country = self.request.get('country','')
+			if country == '':
+				country = ' '
 			lat = self.request.get('lat')
 			lon = self.request.get('lon')
 			geo_point = ndb.GeoPt('{},{}'.format(lat,lon))
 			
 			# create the global city entity in the db
 			city = utils.fetch_city_from_path(country, admin1, city_name, geo_point)
-			
 			# create a version of the city to be stored on the artist
 			city_property = city.to_city_property()
 			# artist.cities is a list, pass city_property as a singleton

@@ -123,7 +123,7 @@ class Artist(ndb.Model):
 			lat,lon = geohash.decode(city.ghash)
 			
 			# create a string version for display purposes
-			city_string = '{}, {}'.format(locality,admin1)
+			city_string = '{}, {}'.format(locality,admin1) if admin1 != ' ' else locality
 			
 			city_dict = {
 						'country' : country,
