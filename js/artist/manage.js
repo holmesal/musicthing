@@ -73,6 +73,13 @@ $(document).ready(function(){
 	google.maps.event.addListener(autocomplete, 'place_changed', function() {
 	  	var place = autocomplete.getPlace();
 	  	
+	  	//empty so there are no ghosts. boo!
+	  	$("#locality").val("")
+	  	$("#administrative_area_level_1").val("")
+	  	$("#country").val("")
+	  	$("#lat").val("")
+	  	$("#lon").val("")
+	  	
 	  	$.each(place.address_components,function(idx,comp){
 		  	
 		  	//check if type, and do stuff
