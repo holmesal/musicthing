@@ -215,6 +215,8 @@ class AddTagsHandler(handlers.ArtistHandler):
 		jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 		template = jinja_environment.get_template('templates/addtags.html')
 		self.response.out.write(template.render(template_values))
+	
+		
 		
 		
 	def post(self):
@@ -222,16 +224,22 @@ class AddTagsHandler(handlers.ArtistHandler):
 		Update the artist's tags
 		Then redirect to /manage
 		'''
+		# grab the submitted tags
+		try:
+			raw_tags = json.loads(self.request.get('tags','{}'))
+		except ValueError:
+			# json throws error if tags is empty
+			raw_tags = []
+		
+		# grab the artist in question
 		try:
 			artist = self.get_artist_from_session()
 		except self.SessionError:
 			return self.redirect(ARTIST_MANAGE)
-		try:
-			raw_tags = json.loads(self.request.get('tags','{}'))
-		except ValueError:
-			raw_tags = []
+		
+		
 		if raw_tags:
-			parsed_tags = self.convert_client_tags_to_tags_dict(raw_tags)
+			parsed_tags = self.convert_client_tags_to_tags_dict_OLD(raw_tags)
 			prepped_tags = self.prep_tags_for_datastore(parsed_tags)
 		else:
 			# empty list if raw_tags is empty

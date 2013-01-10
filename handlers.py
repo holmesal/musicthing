@@ -78,6 +78,25 @@ class BaseHandler(webapp2.RequestHandler):
 				'mixpanel rpc failed'
 		except Exception,e:
 			logging.error(e)
+	def convert_client_tags_to_tags_dict_OLD(self, raw_tags):
+		'''
+		This method is used on the artist addtags page where we are using the old form
+		
+		@param raw_tags: list of tag objects [{'name':'radiohead','count':100},]
+		@type raw_tags: list
+		@return: tag:count mapping
+		@rtype: dict
+		'''
+		tags = defaultdict(int)
+		for t in raw_tags:
+			name = t['name']
+			count = int(t['count'])
+			tags[name] += count
+		max_count = max(tags.values())
+		# normalize the counts by dividing by the max value and *100
+		tags = {key:int(float(count)/float(max_count)*100) for key,count in tags.iteritems()}
+		return tags
+		
 	def convert_client_tags_to_tags_dict(self,raw_tags):
 		'''
 		Converts a list of objects in form 
@@ -102,7 +121,7 @@ class BaseHandler(webapp2.RequestHandler):
 		# make tags static
 		tags.default_factory = None
 		# calc max count for all the tags
-		max_count = max([tags[tag] for tag in tags])
+		max_count = max(tags.values())
 		# update the tags dict
 		tags = {key:int(float(count)/float(max_count)*100) for key,count in tags.iteritems()}
 		return tags
