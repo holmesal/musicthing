@@ -14,7 +14,7 @@ class LandingHandler(handlers.BaseHandler):
 		
 		
 		jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
-		template = jinja_environment.get_template('templates/hypev2.html')
+		template = jinja_environment.get_template('templates/landingv3.html')
 		self.response.out.write(template.render())
 
 	def post(self):
@@ -39,7 +39,7 @@ class LandingHandler(handlers.BaseHandler):
 			logging.error(e)
 		
 		jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
-		template = jinja_environment.get_template('templates/hypev2.html')
+		template = jinja_environment.get_template('templates/landingv3.html')
 		self.response.out.write(template.render(template_values))
 
 app = webapp2.WSGIApplication([('/',LandingHandler)])

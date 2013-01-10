@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html>
   
   <head>
@@ -86,7 +85,13 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
         <div id="expando-radius" class="collapse">
         	<div class="container">
 		    	<div class="row collapserow">
-		    		<p class="prompt">Choose a location</p>
+		    		<div id="location-select" hidden>
+			    		<p class="prompt">Use your location</p>
+			    		<p class="explain">What's your radius?</p>
+			    		<input id="radius-slider" name="radius-slider" type="range" min="0" step="1" max="100" value="{{radius|default(10)}}">
+			    		<a class="btn btn-warning btn-large" href="/music/updateLocation">Play tracks</a>
+		    		</div>
+		    		<p class="prompt">Choose a city</p>
 		        	<div id="cities" class="span12">
 		        		{% for c in cities %}
 		        			<a id="citybutton" class="btn btn-primary" href="/music/updateCity?city={{c}}">{{c}}</a>
@@ -183,6 +188,8 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 -->
     <script type="text/javascript">
     	
+	
+    	
     	mixpanel.track("Music player page loaded")
     	/*
 mixpanel.track_links("#genre","Genre dropdown link clicked")
@@ -191,6 +198,10 @@ mixpanel.track_links("#genre","Genre dropdown link clicked")
     	mixpanel.track_links("#twittershare","Twitter share link clicked")
     	mixpanel.track_links("#citybutton","City button clicked")
     	mixpanel.track_forms("#btnSave","Save button clicked")
+    	
+    	
+    	//geolocate -- fires initial request
+    	geolocate()
     	
 	    //enter sandman
 	    art = []
@@ -209,16 +220,6 @@ mixpanel.track_links("#genre","Genre dropdown link clicked")
 	    addtracks(init_artists)
 	    
 */
-	    $.getJSON('/music/initialize',function(data){
-		    addtracks(data)
-		    //first values
-		    idx = 0
-		    changetrackinfo($(".sc-player")[0])
-		    $('.sc-controls').animate({opacity:1},200)
-		    
-		    spinner.stop()
-		    $("#loading").hide()
-	    })
 	    
 	    
 	    

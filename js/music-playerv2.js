@@ -1,3 +1,19 @@
+function calcpoke(){
+	
+	wide = $(window).width();
+	
+	if (wide < 500){
+		wide = 500
+	}
+	
+	poke = wide/2-250
+	offset = -500*idx + poke
+	$(".player-container").animate({"margin-left":offset},{duration:200,queue:false});
+	$("#info-container").css("margin-left",poke)
+	
+	return poke
+}
+
 function setup_location_ui(location_enabled){
 	
 	if (location_enabled == true) {
@@ -49,8 +65,10 @@ make_initial_request = function(location_enabled) {
 	    changetrackinfo($(".sc-player")[0])
 	    $('.sc-controls').animate({opacity:1},200)
 	    
-	    spinner.stop()
+/* 	    spinner.stop() */
 	    $("#loading").hide()
+	    
+	    controllisteners()
     })
 	
 }
@@ -79,7 +97,21 @@ changetrackinfo = function(player){
 	info = art[idx]
 	console.log(info)
 	
-	$(".info-track").text($(player).children(".sc-info").children("h3").children("a").text())
+	url = 'http://api.soundcloud.com/tracks/'+info.track_id+'.json?client_id=d03ca49fb6764663d0992eadc69f8bf1'
+	$.get(url,function(data){
+		console.log(data)
+		sc_url = data.permalink_url
+		$('#scbtn').attr("href",sc_url)
+		$(".info-track").text(data.title)
+		
+		//fade stuff in
+		$("#info-row,#link-row").animate({opacity:1},{duration:200,queue:false});
+	})
+	
+	
+	
+/* 	$(".info-track").text($(player).children(".sc-info").children("h3").children("a").text()) */
+	console.log($(player).children(".sc-info").html())
 /* 	console.log(art[0][idx].username) */
 /* 	console.log(info.username) */
 	$(".info-name").text(info.username)
@@ -91,47 +123,53 @@ changetrackinfo = function(player){
 	}
 	
 	//empty the button container
-	$('.buttoncontainer').empty()
+	$('#link-row').empty()
 	
 	//append buttons as necessary
 	if (info.bandcamp_url != '' && info.bandcamp_url != 'None' && info.bandcamp_url != null){
 		url = checkhttp(info.bandcamp_url)
-		$('.buttoncontainer').append('<a href="'+url+'" target="_blank"><img class="ext-button" src="/img/bandcamp.png"></a>')
+		$('#link-row').append('<p><a class="lead"  href="'+url+'" target="_blank"><img class="link-icon" src="/img/bandcamp.png">Download on Bandcamp</a></p>')
 	}
+	
+	$('#link-row').append('<a class="lead"  id="scbtn" href="" target="_blank"><img class="link-icon" src="/img/soundcloud.png">Find on SoundCloud</a></p>')
 	
 	if (info.facebook_url != '' && info.facebook_url != 'None' && info.facebook_url != null){
 		url = checkhttp(info.facebook_url)
-		$('.buttoncontainer').append('<a href="'+url+'" target="_blank"><img class="ext-button" src="/img/facebook.png"></a>')
+		$('#link-row').append('<p><a class="lead"  href="'+url+'" target="_blank"><img class="link-icon" src="/img/facebook.png">Find on Facebook</a></p>')
 	}
 	
 	if (info.twitter_url != '' && info.twitter_url != 'None' && info.twitter_url != null){
 		url = checkhttp(info.twitter_url)
-		$('.buttoncontainer').append('<a href="'+url+'" target="_blank"><img class="ext-button" src="/img/twitter.png"></a>')
+		$('#link-row').append('<p><a class="lead"  href="'+url+'" target="_blank"><img class="link-icon" src="/img/twitter.png">Follow on Twitter</a></p>')
 	}
 	
 	if (info.myspace_url != '' && info.myspace_url != 'None' && info.myspace_url != null){
 		url = checkhttp(info.myspace_url)
-		$('.buttoncontainer').append('<a href="'+url+'" target="_blank"><img class="ext-button" src="/img/myspace.png"></a>')
+		$('#link-row').append('<p><a class="lead"  href="'+url+'" target="_blank"><img class="link-icon" src="/img/myspace.png">Find on Myspace</a></p>')
 	}
 	
 	if (info.youtube_url != '' && info.youtube_url != 'None' && info.youtube_url != null){
 		url = checkhttp(info.youtube_url)
-		$('.buttoncontainer').append('<a href="'+url+'" target="_blank"><img class="ext-button" src="/img/youtube.png"></a>')
+		$('#link-row').append('<p><a class="lead"  href="'+url+'" target="_blank"><img class="link-icon" src="/img/youtube.png">Watch on Youtube</a></p>')
 	}
 	
 	if (info.website_url != '' && info.website_url != 'None' && info.website_url != null){
 		url = checkhttp(info.website_url)
-		$('.buttoncontainer').append('<a href="'+url+'" target="_blank"><img class="ext-button" src="/img/website.png"></a>')
+		$('#link-row').append('<p><a class="lead"  href="'+url+'" target="_blank"><img class="link-icon" src="/img/website.png">Go to website</a></p>')
 	}
 	
-	$('.buttoncontainer').append('<a id="scbtn" href="" target="_blank"><img class="ext-button" src="/img/soundcloud.png"></a>')
 	
-	//go get the link
-	url = 'http://api.soundcloud.com/tracks/'+info.track_id+'.json?client_id=d03ca49fb6764663d0992eadc69f8bf1'
+	
+	//go get the track info
+	/*
+url = 'http://api.soundcloud.com/tracks/'+info.track_id+'.json?client_id=d03ca49fb6764663d0992eadc69f8bf1'
 	$.get(url,function(data){
+		console.log(data)
 		sc_url = data.permalink_url
 		$('#scbtn').attr("href",sc_url)
 	})
+*/
+	
 	
 	
 	
@@ -171,6 +209,7 @@ addtracks = function(data){
 	
 	console.log("loading tracks!")
 	console.log(data)
+	console.log(data.length)
 	
 	newlinks = []
 	newdata = []
@@ -198,7 +237,7 @@ addtracks = function(data){
 	art.push.apply(art,newdata)
 	
 	//increase the width of the player container to accomidate new players
-	$('.player-container').css({width:400*$(".sc-player").length})
+	$('.player-container').css({width:500*$(".sc-player").length})
 	
 	
 	console.log($("a.sc-player"))
@@ -225,42 +264,85 @@ loadtracks = function(){
 	
 }
 
+controllisteners = function(){
+	//re-assign the next and prev listeners
+	$("#btn-next").unbind().click(function(){
+		$(".sc-player").eq(idx+1).children(".sc-artwork-list").click()
+	})
+	
+	$("#btn-prev").unbind().click(function(){
+		$(".sc-player").eq(idx-1).children(".sc-artwork-list").click()
+	})
+	
+	curplay = $(".sc-player").eq(idx).children(".sc-controls").children(".sc-play")
+	
+	$("#btn-play").unbind().click(function(){
+		$(curplay).click()
+		$("#btn-play").hide()
+		$("#btn-pause").show()
+	})
+	
+	$("#btn-pause").unbind().click(function(){
+		$(".sc-player").eq(idx).children(".sc-controls").children(".sc-pause").click()
+		$("#btn-pause").hide()
+		$("#btn-play").show()
+	})
+}
+
 changetrack = function(player){
 	//player is the track that was clicked on - the track to be played next
 	console.log(player)
+/* 	event.stopPropagation() */
+	//show the play button on the current track
+	$("#btn-play").hide()
+	$("#btn-pause").show()
 	
 	//pause all currently playing tracks
-	$('.sc-player.playing > a.sc-pause').click();
+	$('.sc-player.playing').children('.sc-controls').children('.sc-pause').click()
+/* 	console.log($('player > a.sc-play')) */
 	//play the next track
-	$('player > a.sc-play').click();
+/* 	$('player > a.sc-play').click(); */
+	$(player).children(".sc-controls").children(".sc-play").click()
 	
 	
 	//slide the player
 	idx = $(player).index()
 	console.log(idx)
-	offset = -400*idx - 200
+	console.log(poke)
+	offset = -500*idx + poke
 	$(".player-container").animate({"margin-left":offset},{duration:400,queue:false});
 	
-	//fade out all controls
-	$(".sc-player").not(player).children(".sc-controls").animate({opacity:0},{duration:400,queue:false});
+	//fade out all text info
+	$("#info-row,#link-row").animate({opacity:0},{duration:100,queue:false});
+	
+	
+/* 	$(".sc-player").not(player).children(".sc-controls").animate({opacity:0},{duration:400,queue:false}); */
 	//fade in the controls
-	$(player).children(".sc-controls").animate({opacity:1},{duration:400,queue:false});
-	$(player).next().children(".sc-controls").animate({opacity:1},{duration:400,queue:false});
+/* 	$(player).children(".sc-controls").animate({opacity:1},{duration:400,queue:false}); */
+/* 	$(player).next().children(".sc-controls").animate({opacity:1},{duration:400,queue:false}); */
 	
 	if (idx!=0){
-		$(player).prev().children(".sc-controls").animate({opacity:1},{duration:400,queue:false});
+		$("#btn-prev").css({opacity:1})
+	} else{
+		$("#btn-prev").css({opacity:0.420})
 	}
 	
+/*
+	//all play buttons fire trackchanged except for the current one
+	allelse = $('.sc-play').not(curplay)
+	$(allelse).unbind().click(function(){
+		console.log(this.parentNode.parentNode)
+		changetrack(this.parentNode.parentNode)
+	})
+*/
+
 	//change the track information
 	changetrackinfo(player)
+	//bind control listners
+	controllisteners()
 	
-	//check if on last track - time to refresh
-	//do this 2 tracks before the end
 	
-/* 	console.log(idx) */
-/* 	console.log($(".sc-player").length) */
-	
-	if (idx > $(".sc-player").length-3){
+	if (idx > $(".sc-player").length-4){
 		console.log("loading!")
 		loadtracks()
 	}
@@ -270,9 +352,10 @@ changetrack = function(player){
 bindevents = function(){
 	
 	//click to change track
-	$('.sc-player').on("click",function(e){
+	$('.sc-artwork-list').on("click",function(e){
 		console.log("changing track!")
-		changetrack(this)
+/* 		console.log(this.parentNode) */
+		changetrack(this.parentNode)
 	});
 	
 	//next button listeners
@@ -306,22 +389,12 @@ $(document).bind('onMediaTimeUpdate.scPlayer', function(event){
 /*
 	$(document).bind('onPlayerTrackSwitch.scPlayer', function(event, track){
 		
-		if (first_track == null){
-			first_track = track
-		}
+		console.log("track switch detected")
+		player = $('.sc-player.playing')
+		console.log(player)
 		
-		curtrack = track
+		changetrack(player)
 		
-		console.log(first_track)
-		
-		//fade out the track info
-		$(".trackinfo").animate({opacity:0},200,function(){
-			//change the track info
-			changetrackinfo()
-		});
-		
-		//fade in the track info
-		$(".trackinfo").delay(300).animate({opacity:1},{duration:200,queue:true});
 		
 	});
 */
