@@ -103,6 +103,22 @@ $(document).ready(function(){
 			  	
 		  	})
 		  	
+		  	if ($("#locality").val() == ""){
+			  	$.each(comp.types,function(idx_comp,type_comp){
+				  	if (type_comp == "administrative_area_level_3"){
+					  	$("#locality").val(comp.long_name)
+				  	}
+			  	})
+		  	}
+		  	
+		  	if ($("#locality").val() == ""){
+			  	$.each(comp.types,function(idx_comp,type_comp){
+				  	if (type_comp == "administrative_area_level_2"){
+					  	$("#locality").val(comp.long_name)
+				  	}
+			  	})
+		  	}
+		  	
 	  	})
 	  	
 	  	//grab the lat and lon
