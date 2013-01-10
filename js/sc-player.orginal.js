@@ -404,12 +404,9 @@
         $nextItem = $('.sc-trackslist li.active', $player).next('li');
         // try to find the next track in other player
         if(!$nextItem.length){
-        	log("looking in another player")
-/*           $nextItem = $player.nextAll('div.sc-player:first').find('.sc-trackslist li.active'); */
-          $nextItem = $player.nextAll('div.sc-player:first').find('.sc-artwork-list');
+          $nextItem = $player.nextAll('div.sc-player:first').find('.sc-trackslist li.active');
         }
-        log($nextItem)
-        $nextItem.click()
+        $nextItem.click();
       },
       soundVolume = function() {
         var vol = 80,
