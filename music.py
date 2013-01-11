@@ -261,7 +261,7 @@ class GetRadialCitiesHandler(handlers.UserHandler):
 		lon = float(self.request.get('lon'))
 		ghash = geohash.encode(lat,lon)
 		
-		radial_cities = self.fetch_radial_cities(ghash)
+		radial_cities = self.fetch_radial_cities(ghash,precision=3)
 		
 		self.send_success(radial_cities)
 
