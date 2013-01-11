@@ -3,7 +3,6 @@ from datetime import datetime
 from gaesessions import get_current_session
 from geo import geohash
 from google.appengine.ext import ndb
-from math import radians, asin, cos, sin, sqrt
 import logging
 import models
 import random
@@ -30,7 +29,7 @@ class StationPlayer(object):
 	_all_mode = 'all_mode'
 	available_modes = [_city_mode,_location_mode,_favorites_mode,_all_mode]
 	
-	def __init__(self,mode = None,mode_data = None,station_tags = None, client_tags = None):
+	def __init__(self,mode,mode_data = None,station_tags = None, client_tags = None):
 		# assign the station mode
 		self.set_mode(mode,mode_data)
 		
@@ -42,7 +41,7 @@ class StationPlayer(object):
 		self.previous_idx = 0
 		
 		# limit the number of tracks that can be played in one station
-#		warnings.warn('Max tracks is not set to the production value')
+		warnings.warn('Max tracks is not set to the production value')
 		self.max_tracks = 150
 		
 		self.skipped_artist_keys = []
@@ -66,9 +65,6 @@ class StationPlayer(object):
 			'lon' : geo_point[1]
 			}
 	@property
-	def radius(self):
-		return self.mode_data['radius']
-	@property
 	def user_key(self):
 		return self.mode_data['user_key']
 	@property
@@ -78,16 +74,13 @@ class StationPlayer(object):
 		'''
 		Use to set the station mode
 		All params that are not sent in mode_data are set to None by default
-		
-		If mode is set to none, create_station will raise an error
-		
 		@param mode: station mode
 		@type mode: str
 		@param mode_data: all the information needed to play a station in the specified mode
 		@type mode_data: dict
 		'''
 		# assure mode is supported
-		assert mode is None or mode in self.available_modes, 'Station mode not supported, {}'.format(mode)
+		assert mode in self.available_modes, 'Station mode not supported, {}'.format(mode)
 		
 		# set mode
 		self._mode = mode
@@ -97,7 +90,7 @@ class StationPlayer(object):
 			mode_data = {}
 		
 		# mode_data must have keys for all possible keys for client communication
-		mode_data_keys = ['city','user_key','ghash','radius','radial_cities']
+		mode_data_keys = ['city','user_key','ghash','radius']
 		for key in mode_data_keys:
 			if key not in mode_data:
 				mode_data[key] = None
@@ -108,11 +101,6 @@ class StationPlayer(object):
 		
 		# assign mode data
 		self.mode_data = mode_data
-		
-		
-		
-		
-		
 	def set_station_tags(self,station_tags = None,client_tags = None):
 		'''
 		Updates the stations tags
@@ -235,7 +223,7 @@ class StationPlayer(object):
 				'tags_to_ranks' : {},
 				'rank' : 0
 				}
-	def fetch_next_n_tracks(self,n=10):
+	def fetch_next_n_tracks(self,n):
 		'''
 		Fetches next n tracks from the playlist
 		Updates the station self.idx value so the next time this method
@@ -285,9 +273,6 @@ class StationPlayer(object):
 		Saves a list of track objects to self
 		@todo: need to handle a case where there are no artist keys returned. this is not a trivial case
 		'''
-		# assure mode is set
-		assert self.mode is not None, 'Station mode not set.'
-		
 		# query each of the tags from the station meta
 		# create a list of iterators to fetch all of the keys
 		timer = Timer()
@@ -296,8 +281,8 @@ class StationPlayer(object):
 		artist_keys = self.fetch_artist_keys()
 		time('b fetch_keys')
 		
-		if self.station_tags is None or self.mode == self._favorites_mode:
-			logging.info('Station does not have tags or is favorites')
+		if self.station_tags is None:
+			logging.info('Station does not have tags')
 			# artist keys cannot be a generator object
 			artist_keys = list(artist_keys)
 			# Try to fetch a sample of artists from the list of available artists
@@ -443,28 +428,7 @@ class StationPlayer(object):
 		playlist = sorted(tracks_list,key=lambda x: x['rank'],reverse=True)
 		time('p_sort_tracks')
 		return playlist[:self.max_tracks]
-	@staticmethod
-	def package_track_multi(tracks):
-		'''
-		Packages playlist tracks into a form that is relevant to the client
-		Assumes that the tracks are already in a relevant order
-		@param tracks: self.playlist tracks
-		@type tracks: list
-		@return: a list of artist dicts
-		@rtype: list
-		'''
-		# grab the artists from the tracks
-		artists = [t['artist'] for t in tracks]
-		# package all the artists for the client
-		to_send = []
-		for artist in artists:
-			# remove the fields that are not json serializable
-			artist_dict = artist.to_dict(exclude=('created',))
-			# add the artists id to the dict, for reference upon return to server
-			artist_dict.update({'id':artist.strkey})
-			# add the artist dict to the to_send array
-			to_send.append(artist_dict)
-		return to_send
+
 
 	
 def fetch_city_from_path(country,admin1,city_name,geo_point):
@@ -638,20 +602,120 @@ def calc_bounding_box(ghash_list):
 	return bounding_box
 
 
-def distance_between_points((lat1, lon1), (lat2, lon2)):
-	# all args are in degrees
-	# WARNING: loss of absolute precision when points are near-antipodal
-	Earth_radius_km = 6371.0
-	Earth_radius_mi = 3958.76
-	RADIUS = Earth_radius_mi
-	def haversine(angle_radians):
-		return sin(angle_radians / 2.0) ** 2
-	
-	def inverse_haversine(h):
-		return 2 * asin(sqrt(h)) # radians
-	lat1 = radians(lat1)
-	lat2 = radians(lat2)
-	dlat = lat2 - lat1
-	dlon = radians(lon2 - lon1)
-	h = haversine(dlat) + cos(lat1) * cos(lat2) * haversine(dlon)
-	return RADIUS * inverse_haversine(h)
+
+#	def create_station_(self):
+#		'''
+#		Creates a station using the station meta properties.
+#		Does not return anything.
+#		Saves a list of track objects to self
+#		Adds self to the current session
+#		'''
+#		# query each of the tags from the station meta
+#		# create a list of iterators to fetch all of the keys
+#		timer = Timer()
+#		time = timer.time
+#		if self.city:
+#			artist_keys = models.Artist.query(models.Artist.city == self.city).iter(batch_size=50,keys_only=True)
+#		else:
+#			artist_keys = fetch_all_artist_keys()
+#		time('b_fetch_keys')
+#		f = lambda x: {'key':x.key,'artist':x,'tags_to_counts':x.tags_dict,'tags_to_ranks':{},'rank':0}
+#		if not self.station_tags:
+#			logging.info('empty station')
+##			if self.city:
+##				artists = models.Artist.query(models.Artist.city == self.city).iter(batch_size=50)
+##			else:
+##				artists = models.Artist.query().iter(batch_size=50)
+##			tracks = [f(a) for a in tracks]
+##			tracks = [track for track in tracks]
+##			random.shuffle(tracks_list)
+#			# this line necessary b/c artist_keys is a generator
+#			artist_keys = [k for k in artist_keys]
+#			try:
+#				artist_keys = random.sample(artist_keys,self.max_tracks)
+#			except ValueError:
+#				pass
+#			
+#			random.shuffle(artist_keys)
+#			time('select_random_artists')
+#			artists = ndb.get_multi(artist_keys)
+#			tracks_list = [f(a) for a in artists]
+#			self.playlist = tracks_list
+#			time('n_clip_track_length')
+#		else:
+#			logging.info('not empty station')
+#			artist_futures = ndb.get_multi_async(artist_keys)#[a.get_async() for a in artist_keys]
+#			time('c_get_futures')
+#			tracks = (f.get_result() for f in artist_futures)
+#			time('d_get_results')
+#			
+#			tracks_list = [f(t) for t in tracks]
+#			time('e_parse_artist to track')
+#			#=======================================================================
+#			# Rank the tracks based on their tags
+#			#=======================================================================
+#			for track in tracks_list:
+#				for tag,station_count in self.station_tags.iteritems(): # for each tag in the station
+#					try:
+#						# pull the track affinity for the station tag
+#						track_count = track['tags_to_counts'][tag]
+#						# rank the track tag based on the station tag
+#						track['tags_to_ranks'][tag] = self._rank_track_tags(track_count,station_count)
+#						logging.info(track['tags_to_ranks'][tag])
+#					except KeyError:
+#						# the track did not have that tag in its list of tags
+#						pass
+#				# set the total rank of the track
+#				track['rank'] = self._rank_track(track['tags_to_ranks'])
+#			time('m_rank_{}_tracks'.format(tracks_list.__len__()))
+#			#=======================================================================
+#			# # add some entropy
+#			#=======================================================================
+#			keyfunc = lambda x: x['rank']
+#			max_rank = keyfunc(max(tracks_list,key=keyfunc))
+#			time('n_calc_max_rank')
+#			if max_rank < 0.0001:
+#				max_rank = 0.1
+#			logging.info('max rank: '+str(max_rank))
+#			min_rank = 0
+#			for track in tracks_list:
+#				rank = track['rank']
+#				random_factor = max_rank*self.serendipity
+#				rank_plus = rank + random_factor
+#				if rank_plus > max_rank:
+#					rank_plus = max_rank
+#				rank_minus = rank - random_factor
+#				if rank_minus < min_rank:
+#					rank_minus = min_rank
+##				range_factor = 100.
+##				rank_plus = int(rank_plus*range_factor)
+##				rank_minus = int(rank_minus*range_factor)
+#				if rank_plus == rank_minus:
+#					logging.info('! same ranks')
+#					new_rank = rank
+#				else:
+#					new_rank = random.uniform(rank_minus,rank_plus)
+##					r = [x/range_factor for x in range(rank_minus,rank_plus)]
+##					new_rank = random.choice(r)
+#				track['rank'] = new_rank
+#				track['old_rank'] = rank
+##				logging.info('-->')
+##				logging.info('rank: '+str(rank))
+##				logging.info('new_rank: '+str(new_rank))
+##				logging.info('serendipity: '+str(self.serendipity))
+##				logging.info('random_factor: '+str(random_factor))
+##				logging.info('rank_plus: '+str(rank_plus/range_factor))
+##				logging.info('rank_minus: '+str(rank_minus/range_factor))
+#			time('o_entropy_gen')
+#			# sort the tracks list based on their new ranks
+#			playlist = sorted(tracks_list,key=lambda x: x['rank'],reverse=True)
+#			time('p_sort_tracks')
+#			self.playlist = playlist[:self.max_tracks]
+##		logging.info(', '.join([str(t['rank']) for t in self.playlist]))
+#		#=======================================================================
+#		# add station to current session
+#		#=======================================================================
+#		session = get_current_session()
+#		session['station'] = self
+#		session['idx'] = self.idx
+#		return session,timer.get_times()

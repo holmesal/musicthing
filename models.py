@@ -19,28 +19,17 @@ class City(ndb.Model):
 	ghash = ndb.StringProperty(required = True)
 	name = ndb.StringProperty(required = True)
 	name_lower = ndb.ComputedProperty(lambda self: self.name.lower())
-	@property
-	def geo_point(self):
-		return geohash.decode(self.ghash)
-	@property
 	def to_dict(self):
-		path = self.key.pairs()
-		country = path[0][1]
-		admin1 = path[1][1]
-		locality = path[2][1]
+		flat_key = self.key.flat()
+		country = flat_key[1]
+		admin1 = flat_key[3]
+		city = flat_key[5]
 		return {
 			'country' : country,
 			'administrative_area_level_1' : admin1,
-			'locality' : locality,
-			'display' : ''
-			
-			}
-	def package(self):
-		strkey = self.key.urlsafe()
-		name = self.key.id()
-		return {
-			'name' : name,
-			'key' : strkey
+			'locality' : city,
+			'ghash' : self.ghash,
+			'geo_point' : geohash.decode(self.ghash)
 			}
 	def to_city_property(self):
 		'''
