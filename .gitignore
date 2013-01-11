@@ -5,7 +5,7 @@ bin
 .project
 .pydevproject
 todo*
-test.py
+#test.py
 Copy*
 Crypto/
 pycrypto-2.3*

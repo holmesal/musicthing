@@ -450,7 +450,7 @@ class GetArtistInfoHandler(handlers.UserHandler):
 		
 		
 class SpoofArtistHandler(handlers.ArtistHandler):
-	def get_all(self):
+	def get(self):
 		'''
 		Spoof a lot of the data on the server
 		'''
@@ -468,6 +468,7 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 		
 #		logging.info(data)
 		self.say(json.dumps(data))
+		return
 		artist_futures = []
 		for d in data:
 			# create random tag counts
@@ -503,7 +504,12 @@ class TestHandler(handlers.ArtistHandler):
 		for use on the dev server
 		'''
 		artists = models.Artist.query().fetch(None)
-		self.response.out.write(json.dumps([a.to_dict(exclude=('created',)) for a in artists]))
+#		artist_list = []
+#		for a in artists:
+#			exclude = ('created','cities')
+#			a_dict = a.to_dict(exclude=exclude)
+#			a_dict['city'] = a.city_dict()
+		self.response.out.write(json.dumps([a.to_dict(exclude=('created','cities')) for a in artists]))
 	def get_2(self):
 		'''
 		Gets all the access tokens of the artists on the server.
