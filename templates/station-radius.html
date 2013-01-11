@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Choose your radius</title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="Radius is Pandora for local bands.">
+    
+    <meta property="og:image" content="http://www.getradi.us/img/logobig.png"/>
+    <meta property="og:title" content="Radius"/>
+    <meta property="og:url" content="http://www.getradi.us"/>
+    <meta property="og:description" content="Radius is Pandora for local bands."/>
+
+    <!-- Le styles -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="../css/landingv3.css" rel="stylesheet">
+    <link href="../css/station-radius.css" rel="stylesheet">
+    
+    <!-- start Mixpanel --><script type="text/javascript">(function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src=("https:"===e.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f);b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==
+typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.increment people.append people.track_charge".split(" ");for(g=0;g<i.length;g++)f(c,i[g]);b._i.push([a,e,d])};b.__SV=1.2}})(document,window.mixpanel||
+[]);
+mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
+    
+    
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../img/logobig.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../img/logobig.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../img/logobig.png">
+                    <link rel="apple-touch-icon-precomposed" href="../img/logobig.png">
+                                   <link rel="shortcut icon" href="../img/favicon.png">
+  </head>
+
+  <body>
+
+
+
+    <!-- Marketing messaging and featurettes
+    ================================================== -->
+    <!-- Wrap the rest of the page in another container to center all the content. -->
+
+<!--     <div class="container marketing"> -->
+    
+    <div id="player-info" class="featurette">
+	  	<h1 class="featurette-heading dynamo">
+	  		Choose your radius
+	  	</h1>
+	  	
+	  	<p class="lead tagline">
+		  	Drag the blue circle to include or exclude cities.
+	  	</p>
+	  	
+	  	<!-- <h3 class="milecounter"><span class="pixels">0</span>pixels<span class="miles">0</span>mi</h3> -->
+	  	<div class="radiusblock">
+		  	<div id="draggable"></div>
+		  	<div id="overlay" class="gradient-jk dotted">
+			  	<h3 class="milecounter outabove"><!-- <span class="pixels">0</span>pixels --><span class="miles">0</span>mi</h3>
+		  	</div>
+		  	
+		  	<div id="city-container">
+		  		
+<!--
+			  	<div class="city-row city-left">
+			  		<div class="circle circle-left"></div>
+			  		<span class="city-text">Boston</span>
+			  	</div>
+			  	
+			  	<div class="city-row city-right">
+			  		<div class="circle circle-right"></div>
+			  		<span class="city-text">San Jose</span>
+			  	</div>
+			  	
+			  	<div class="city-row city-left">
+			  		<div class="circle circle-left"></div>
+			  		<span class="city-text">Bellingham</span>
+			  	</div>
+-->
+		  	</div>
+		  	
+		  	
+	  	</div>
+	  	
+	  	<button id="btnchoose" class="btn btn-info">Current location</button>
+	  	<p id="btnchoose-text">Click to choose a different location</p>
+	  	
+	  	<div class="chooselocation" class="collapse">
+	  		<p class="lead">Choose a city, any city:</p>
+		  	<input type="text" id="location_string" name="location_string" value="{{location_string}}" placeholder="Start typing...">
+		  	<a id="saveCity" class="btn btn-success">Save</a>
+	  	</div>
+	  	
+	  	<form id="saveForm" method="post" action="/music/something">
+		  	<input type="hidden" name="locality" value="{{city.locality}}">
+		  	<input type="hidden" name="administrative_area_level_1" value="{{city.administrative_area_level_1}}">
+		  	<input type="hidden" name="country" value="{{city.country}}">
+		  	<input type="hidden" name="lat" value="{{city.lat}}">
+		  	<input type="hidden" name="lon" value="{{city.lon}}">
+		  	
+		  	<input type="hidden" name="radius" value="{{radius}}">
+		  	
+		  	<input id="btnSave" type="submit" class="btn btn-warning btn-large" value="Save and return">
+	  	</form>
+  	</div>
+
+    <!-- </div> --><!-- /.container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
+    <script src="../js/bootstrap.min.js"></script>
+<!--     <script src="../js/jquery-ui-1.9.2.custom.min.js"></script> -->
+    <script src="../js/jquery-ui-1.9.2.custom.min.js"></script>
+    <script src="../js/jquery.ui.touch-punch.min.js"></script>
+    <script src="../js/pulse.min.js"></script>
+    <script src="../js/station-radius.js"></script>
+
+	
+  </body>
+</html>

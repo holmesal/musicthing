@@ -48,11 +48,11 @@ make_initial_request = function(location_enabled) {
 		
 	if (location_enabled == true) {
     	
-    	url = "/music/initialize?geo_point="+lat+","+lon+"&radius="+$("#radius-slider").val()
+    	url = "/music/everything?geo_point="+lat+","+lon+"&radius="+$("#radius-slider").val()
     	
 	} else {
     	
-    	url = "/music/initialize"
+    	url = "/music/everything"
     	
 	}
 	

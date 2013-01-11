@@ -1,4 +1,5 @@
-/* GLOBAL STYLES
+
+    /* GLOBAL STYLES
     -------------------------------------------------- */
     /* Padding below the footer and lighter body text */
     
@@ -168,7 +169,6 @@
 	
 	#slider-container{
 		width: 100%;
-		height: 500px;
 		overflow: hidden;
 		margin:0;
 		padding:0;
@@ -469,127 +469,13 @@ margin-bottom: 20px;
 
     }
     
+    
+    
+    
+    
+    
+    
+    
 
-
-/* station info div */
-#station-container{
-	width: 500px;
-	height: 100px;
-	background-color: black;
-}
-
-   
-/* TRACK STYLES */
-.sc-player{
-	width: 500px;
-	height: 500px;
-	float: left;
-	color: transparent;
-}
-
-/* remove border from ol */
-.sc-artwork-list{
-	margin:0;
-}
-
-/* remove numbers from artwork list */
-.sc-artwork-list > li{
-	list-style-type: none;
-}
-
-.sc-artwork-list > li > img{
-	width: 500px;
-	height: 500px;
-}
-
-/* no album art */
-.sc-no-artwork{
-	width: 500px;
-	height: 500px;
-	background-image: url('../img/noartwork.jpg');
-	background-size: cover;
-	color: transparent;
-}
-
-
-/* TRACK CONTROL STYLES */
-#info-container{
-	width: 500px;
-	height: 200px;
-}
-
-
-
-#control-row{
-	margin-top: 20px;
-	width: 300px;
-	margin-left: auto;
-	margin-right: auto;
-	text-align: center;
-	overflow: auto;
-}
-
-#btn-next{
-	float: right;
-}
-
-#btn-prev{
-	float: left;
-}
-
-
-
-#action-row{
-	margin-top: 20px;
-	width: 200px;
-	margin-left: auto;
-	margin-right: auto;
-	text-align: center;
-	overflow: auto;
-}
-
-#btn-remove{
-	float: right;
-}
-
-#btn-favorite{
-	float: left;
-}
-
-
-
-#info-row{
-	margin-top: 20px;
-	display: block;
-	padding-left: 50px;
-	padding-right: 50px;
-	overflow: auto;
-}
-
-.info-track{
-	margin-bottom: 5px;
-}
-
-.info-name{
-	font-weight: 600;
-	margin-bottom: 5px;
-	float: left;
-}
-
-.info-city{
-	color: #a9a9a9;
-	float: right;
-}
-
-
-#link-row{
-	margin-left: 50px;
-	min-height: 200px;
-	margin-bottom: 100px;
-}
-
-.link-icon{
-	width: 40px;
-	margin-right: 20px;
-}
-
+	
+			
