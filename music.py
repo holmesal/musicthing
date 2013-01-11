@@ -265,6 +265,18 @@ class GetRadialCitiesHandler(handlers.UserHandler):
 		
 		self.send_success(radial_cities)
 
+class RadiusHandler(handlers.UserHandler):
+	def get(self):
+		'''
+		The page to adjust the radius
+		'''
+		template_values = {
+			"city"	:	""
+		}
+		
+		template = jinja_environment.get_template('templates/station-radius.html')
+		self.response.out.write(template.render(template_values))
+
 		
 app = webapp2.WSGIApplication([
 							# music player page
@@ -278,7 +290,8 @@ app = webapp2.WSGIApplication([
 							('/music/get_radial_cities',GetRadialCitiesHandler),
 							('/music/change_tags',SetTagsHandler),
 							('/music/gettracks',GetTracksHandler),
-							('/music/chirp',ChirpHandler)
+							('/music/chirp',ChirpHandler),
+							('/music/radius',RadiusHandler)
 							])
 
 
