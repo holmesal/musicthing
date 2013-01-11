@@ -444,6 +444,33 @@ class StationPlayer(object):
 		time('p_sort_tracks')
 		return playlist[:self.max_tracks]
 	@staticmethod
+	def api_package_track_multi(tracks):
+		'''
+		Packages playlist into api form
+		@param tracks: self.playlist tracks
+		@type tracks: list
+		@return: a list of artist dicts
+		@rtype: list
+		'''
+		# grab the artists from the tracks
+		artists = [t['artist'] for t in tracks]
+		# package all the artists for the client
+		to_send = []
+		for artist in artists:
+			# remove the fields that are not json serializable
+			exclude = ('created','access_token','email','description','image_key',
+					'track_url','tags_','genre','external_image_url','cities','city')
+			artist_dict = artist.to_dict(exclude=exclude)
+			# add the artists id to the dict, for reference upon return to server
+			artist_dict.update({
+							'id' : artist.strkey,
+							'soundcloud_id' : artist.strkey,
+							'vicinity' : artist.city
+							})
+			# add the artist dict to the to_send array
+			to_send.append(artist_dict)
+		return to_send
+	@staticmethod
 	def package_track_multi(tracks):
 		'''
 		Packages playlist tracks into a form that is relevant to the client
@@ -459,9 +486,16 @@ class StationPlayer(object):
 		to_send = []
 		for artist in artists:
 			# remove the fields that are not json serializable
-			artist_dict = artist.to_dict(exclude=('created',))
+			exclude = ('created','access_token','email','description','image_key',
+					'track_url','tags_','genre','external_image_url','cities')
+			artist_dict = artist.to_dict(exclude=exclude)
 			# add the artists id to the dict, for reference upon return to server
-			artist_dict.update({'id':artist.strkey})
+			artist_dict.update({
+							'id' : artist.strkey,
+							'soundcloud_id' : artist.strkey,
+							'tags' : artist.tags_dict,
+							'city	' : artist.city_dict()
+							})
 			# add the artist dict to the to_send array
 			to_send.append(artist_dict)
 		return to_send

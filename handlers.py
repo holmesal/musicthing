@@ -282,8 +282,6 @@ class UserHandler(BaseHandler):
 		time('fetch tracks')
 		
 		# package the fuckers!
-		packaged_artists = station.package_track_multi(tracks)
-		time('package artists')
 		
 		global_times = timer.get_times()
 		logging.info('{} tracks in the playlist'.format(station.playlist.__len__()))
@@ -293,8 +291,8 @@ class UserHandler(BaseHandler):
 		station.add_to_session()
 		time('add to session')
 		
-		return packaged_artists
-	def send_artists(self,packaged_artists):
+		return tracks
+	def send_success(self,response):
 		'''
 		Simple method to send a list of packaged artists
 		@param packaged_artists: list of packaged artists dicts
@@ -302,9 +300,9 @@ class UserHandler(BaseHandler):
 		'''
 		to_send = {
 				'success' : 1,
-				'artists' : packaged_artists
+				'response' : response
 				}
-		self.response.out.write(to_send)
+		self.response.out.write(json.dumps(to_send))
 		
 	def fetch_radial_cities(self,ghash,precision=4,n=3):
 		'''
@@ -335,25 +333,41 @@ class UserHandler(BaseHandler):
 		cities_list = []
 		# calculate the distance from the center ghash
 		for city in cities:
-			geo_point = city.geo_point
-			distance = utils.distance_between_points(center_geo_point, geo_point)
-			
-			
-	def calc_major_cities(self, artists):
+			# package the city for the radius list
+			city_dict = city.package_for_radius_list()
+			# calc distance from center point
+			distance = utils.distance_between_points(center_geo_point, city.geo_point)
+			# add the distance 
+			city_dict['distance'] = distance
+			cities_list.append(city_dict)
+		
+		# sort the list of cities by distance
+		cities_list = sorted(cities_list,key=lambda c: c['distance'])
+		return cities_list
+		
+	def calc_major_cities(self):
 		'''
-		Tries to calc major cities, but fails.
+		Tries to calc major cities with the most artists
 		@param artists:
 		@type artists:
 		'''
-		# minumum artists in a city to qualify to be a major city
-		min_artists = 10
-		cities = [a.city.lower() for a in artists if a.city]
-		city_counts = Counter(cities).most_common()
-#		logging.info(cities)
-		cities = filter(lambda x: x[1] > min_artists,city_counts)
-		cities = [c[0].title() for c in cities]
-		logging.info(cities)
-		return cities
+		
+		min_artists = 20
+		popular_city_keys = []
+		for key in models.City.query().iter(keys_only=True):
+			artist_count = models.Artist.query(models.Artist.cities.city_key == key).count()
+			if artist_count > min_artists:
+				popular_city_keys.append((key,artist_count))
+		# sort the keys
+		popular_city_keys = sorted(popular_city_keys,key=lambda x: x[1])
+		# grab only the city keys
+		city_keys = (x[0] for x in popular_city_keys)
+		# fetch them!
+		city_futures = ndb.get_multi_async(city_keys)
+		cities = (f.get_result() for f in city_futures)
+		
+		to_send = (c.to_dict() for c in cities)
+		return to_send
 class UploadHandler(ArtistHandler,blobstore_handlers.BlobstoreUploadHandler):
 	pass
 

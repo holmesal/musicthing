@@ -18,30 +18,42 @@ class MusicHandler(handlers.UserHandler):
 		'''
 		The music page. Station is created in ajax.
 		'''
+#		lat = self.request.get('lat') or 42.3584308 
+#		lon = self.request.get('lon') or -71.0597732
+#		ghash = geohash.encode(lat,lon)
+		ghash = 'drt3nh6v'
 		# fetch the user from the session
 		user_key = self.get_user_key_from_session()
 		
-		# fetch the station from the session
-		try:
-			station = self.get_station_from_session()
-		except self.SessionError:
-			# if there is no station in the session, create a new one with defaults.
-			station = utils.StationPlayer(utils.StationPlayer._all_mode,{'user_key':user_key},None,None)
+		station = self.get_or_create_station_from_session()
+		mode = utils.StationPlayer._all_mode
+		mode_data = {'user_key':user_key}
+		station.set_mode(mode, mode_data)
 		
 		# add the station to the session
 		station.add_to_session()
 		
-		# grab the city if there is one
+		timer = utils.Timer()
+		time = timer.time
+		
+		# suggested cities with google places fields
+#		popular_cities = list(self.calc_major_cities())
+#		time('calc popular')
+		# cities list with name, key, and distance
+#		radial_cities = list(self.fetch_radial_cities(ghash))
+		time('calc radial')
 		template_values = {
 						'mode' : station.mode,
-						'city' : station.city_dict,
-						'tags' : station.client_tags,
-						'radius' : station.radius,
-						'geo_point' : station.geo_point
-						# cities list with name, key, and radius
-						# suggested cities with google places fields
-						
+						'mode_data' : station.mode_data,
+#						'city' : station.city_dict(),
+#						'tags' : station.client_tags,
+#						'radius' : station.radius,
+#						'geo_point' : station.geo_point,
+#						'popular_cities' : list(popular_cities),
+#						'radial_cities' : list(radial_cities),
+#						'times' : timer.get_times()
 						}
+		return self.response.out.write(json.dumps(template_values))
 		template = jinja_environment.get_template('templates/music.html')
 		self.response.out.write(template.render(template_values))
 	def post(self):
@@ -81,7 +93,6 @@ class MusicHandler(handlers.UserHandler):
 		# set the station to session to be passed on to /music
 		session = station.add_to_session()
 		return self.redirect('/music')
-# TODO: get cities for the radius selection
 class FavoritesStationHandler(handlers.UserHandler):
 	def get(self):
 		'''A station to play a users favorites
@@ -98,9 +109,9 @@ class FavoritesStationHandler(handlers.UserHandler):
 		
 		mode = utils.StationPlayer._favorites_mode
 		mode_data = {'user_key':user_key}
-		packaged_artists = self.change_station_mode(mode, mode_data)
-		
-		self.send_artists(packaged_artists)
+		tracks = self.change_station_mode(mode, mode_data)
+		packaged_artists = utils.StationPlayer.package_track_multi(tracks)
+		self.send_success(packaged_artists)
 		
 class EverywhereStationHandler(handlers.UserHandler):
 	def get(self):
@@ -109,10 +120,10 @@ class EverywhereStationHandler(handlers.UserHandler):
 		
 		mode = utils.StationPlayer._all_mode
 		mode_data = None
-		packaged_artists = self.change_station_mode(mode, mode_data)
-		
+		tracks = self.change_station_mode(mode, mode_data)
+		packaged_artists = utils.StationPlayer.package_track_multi(tracks)
 		# return with the packaged artist list
-		self.send_artists(packaged_artists)
+		self.send_success(packaged_artists)
 class MyLocationStationHandler(handlers.UserHandler):
 	def get(self):
 		'''A station to play music near the user
@@ -129,10 +140,10 @@ class MyLocationStationHandler(handlers.UserHandler):
 		# set the mode
 		mode = utils.StationPlayer._location_mode
 		mode_data = {'ghash':ghash,'radial_cities':cities}
-		packaged_artists = self.change_station_mode(mode, mode_data)
-		
+		tracks = self.change_station_mode(mode, mode_data)
+		packaged_artists = utils.StationPlayer.package_track_multi(tracks)
 		# respond with the artists
-		self.send_artists(packaged_artists)
+		self.send_success(packaged_artists)
 class CityStationHandler(handlers.UserHandler):
 	def get(self):
 		'''A station to play music around a city
@@ -157,9 +168,9 @@ class CityStationHandler(handlers.UserHandler):
 		# set the mode
 		mode = utils.StationPlayer._city_mode
 		mode_data = {'city':city,'radial_cities':cities}
-		packaged_artists = self.change_station_mode(mode, mode_data)
-		
-		self.send_artists(packaged_artists)
+		tracks = self.change_station_mode(mode, mode_data)
+		packaged_artists = utils.StationPlayer.package_track_multi(tracks)
+		self.send_success(packaged_artists)
 class SetTagsHandler(handlers.UserHandler):
 	def get(self):
 		'''Handler to change the stations tags.
@@ -191,7 +202,7 @@ class SetTagsHandler(handlers.UserHandler):
 		
 		# dont forget to add the station to the session
 		station.add_to_session()
-		self.send_artists(packaged_artists)
+		self.send_success(packaged_artists)
 class GetTracksHandler(handlers.UserHandler):
 	def get(self):
 		'''
@@ -205,7 +216,7 @@ class GetTracksHandler(handlers.UserHandler):
 		tracks = station.fetch_next_n_tracks()
 		packaged_artists = station.package_track_multi(tracks)
 		# send the tracks!
-		self.send_artists(packaged_artists)
+		self.send_success(packaged_artists)
 class ChirpHandler(handlers.UserHandler):
 	def get(self):
 		'''
@@ -231,6 +242,19 @@ class ChirpHandler(handlers.UserHandler):
 			return self.response.out.write(json.dumps({'success' : 1,
 													'message' : 'OK'
 													}))
+class GetRadialCitiesHandler(handlers.UserHandler):
+	def get(self):
+		'''Method to return the list of cities around a point
+		'''
+		lat = self.request.get('lat')
+		lon = self.request.get('lon')
+		ghash = geohash.encode(lat,lon)
+		
+		radial_cities = self.fetch_radial_cities(ghash)
+		
+		self.send_success(radial_cities)
+
+		
 app = webapp2.WSGIApplication([
 							# music player page
 							('/music', MusicHandler),
@@ -240,6 +264,7 @@ app = webapp2.WSGIApplication([
 							('/music/favorites',FavoritesStationHandler),
 							('/music/location',MyLocationStationHandler),
 							# playlist stuff
+							('/music/get_radial_cities',GetRadialCitiesHandler),
 							('/music/change_tags',SetTagsHandler),
 							('/music/gettracks',GetTracksHandler),
 							('/music/chirp',ChirpHandler)

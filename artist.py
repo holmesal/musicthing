@@ -189,7 +189,7 @@ class ManageArtistHandler(handlers.ArtistHandler):
 		# for right now, we only handle one city at a time. 
 		template_values = {
 						'artist' : artist,
-						'city' : artist.city_dict
+						'city' : artist.city_dict()
 		}
 		logging.info(template_values)
 		template = jinja_environment.get_template('templates/artist/manage.html')
@@ -463,6 +463,8 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 		# extract all the genres
 		tags = list(set([d['genre'] for d in data]))
 		counts = range(1,101) + [0 for i in range(1,601)] #@UnusedVariable
+		
+		
 		
 #		logging.info(data)
 		self.say(json.dumps(data))

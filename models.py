@@ -22,20 +22,29 @@ class City(ndb.Model):
 	@property
 	def geo_point(self):
 		return geohash.decode(self.ghash)
-	@property
 	def to_dict(self):
-		path = self.key.pairs()
-		country = path[0][1]
-		admin1 = path[1][1]
-		locality = path[2][1]
+		'''
+		Reverse engineers the city's key to model the form that the server
+		receives a city from google maps
+		'''
+		flat_key = self.key.flat()
+		country = flat_key[1]
+		admin1 = flat_key[3]
+		locality = flat_key[5]
+		city_string = '{}, {}'.format(locality,admin1) if admin1 != ' ' else locality
+		lat,lon =  geohash.decode(self.ghash)
 		return {
+			'city_string' : city_string,
 			'country' : country,
 			'administrative_area_level_1' : admin1,
 			'locality' : locality,
-			'display' : ''
-			
+			'lat' : lat,
+			'lon' : lon
 			}
-	def package(self):
+	def package_for_radius_list(self):
+		'''
+		Package for radius list
+		'''
 		strkey = self.key.urlsafe()
 		name = self.key.id()
 		return {
@@ -107,7 +116,6 @@ class Artist(ndb.Model):
 	image_key = ndb.BlobKeyProperty()
 	genre = ndb.StringProperty() # deprecated
 	
-	@property
 	def city_dict(self):
 		'''
 		Creates a dict form of the artists city for manage page, etc...
