@@ -38,6 +38,16 @@ class MusicHandler(handlers.UserHandler):
 		
 		# suggested cities with google places fields
 #		popular_cities = list(self.calc_major_cities())
+		popular_cities = [
+						{
+						'city_string' : 'Boston, MA',
+						'country' : 'United States',
+						'administrative_area_level_1' : 'Massachusetts',
+						'locality' : 'Boston',
+						'lat' : 42.3584308,
+						'lon' : -71.0597732
+						}
+						]
 #		time('calc popular')
 		# cities list with name, key, and distance
 #		radial_cities = list(self.fetch_radial_cities(ghash))
@@ -45,11 +55,12 @@ class MusicHandler(handlers.UserHandler):
 		template_values = {
 						'mode' : station.mode,
 						'mode_data' : station.mode_data,
+						# TODO: what to template out here?
 #						'city' : station.city_dict(),
 #						'tags' : station.client_tags,
 #						'radius' : station.radius,
 #						'geo_point' : station.geo_point,
-#						'popular_cities' : list(popular_cities),
+						'popular_cities' : popular_cities,
 #						'radial_cities' : list(radial_cities),
 #						'times' : timer.get_times()
 						}
@@ -129,8 +140,8 @@ class MyLocationStationHandler(handlers.UserHandler):
 		'''A station to play music near the user
 		'''
 		# get the users location
-		lat = self.request.get('lat')
-		lon = self.request.get('lon')
+		lat = float(self.request.get('lat'))
+		lon = float(self.request.get('lon'))
 		ghash = geohash.encode(lat,lon)
 		
 		# get the list of included cities
@@ -154,8 +165,8 @@ class CityStationHandler(handlers.UserHandler):
 		country = self.request.get('country','') or ' '
 		
 		# geo point
-		lat = self.request.get('lat')
-		lon = self.request.get('lon')
+		lat = float(self.request.get('lat'))
+		lon = float(self.request.get('lon'))
 		geo_point = ndb.GeoPt('{},{}'.format(lat,lon))
 		
 		
@@ -246,8 +257,8 @@ class GetRadialCitiesHandler(handlers.UserHandler):
 	def get(self):
 		'''Method to return the list of cities around a point
 		'''
-		lat = self.request.get('lat')
-		lon = self.request.get('lon')
+		lat = float(self.request.get('lat'))
+		lon = float(self.request.get('lon'))
 		ghash = geohash.encode(lat,lon)
 		
 		radial_cities = self.fetch_radial_cities(ghash)
