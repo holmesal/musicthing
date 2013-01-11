@@ -16,6 +16,7 @@ import urllib2
 import webapp2
 from google.appengine.ext import ndb
 import utils
+from google.appengine.ext import ndb
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
@@ -396,16 +397,10 @@ class UploadUrlsHandler(handlers.ArtistHandler):
 		#=======================================================================
 		
 		
-		city_name = self.request.get('locality')
-		if city_name == '':
-			city_name = ' '
+		city_name = self.request.get('locality') or ' '
 		if city_name is not None:
-			admin1 = self.request.get('administrative_area_level_1','')
-			if admin1 == '':
-				admin1 = ' '
-			country = self.request.get('country','')
-			if country == '':
-				country = ' '
+			admin1 = self.request.get('administrative_area_level_1','') or ' '
+			country = self.request.get('country','') or ' '
 			lat = self.request.get('lat')
 			lon = self.request.get('lon')
 			geo_point = ndb.GeoPt('{},{}'.format(lat,lon))
@@ -441,6 +436,19 @@ class ViewArtistHandler(handlers.BaseHandler):
 #===============================================================================
 # Development handlers
 #===============================================================================
+class GetArtistInfoHandler(handlers.UserHandler):
+	def get(self):
+		'''
+		Fetch artist names and emails for filtering on the email list
+		'''
+		artist_keys = models.Artist.query(keys_only = True)
+		artist_futures = ndb.get_multi_async(artist_keys)
+		artists = (a.get_result() for a in artist_futures)
+		artist_data = ({a.username:a.email} for a in artists)
+		
+		self.response.out.write(json.dumps(artist_data))
+		
+		
 class SpoofArtistHandler(handlers.ArtistHandler):
 	def get_all(self):
 		'''
@@ -487,7 +495,7 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 		self.say('Done!')
 		
 class TestHandler(handlers.ArtistHandler):
-	def get_all(self):
+	def get(self):
 		'''
 		A spoof api call to exist on the server to retrieve artist information
 		for use on the dev server
@@ -562,4 +570,5 @@ app = webapp2.WSGIApplication([
 							(STORE_TRACK,StoreTrackHandler),
 							('/artist/(.*)/',ViewArtistHandler),
 							('/artist/test',TestHandler),
+							('/artist/data','')
 							])
