@@ -8,6 +8,10 @@ from gaesessions import get_current_session
 import hashlib, uuid
 from collections import defaultdict
 from collections import Counter
+import utils
+import json
+from google.appengine.ext import ndb
+from geo import geohash
 
 #from excepts import *
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
@@ -139,7 +143,6 @@ class BaseHandler(webapp2.RequestHandler):
 									)
 					for tag,count in tag_to_count_mapping.iteritems() if count > 0
 					]
-	
 class ArtistHandler(BaseHandler):
 	def log_in(self,artist_id):
 		'''
@@ -209,27 +212,6 @@ class UserHandler(BaseHandler):
 		session = get_current_session()
 		session['logged_in'] = True
 		session['id'] = uid
-#	def set_station_meta_to_station(self,mode,mode_data,station_tags=None,client_tags=None):
-#		# assure the original artist --> tags:counts mappings are preserved
-#		if station_tags is not None:
-#			assert client_tags is not None, 'If passing tags, must preserve client tags.'
-#		session = get_current_session()
-#		session['mode'] = mode
-#		session['mode_data'] = mode_data
-#		session['station_tags'] = station_tags
-#		session['client_tags'] = client_tags
-#		
-#	def get_station_meta_from_session(self):
-#		session = get_current_session()
-#		try:
-#			mode = session['mode']
-#			mode_data = session['mode_data']
-#			station_tags = session['station_tags']
-#			client_tags = session['client_tags']
-#		except KeyError,e:
-#			raise self.SessionError(e)
-#		else:
-#			return mode,mode_data,station_tags,client_tags
 	def get_user_key_from_session(self):
 		'''
 		Fetches the users key from the session.
@@ -244,8 +226,12 @@ class UserHandler(BaseHandler):
 		except self.SessionError:
 			user_key = None
 		return user_key
-		
 	def get_station_from_session(self):
+		'''Pulls the station from the session.
+		@raise self.SessionError: if station doesn't exist
+		@return: a music station
+		@rtype: utils.StationPlayer
+		'''
 		session = get_current_session()
 		try:
 			station = session['station']
@@ -253,13 +239,111 @@ class UserHandler(BaseHandler):
 			raise self.SessionError(e)
 		else:
 			return station
-	def calc_major_cities(self,artists):
-		# TODO: redo this?
+	def get_or_create_station_from_session(self):
+		'''Pulls the station from the session.
+		If a station does not exist in the session,
+		an empty station is created
+		@return: a music station
+		@rtype: utils.StationPlayer
 		'''
-		@param artists: a list of artist entities
-		@type artists: list
-		@return: a list of cities with a minimum number of artists
+		try:
+			station = self.get_station_from_session()
+		except self.SessionError:
+			station = utils.StationPlayer()
+		
+		return station
+	def change_station_mode(self,mode,mode_data):
+		'''
+		Changes the mode of a station. If the station doesn't exist,
+		a new one is created using the mode and mode_data provided
+		@param mode: station player mode
+		@type mode: str
+		@param mode_data: info needed for the specified mode
+		@type mode_data: dict
+		@return: a list of packaged artists for the client
 		@rtype: list
+		'''
+		timer = utils.Timer()
+		time = timer.time
+		
+		# grab the station
+		station = self.get_or_create_station_from_session()
+		time('get or create station')
+		# set the station mode
+		station.set_mode(mode,mode_data)
+		time('set mode')
+		
+		# create the station!!
+		algo_times = station.create_station()
+		time('create_station()')
+		
+		# pull the first 10 tracks
+		tracks = station.fetch_next_n_tracks()
+		time('fetch tracks')
+		
+		# package the fuckers!
+		packaged_artists = station.package_track_multi(tracks)
+		time('package artists')
+		
+		global_times = timer.get_times()
+		logging.info('{} tracks in the playlist'.format(station.playlist.__len__()))
+		logging.info(json.dumps({'global':global_times,'algo':algo_times}))
+		
+		# add the station to the session
+		station.add_to_session()
+		time('add to session')
+		
+		return packaged_artists
+	def send_artists(self,packaged_artists):
+		'''
+		Simple method to send a list of packaged artists
+		@param packaged_artists: list of packaged artists dicts
+		@type packaged_artists: list
+		'''
+		to_send = {
+				'success' : 1,
+				'artists' : packaged_artists
+				}
+		self.response.out.write(to_send)
+		
+	def fetch_radial_cities(self,ghash,precision=4,n=3):
+		'''
+		Fetches cities around the specified ghash
+		Sorts the cities by distance from the center ghash
+		@param ghash: the ghash of the center point
+		@type ghash: str
+		'''
+		# calc the center geo_point
+		center_geo_point = geohash.decode(ghash)
+		# create a list of ghashes around the 
+		ghash = utils.chop_ghash(ghash, precision)
+		ghash_list = utils.create_ghash_list(ghash, n)
+		# get a list of all the city keys in the range of ghashes
+		city_keys_set = set([])
+		for ghash in ghash_list:
+			city_keys = models.City.query(
+						models.City.ghash >= ghash,
+						models.City.ghash <= ghash+"{"
+						).iter(
+							batch_size = 50,
+							keys_only = True)
+			city_keys_set.update(city_keys)
+		
+		city_futures = ndb.get_multi_async(city_keys_set)
+		cities = (c.get_result() for c in city_futures)
+		
+		cities_list = []
+		# calculate the distance from the center ghash
+		for city in cities:
+			geo_point = city.geo_point
+			distance = utils.distance_between_points(center_geo_point, geo_point)
+			
+			
+	def calc_major_cities(self, artists):
+		'''
+		Tries to calc major cities, but fails.
+		@param artists:
+		@type artists:
 		'''
 		# minumum artists in a city to qualify to be a major city
 		min_artists = 10
@@ -270,20 +354,6 @@ class UserHandler(BaseHandler):
 		cities = [c[0].title() for c in cities]
 		logging.info(cities)
 		return cities
-	def package_artist_multi(self,artists):
-		'''
-		Packages a list of artists into dictionary form
-		@param artists: a list of artist entities
-		@type artists: list
-		@return: a list of artists in dictionary form
-		@rtype: list
-		'''
-		to_send = []
-		for artist in artists:
-			artist_dict = artist.to_dict(exclude=('created',))
-			artist_dict.update({'id':artist.strkey})
-			to_send.append(artist_dict)
-		return to_send
 class UploadHandler(ArtistHandler,blobstore_handlers.BlobstoreUploadHandler):
 	pass
 
