@@ -253,8 +253,13 @@ loadcities = function(mode){
 	
 	if (mode == "location"){
 		log("loading cities via ajax...")
+		data = {
+			lat	:	lat,
+			lon :	lon
+		}
 		
-		$.get()
+		log(data)
+		$.get('/music/get_radial_cities',data)
 	}
 	
 	
