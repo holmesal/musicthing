@@ -259,7 +259,10 @@ loadcities = function(mode){
 		}
 		
 		log(data)
-		$.get('/music/get_radial_cities',data)
+		$.getJSON('/music/get_radial_cities',data,function(response){
+			log(response)
+			plotcities()
+		})
 	}
 	
 	
