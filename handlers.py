@@ -343,7 +343,7 @@ class UserHandler(BaseHandler):
 		
 		# sort the list of cities by distance
 		cities_list = sorted(cities_list,key=lambda c: c['distance'])
-		return cities_list
+		return cities_list[:10]
 		
 	def calc_major_cities(self):
 		'''
