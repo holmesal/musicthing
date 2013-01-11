@@ -552,6 +552,46 @@ class TestHandler(handlers.ArtistHandler):
 		assert int(mp_result.content) == 1, \
 			'mixpanel "login" rpc for user {} failed'.format(str(current_user.id))
 
+class AddSpoofCititesHandler(handlers.UserHandler):
+	def get(self):
+		'''
+		Adds cities to all the spoofed artists
+		'''
+		if os.environ['SERVER_SOFTWARE'].startswith('Development') == False:
+			self.say('This handler can not be accessed')
+			return
+		cities = ['c'*i for i in range(1,10)]
+		states = ['s'*i for i in range(1,10)]
+		countries = ['y'*i for i in range(1,10)]
+		
+		city_keys = []
+		for y in countries:
+			for s in states:
+				for c in cities:
+					lat = random.uniform(41.9,42.9)
+					lon = random.uniform(-70.9,-71.9)
+#					gstring = '{},{}'.format(lat,lon)
+					geo_point = ndb.GeoPt(lat,lon)
+					city = utils.fetch_city_from_path(y,s,c,geo_point)
+					city_keys.append(city)
+					
+#		allston = utils.fetch_city_from_path('United States', 'MA', 'Allston', ndb.GeoPt('42.3539038, -71.1337112'))
+#		boston = utils.fetch_city_from_path('United States', 'MA', 'Boston', ndb.GeoPt('42.353, -71.133'))
+#		somerville = utils.fetch_city_from_path('United States', 'MA', 'Somerville', ndb.GeoPt('42.3875968, -71.0994968'))
+#		
+#		city_keys = [allston,boston,somerville]
+		artists = models.Artist.query().iter(batch_size = 50)
+		for a in artists:
+#			del a._properties['city_keys']
+#			del a._properties['ghash']
+			city = random.choice(city_keys)
+			a.cities.append(models.CityProperty(city_key = city.key, ghash = city.ghash))
+#			a.ghash = city.ghash
+#			a.city_keys.append(city.key)
+			a.put()
+#			self.say(a.key)
+		self.say('Done!')
+
 ARTIST_LOGIN = '/artist/login'
 SC_AUTH = '/artist/scauth'
 ARTIST_LOGIN_COMPLETE = '/artist/login/complete'
@@ -578,5 +618,6 @@ app = webapp2.WSGIApplication([
 							(STORE_TRACK,StoreTrackHandler),
 							('/artist/(.*)/',ViewArtistHandler),
 							('/artist/test',TestHandler),
-							('/artist/data','')
+							('/artist/data',''),
+							('/artist/test/add_cities',AddSpoofCititesHandler)
 							])
