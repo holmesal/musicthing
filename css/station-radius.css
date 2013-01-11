@@ -1,0 +1,119 @@
+body{
+	margin: 0;
+}
+
+.radiusblock{
+	width: 500px;
+	height: 650px;
+	margin-left: auto;
+	margin-right: auto;
+	position: relative;
+	background-image: url(../img/vertline.png);
+}
+
+.milecounter{
+	width: 500px;
+	margin-bottom: 0px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: right;
+}
+
+.dotted{
+	border-top: 1px dashed #646464;
+}
+
+.outabove{
+	margin-top: -50px;
+}
+
+.miles{
+	font-size: 40pt;
+	margin-right: 2px;	
+}
+
+#draggable{
+	width: 100%;
+	height: 100px;
+/* 	background-color: rgba(114,114,114,0.13); */
+	position: absolute;
+	bottom:0;
+	z-index: 5;
+}
+
+#overlay{
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 50px;
+/* 	background-color: rgba(217,237,255,0.48); */
+	background-image: url(../img/vertline_blue.png);
+	z-index: 2;
+}
+
+#city-container{
+/* 	background-color: rgba(84,101,150,0.36); */
+	overflow: auto;
+	position: absolute;
+	width: 100%;
+	bottom:0;
+	z-index: 3;
+}
+
+.buffer{
+	width: 100%;
+	height: 20px;
+/* 	background-color: red; */
+}
+
+.city-row{
+/* 	background-color: rgba(0,123,15,0.48); */
+	width: 50%;
+	margin-bottom: 30px;
+}
+
+.city-text{
+	font-weight: 400;
+	font-size: 16pt;
+	line-height: 120%;
+}
+
+.city-left{
+	text-align: right;
+}
+
+.city-right{
+	text-align: left;
+	margin-left: 50%;
+}
+
+.circle{
+	border-radius: 50%;
+	width: 10px;
+	height: 10px;
+	background-color: black;
+	margin-top: 8px;
+}
+
+.circle-left{
+	float: right;
+	margin-right: -5px;
+	margin-left: 10px;
+}
+
+.circle-right{
+	float: left;
+	margin-left: -5px;
+	margin-right: 10px;
+}
+
+.gradient{
+	background: -moz-radial-gradient(center, ellipse cover,  rgba(30,87,153,1) 0%, rgba(41,137,216,0.5) 50%, rgba(32,124,202,0.49) 51%, rgba(125,185,232,0) 100%); /* FF3.6+ */
+background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(30,87,153,1)), color-stop(50%,rgba(41,137,216,0.5)), color-stop(51%,rgba(32,124,202,0.49)), color-stop(100%,rgba(125,185,232,0))); /* Chrome,Safari4+ */
+background: -webkit-radial-gradient(center, ellipse cover,  rgba(30,87,153,1) 0%,rgba(41,137,216,0.5) 50%,rgba(32,124,202,0.49) 51%,rgba(125,185,232,0) 100%); /* Chrome10+,Safari5.1+ */
+background: -o-radial-gradient(center, ellipse cover,  rgba(30,87,153,1) 0%,rgba(41,137,216,0.5) 50%,rgba(32,124,202,0.49) 51%,rgba(125,185,232,0) 100%); /* Opera 12+ */
+background: -ms-radial-gradient(center, ellipse cover,  rgba(30,87,153,1) 0%,rgba(41,137,216,0.5) 50%,rgba(32,124,202,0.49) 51%,rgba(125,185,232,0) 100%); /* IE10+ */
+background: radial-gradient(ellipse at center,  rgba(30,87,153,1) 0%,rgba(41,137,216,0.5) 50%,rgba(32,124,202,0.49) 51%,rgba(125,185,232,0) 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#007db9e8',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
+}
