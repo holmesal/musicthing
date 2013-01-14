@@ -501,7 +501,7 @@
         // adding controls to the player
         $player
           .find('.sc-controls')
-            .append('<a href="#play" class="sc-play">Play</a> <a href="#pause" class="sc-pause hidden">Pause</a><a class="sc-prev">Prev</a><a class="sc-next">Next</a>')
+            .append('<a href="#play" class="sc-play">Play</a> <a href="#pause" class="sc-pause hidden">Pause</a>')
           .end()
           .append('<a href="#info" class="sc-info-toggle">Info</a>')
           .append('<div class="sc-scrubber"></div>')
@@ -718,7 +718,7 @@
   // the default Auto-Initialization
   $(function() {
     if($.isFunction($.scPlayer.defaults.onDomReady)){
-      /* $.scPlayer.defaults.onDomReady(); */
+      $.scPlayer.defaults.onDomReady();
     }
   });
 

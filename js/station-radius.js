@@ -135,7 +135,7 @@ dragged = function(event,ui){
 	mi = fpx * mpxs[idx_slot] + dstarts[idx_slot]
 	
 	if (idx_slot == ycenters.length-1){
-		$(".miles").text(dstarts[dstarts.length-1])
+		$(".miles").text(Math.floor(dstarts[dstarts.length-1]))
 	} else{
 		$(".miles").text(Math.floor(mi))
 	}
@@ -241,6 +241,9 @@ register_autocomplete = function(){
 		  	}
 		  	
 	  	})
+	  	
+	  	//change the button
+  		$("#saveCity").text('Use '+$("#location_string").val())
 	  	
 	  	//grab the lat and lon
 		$("#lat").val(place.geometry.location.Ya)
