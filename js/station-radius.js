@@ -135,7 +135,7 @@ dragged = function(event,ui){
 	mi = fpx * mpxs[idx_slot] + dstarts[idx_slot]
 	
 	if (idx_slot == ycenters.length-1){
-		$(".miles").text(dstarts[dstarts.length-1])
+		$(".miles").text(Math.floor(dstarts[dstarts.length-1]))
 	} else{
 		$(".miles").text(Math.floor(mi))
 	}
@@ -242,6 +242,9 @@ register_autocomplete = function(){
 		  	
 	  	})
 	  	
+	  	//change the button
+  		$("#saveCity").text('Use '+$("#location_string").val())
+	  	
 	  	//grab the lat and lon
 		$("#lat").val(place.geometry.location.Ya)
 		$("#lon").val(place.geometry.location.Za)
@@ -259,8 +262,10 @@ loadcities = function(mode){
 		}
 		
 		log(data)
-		$.getJSON('/music/get_radial_cities',data,function(response){
-			log(response)
+		$.getJSON('/music/get_radial_cities',data,function(d){
+			spinner.stop()
+			log(d.response)
+			cities = d.response
 			plotcities()
 		})
 	}
@@ -326,7 +331,7 @@ loadcities = function(mode){
 	]
 */
 	
-	plotcities()
+	
 	
 }
 
@@ -348,8 +353,8 @@ startspinner = function(){
 	  top: 'auto', // Top position relative to parent in px
 	  left: 'auto' // Left position relative to parent in px
 	};
-	var target = document.getElementById('loading');
-	var spinner = new Spinner(opts).spin(target);
+	var target = document.getElementById('city-container');
+	spinner = new Spinner(opts).spin(target);
 	}
 
 $(document).ready(function() {

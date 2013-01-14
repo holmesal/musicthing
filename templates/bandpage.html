@@ -1,0 +1,720 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Template &middot; Bootstrap</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 20px;
+        padding-bottom: 40px;
+      }
+
+      /* Custom container */
+      
+      .container-narrow > hr {
+        margin: 30px 0;
+      }
+
+      /* Main marketing message and sign up button */
+      .jumbotron {
+        margin: 60px 0;
+        text-align: center;
+      }
+      .jumbotron h1 {
+        font-size: 72px;
+        line-height: 1;
+      }
+      .jumbotron .btn {
+        font-size: 21px;
+        padding: 14px 24px;
+      }
+
+      /* Supporting marketing content */
+      .marketing {
+        margin: 60px 0;
+      }
+      .marketing p + h4 {
+        margin-top: 28px;
+      }
+    </style>
+    
+    <style type="text/css">
+	    body{
+		    background-image: url(../img/crosses.png);
+		    padding-top: 100px;
+	    }
+	    
+	    .container-narrow {
+			margin: 0 auto;
+			max-width: 700px;
+			background-color: white;
+/* 			padding: 20px; */
+			border-radius: 5px;
+			overflow: auto;
+			box-shadow: 0px 0px 5px #c0c0c0;
+		}
+		
+		.tophalf{
+			padding: 20px;
+		}
+		
+		.adornment{
+			position: absolute;
+			background-image: url(../img/bgas2.jpg);
+			width: 30px;
+			height: 30px;
+			margin-top: -50px;
+			left: 50%;
+			margin-left: -15px;
+			background-color: red;
+		}
+		
+		.rules{
+			margin-top: 40px;
+		}
+		
+		.subrules{
+			margin-top: 10px;
+			color: #7a7a7a;
+		}
+		
+		.subrulesnum{
+			color: #3ba1d0;
+		}
+		
+		.progressbar-outer{
+			margin-top: 15px;
+			margin-bottom: 25px;
+			width: 100%;
+			height: 20px;
+			background-color: #fafafa;
+			box-shadow: inset 0px 0px 3px #d2d2d2;
+			border-radius: 15px;
+			padding:5px;
+			position: relative;
+		}
+		
+		.progressbar-inner{
+			width: 0%;
+			height: 20px;
+/* 			background-color: #2d97e8; */
+			background-color: #4eb2cd;
+			border-top-left-radius: 15px;
+			border-bottom-left-radius: 15px;
+			border-radius: 15px;
+			position: absolute;
+			z-index: 3;
+		}
+		
+		.progressbar-contribute{
+			width: 0%;
+			height: 20px;
+/* 			background-color: #2d97e8; */
+			background-color: #4eb2cd;
+			border-top-left-radius: 15px;
+			border-bottom-left-radius: 15px;
+			border-radius: 15px;
+			position: absolute;
+			z-index:2;
+		}
+		
+		.progressbar-leader{
+/* 			background-color: red; */
+			width: 0%;
+			height: 30px;
+			margin-top: -5px;
+			border-right: 1px solid #aaaaaa;
+			position: absolute;
+		}
+		
+		.leader-number{
+			float: right;
+			text-align: right;
+			margin-right: -14px;
+			margin-top: -30px;
+			color: #6d6d6d;
+		}
+		
+		.super{
+			vertical-align: super;
+			font-size: 9pt;
+		}
+		
+		.togodiv{
+			width: 200px;
+			height: 30px;
+			background-color: #fafafa;
+			border-radius: 5px;
+			box-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+			
+			margin-bottom: 20px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		
+		.smallterm{
+			margin: 0;
+			color: #a5a5a5;
+			font-size: 12pt;
+			float: left;
+		}
+		
+		.buybtn{
+			float: right;
+		}
+		
+		.bottomhalf{
+			text-align: center;
+			width: 100%;
+			margin-bottom: 40px;
+		}
+		
+		.leftpanel{
+			display: inline-block;
+			width: 400px;
+			padding: 20px;
+			padding-top: 0px;
+			margin-left: -20px;
+			vertical-align: top;
+/* 			background-color: green; */
+		}
+		
+		.album-artwork{
+/* 			background-image: url(../img/bgas2.jpg); */
+/* 			background-size: cover; */
+/* 			border-radius: 5px; */
+			width: 300px;
+			height: 300px;
+/* 			vertical-align: top; */
+		}
+		
+		.sc-player{
+			display: none;
+		}
+		
+		.playbar{
+			width: 300px;
+			margin-left: auto;
+			margin-right: auto;
+			margin-top: 10px;
+		}
+		
+		.playbtn{
+			float: left;
+		}
+		
+		.playbtn:hover{
+			cursor: pointer;
+		}
+		
+		.playtxt{
+			text-align: right;
+			font-size: 12pt;
+			padding-top: 10px;
+		}
+		
+		.findon{
+			width:300px;
+			margin-top: 50px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		
+		.extlink{
+			width: 40px;
+			margin-left: 5px;
+		}
+		
+		
+		.rightpanel{
+			vertical-align: top;
+			display: inline-block;
+			width: 250px;
+/* 			height: 400px; */
+/* 			background-color: blue; */
+			border-left: 1px solid #ebebeb;
+			text-align: left;
+			padding-left: 20px;
+		}
+		
+		.name{
+			font-size: 14pt;
+		}
+		
+		
+		.footer{
+			background: url(../img/debut_dark.png);
+			width: 100%;
+/* 			height: 200px; */
+			text-align: center;
+			color: #f7f7f7;
+			padding-top: 20px;
+			margin-bottom: 0px;
+		}
+		
+		
+		
+		
+		
+/* 		payment screen */
+		.payment-top{
+			height: 50px;
+			background-color: #eeeeee;
+		}
+		
+		.buyform{
+/* 			width: 300px; */
+			padding: 20px;
+/* 			background-color: red; */
+/*
+			margin-left: auto;
+			margin-right: auto;
+			text-align: center;
+*/
+			padding-top: 50px;
+		}
+		
+		.buy-left{
+/* 			background-color: red; */
+			width: 50%;
+			height: 300px;
+			float: left;
+		}
+		
+		.feetext{
+			font-size: 12pt;
+			line-height: 150%;
+			color: #636363;
+		}
+		
+		.feenum{
+			float: right;
+			margin-right: 50px;
+		}
+		
+		.buy-right{
+/* 			background-color: green; */
+			width: 50%;
+/* 			height: 300px; */
+			float: right;
+			padding-top: 40px;
+		}
+		
+		input{
+			font-size: 14pt !important;
+			line-height: 120% !important;
+			float: right;
+			width: 250px;
+			margin-top: 10px;
+		}
+		
+		.radiusfee{
+			width: 42px;
+			font-size: 12pt !important;
+			line-height: 100% !important;
+			height: 20px !important;
+			margin: 0px;
+			margin-top: -6px;
+			margin-right: -6px;
+			text-align: right;
+		}
+		
+		.aboutus{
+			width: 310px;
+/* 			height: 200px; */
+			background-color: white;
+			box-shadow: 0px 0px 3px dimgray;
+			position: absolute;
+			z-index: 1000;
+			opacity: 0;
+			border-radius: 5px;
+			padding: 20px;
+/* 			position: absolute; */
+		}
+		
+		.bottomlinks{
+			text-align: center;
+			margin-bottom: 20px;
+		}
+		
+    </style>
+    <link href="../css/bootstrap-responsive.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+                    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+                                   <link rel="shortcut icon" href="../assets/ico/favicon.png">
+  </head>
+
+  <body>
+
+    <div class="container-narrow">
+<!--     	<div class="adornment">R</div> -->
+		
+		<div class="tophalf">
+			
+			
+			
+<!-- 			<div class="collapse collap-1"> -->
+			<div class="collapse collap-1 in">
+			<h1>Ivy Dye <span class="muted">wants to play</span></h1>
+			<h1>The Middle East Upstairs <span class="muted">in</span></h1>
+			<h1>Boston, MA <span class="muted">on</span></h1>
+			<h1>Jan. 24th, 2013</h1>
+			<p class="rules lead">The 4 bands that sell 50 tickets <strong>the fastest</strong> get the show.</p>
+			
+			</div>
+			
+<!-- 			<div class="collapse collap-4 in"> -->
+			<div class="collapse collap-4">
+				<a href="#" class="btn btn-warning backbtn">Back</a>
+				<p class="rules lead">Congratulations! <strong>Ivy Dye</strong> is about to be one ticket closer.</p>
+			</div>
+			
+			
+			<div class="progressbar-outer">
+				<div class="btn-info progressbar-inner"></div>
+<!-- 				<div class="btn-warning progressbar-contribute"></div> -->
+<!--
+				<div id="1" class="progressbar-leader"><span class="leader-number lead">1<span class="super">st</span></span></div>
+				<div id="2" class="progressbar-leader"><span class="leader-number lead">2<span class="super">nd</span></span></div>
+				<div id="3" class="progressbar-leader"><span class="leader-number lead">3<span class="super">rd</span></span></div>
+				<div id="4" class="progressbar-leader"><span class="leader-number lead">4<span class="super">th</span></span></div>
+-->
+			</div>
+			
+			<p class="subrules lead">Ivy Dye needs to sell <strong class="subrulesnum strong">22</strong> more tickets.</p>
+			
+<!-- 			<div class="togodiv"><p class="togotext">Only 19 tickets to go!</p></div> -->
+			
+			<div class="collapse collap-2 in">
+<!-- 			<div class="collapse collap-2"> -->
+			<div class="buyrow">
+				<p class="smallterm">You'll get a ticket if Ivy Dye gets the show.</br>You won't be charged if they don't.</p>
+				<a id="getticket" class="buybtn btn btn-large btn-info">Get a ticket</a>
+				
+			</div>
+			<div style="clear:both;"></div>
+			
+			<hr style="opacity:0;">
+			</div>
+		</div>
+<!-- 		<div class="collapse collap-3"> -->
+		<div class="collapse collap-3 in">
+		<div class="bottomhalf">
+			<div class="leftpanel">
+				<img class="album-artwork img-rounded" src="../img/loading_artwork.png">
+				
+				<div class="playbar">
+					<a id="playbtn"><img class="playbtn" src="../img/play.png"></a>
+					<p class="playtxt">Listen to "Heart"</p>
+				</div>
+				<p class="lead findon" style="text-align:left;">Find more from Ivy Dye</p>
+				<div class="links">
+					<a href="http://www.ivydye.bandcamp.com"><img class="extlink" style="width:43px;" src="../img/bandcamp.png"></a>
+					<a href="http://www.facebook.com/ivydyemusic"><img class="extlink" src="../img/facebook.png"></a>
+					<a href="http://www.twitter.com/ivydye/"><img class="extlink" src="../img/twitter.png"></a>
+					<a href="http://www.ivydye.com"><img class="extlink" src="../img/website.png"></a>
+					<a href="http://www.youtube.com/user/IvyDyeMusic"><img class="extlink" src="../img/youtube.png"></a>
+					
+					
+				</div>
+				<div class="sc-player">
+					<a id="sctrack" class="sc-player" href="http://api.soundcloud.com/tracks/53097530">Player</a>
+				</div>
+			</div>
+			
+			<div class="rightpanel">
+				<p class="lead">Already bought</p>
+				<p class="name muted">Miss Scarlet</p>
+				<p class="name muted">Colonel Mustard</p>
+				<p class="name muted">Mrs. White</p>
+				<p class="name muted">Mr. Green</p>
+				<p class="name muted">Mrs. Peacock</p>
+				<p class="name muted">Professor Plum</p>
+				<p class="name muted">Dr. Black</p>
+				<p class="name muted">Miss Peach</p>
+				<p class="name muted">Monsieur Brunette</p>
+				<p class="name muted">Madame Rose</p>
+				<p class="name muted">Sergeant Gray</p>
+				<p class="name muted">Captain Brown</p>
+				<p class="name muted">Mr. Slate-Grey</p>
+				<p class="name muted">Inspector Grey</p>
+				<p class="name muted">Hograth</p>
+				<p class="name muted">The Black Dog</p>
+				<p class="name muted">Lady Lavendar</p>
+				<p class="name muted">Mr. Meadow-Brook</p>
+				<p class="name muted">Mrs. Meadow-Brook</p>
+				<p class="name muted">Prince Azure</p>
+				<p class="name muted">Rusty Nayler</p>
+				<p class="name muted">Lord Gray</p>
+				<p class="name muted">The Butler</p>
+				<p class="name muted">The Inspector</p>
+				<p class="name muted">Yvette</p>
+				<p class="name muted">Mrs. Ho</p>
+				<p class="name muted">The Motorist</p>
+				<p class="name muted">The Singing Telegram Girl</p>
+			</div>
+		</div>
+		
+		<hr style="opacity:0;">
+					
+		<div class="bottomlinks">
+			<a href="mailto: carl@getradi.us">Contact</a>
+			&middot
+			<a href="#" style="text-decoration: line-through;">Terms of Service</a>
+			&middot
+			<a href="#" style="text-decoration: line-through;">Fees</a>
+			&middot
+			<a href="#" style="text-decoration: line-through;">Frequently Asked Questions</a>
+		</div>
+		
+		</div> <!--end collapse-->
+		
+		<div class="collapse collap-4">
+<!-- 		<div class="collapse collap-4 in"> -->
+<!--
+			<div class="payment-top">
+				<a href="#" class="btn btn-warning backbtn">Back</a>
+				<a href="#" class="btn btn-info">?</a>
+			</div>
+-->
+			
+			
+			<form class="buyform">
+				
+				<div class="buy-left">
+					<p class="lead">Ticket Price</p>
+					<p class="feetext">Base ticket price<span class="feenum">$<span class="basefloat">10.00</span></span></p>
+					<p class="feetext">Ticketfly fee<span class="feenum">$<span class="ticketflyfloat">2.53</span></span></p>
+					<p class="feetext">Radius<span class="feenum"><input class="radiusfee" type="text"></span></p>
+					<p class="feetext"><strong>Total</strong><span id="totalcost" class="feenum"><strong>--</strong></span></p>
+					
+					
+					
+				</div>
+				<div class="buy-right">
+					<input type="text" placeholder="Full Name">
+					<input type="text" placeholder="Email">
+					<input type="text" placeholder="Phone">
+				</div>
+				
+				<div style="clear:both;"></div>
+				
+				
+				<div class="collapse collap-2">
+				<!-- <div class="collapse collap-2 in"> -->
+					<div class="buyrow">
+						<p class="smallterm">Payments are handled securely by <a href="http://www.stripe.com">Stripe</a></br>Please review the <a href="/terms"  style="text-decoration: line-through;">Terms of Service</a></p>
+						<a id="purchaseticket" class="buybtn btn btn-large btn-success">Purchase ticket</a>
+<!--
+						<script
+					src="https://checkout.stripe.com/v2/checkout.js" class="stripe-button"
+					data-key="pk_test_SN4NViBmeNI9s4pl8kTDDgUN"
+					data-amount="1000"
+					data-name="Radius"
+					data-description="Pre-purchase a ticket to see Ivy Dye on January 24th, 2013, at the Middle East Upstairs. You will only be charged if Ivy Dye gets the show. Your card will not be charged now."
+					data-image="http://getradi.us/img/logobig.png">
+				</script>
+-->
+					</div>
+					<div style="clear:both;"></div>
+					
+					<hr style="opacity:0;">
+					
+					<div class="bottomlinks">
+						<a href="mailto: carl@getradi.us">Contact</a>
+						&middot
+						<a href="#" style="text-decoration: line-through;">Terms of Service</a>
+						&middot
+						<a href="#" style="text-decoration: line-through;">Fees</a>
+						&middot
+						<a href="#" style="text-decoration: line-through;">Frequently Asked Questions</a>
+					</div>
+					
+				</div>
+				
+				
+			</form>
+			
+			
+			
+		</div>
+		
+		<div class="aboutus" hidden>
+			<p class="lead">We hate fees, too.</p>
+			<p class="feetext">Pay what you want - we'll give half to <a target="_blank" href="http://www.mhopus.org/">Mr. Holland's Opus</a>, a charity that helps keep music programs alive in under-funded schools.</p>
+		</div>
+		
+		<!--
+<div class="footer">
+			<p class="footerpowered">Powered by Radius</p>
+			<p class="footertagline">Discover more music. See more shows.</p>
+		</div>
+-->
+		
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    
+    
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/soundcloud.player.api.js"></script>
+    <script type="text/javascript" src="../js/soundcloud-player.js"></script>
+    <script src="https://checkout.stripe.com/v2/checkout.js"></script>
+    <script src="../js/numeric.js"></script>
+    <script type="text/javascript">
+	    
+	    totalamounts = function(){
+		    input = $(".radiusfee").val()
+		    
+		    //text to floats
+		    base = Math.ceil(parseFloat($(".basefloat").text()) * 100)
+		    ticketfly = Math.ceil(parseFloat($(".ticketflyfloat").text()) * 100)	    
+		    
+		    radius = Math.ceil(parseFloat(input)*100)
+		    
+		    total = base + ticketfly + radius
+		    
+		    //if you can't do it, show --
+		    if (isNaN(total)){
+			    $('#totalcost').text('--')
+		    } else{
+		    	totalamount = total
+			    $('#totalcost').text('$' + total/100)
+		    }
+		    
+		    
+	    }
+	    
+	    $(document).ready(function() {
+		    
+		    //spoof animation for progressbar
+		    $(".progressbar-inner,.progressbar-contribute").animate({"width":"60%"},300)
+		    
+		    //spoof leader widths
+		    $("#1").css("width","95%")
+		    $("#2").css("width","85%")
+		    $("#3").css("width","72%")
+		    $("#4").css("width","65%")
+		    
+		    total = $(".progressbar-outer").width()
+		    div = Math.ceil(total/50)
+		    
+/* 		    inner =  */
+		    
+		    //hover bump listener spoof
+		    $("#getticket").hover(function(){
+			    $(".progressbar-inner").animate({"width":"+=2%"},{duration:100,queue:true})
+		    },function(){
+			    $(".progressbar-inner").animate({"width":"-=2%"},{duration:100,queue:true})
+		    })
+		    
+		    //initialize collapse
+		    $(".collapse").collapse({
+			    toggle	:	false
+		    })
+		    
+		    //hook up artwork
+		    $(document).bind('onPlayerInit.scPlayer', function(event){
+			  	img_path = $(".sc-artwork-list").children(".active").children().attr("src")
+			  	console.log(img_path)
+			  	$(".album-artwork").attr("src",img_path)
+			  	$(".sc-artwork-list").children(".active").children().attr("src")
+/* 			  	$(img[0]).prependTo(".leftPanel").css({"display":"block"}) */
+			});
+		    
+		    
+		    //hook up play button
+		    $(".playbtn").click(function(){
+			    if ($(".playing").length == 0){ //nothing currently playing, show pause
+				    $(".playbtn").attr("src","../img/pause.png")
+			    } else{
+				    $(".playbtn").attr("src","../img/play.png")
+			    }
+			    
+			    $(".sc-play").click()
+			    
+		    })
+		    
+		    //payment button listener
+		    $("#getticket").click(function(){
+		    	$(".progressbar-inner").css({"width":"62%"})
+			    $(".collapse").collapse('toggle')
+		    })
+		    
+		    //back button listener
+		    $(".backbtn").click(function(){
+			    $(".collapse").collapse('toggle')
+		    })
+		    
+		    
+		    $('#purchaseticket').click(function(){
+				var token = function(res){
+					console.log('Got token ID:', res.id);
+				};
+				
+				StripeCheckout.open({
+					key:         'pk_test_SN4NViBmeNI9s4pl8kTDDgUN',
+					address:     false,
+					image:		 'http://getradi.us/img/logobigwhite.png',
+					amount:      totalamount,
+					name:        'Radius',
+					description: 'Pre-purchase a ticket to see Ivy Dye on January 24th, 2013, at the Middle East Upstairs. You will only be charged if Ivy Dye gets the show. Your card will not be charged now.',
+					panelLabel:  'Checkout',
+					token:       token
+				});
+				
+				return false;
+			});
+			
+			$(".radiusfee").focus(function() { 
+				
+				left = $(".radiusfee").offset().left + $(".radiusfee").width() + 40;
+				top = $(".radiusfee").offset().top - $(".aboutus").height()/2 + $(".radiusfee").height()/2;
+				
+				$(".aboutus").css({
+					left: left,
+					top: top
+				})
+				$(".aboutus").show()
+				$(".aboutus").animate({opacity:1})
+			})
+			
+			$(".radiusfee").focusout(function(){
+				$(".aboutus").animate({opacity:0},function(){
+					$(".aboutus").hide()
+				})
+				
+			})
+			
+			$(".radiusfee").numeric({negative:false})
+			
+			$(".radiusfee").keyup(function(){
+				totalamounts()
+			})
+		    
+		    
+		    
+	    });
+	</script>
+  </body>
+</html>
