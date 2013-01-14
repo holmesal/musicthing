@@ -30,12 +30,13 @@ class StationPlayer(object):
 	_all_mode = 'all_mode'
 	available_modes = [_city_mode,_location_mode,_favorites_mode,_all_mode]
 	
-	def __init__(self,mode = None,mode_data = None,station_tags = None, client_tags = None):
-		# assign the station mode
-		self.set_mode(mode,mode_data)
-		
-		# set the station tags
-		self.set_station_tags(station_tags,client_tags)
+	def __init__(self):
+		# init station data variables.
+		self._mode = None
+		self.city_entity = None
+		self.radial_city_keys = None
+		self.user_key = None
+		self.ghash = None
 		
 		# init the station track list index variable
 		self.idx = 0
@@ -48,33 +49,19 @@ class StationPlayer(object):
 		self.skipped_artist_keys = []
 		
 	@property
-	def city_entity(self):
-		# city is a models.City entity
-		return self.mode_data['city']
-	@property
 	def city_dict(self):
 		return self.city_entity.to_dict()
 	@property
-	def ghash(self):
-		return self.mode_data['ghash']
-	@property
 	def geo_point(self):
-		ghash = self.mode_data['ghash']
-		geo_point = geohash.decode(ghash)
+		geo_point = geohash.decode(self.ghash)
 		return {
 			'lat' : geo_point[0],
 			'lon' : geo_point[1]
 			}
 	@property
-	def radius(self):
-		return self.mode_data['radius']
-	@property
-	def user_key(self):
-		return self.mode_data['user_key']
-	@property
 	def mode(self):
 		return self._mode
-	def set_mode(self,mode,mode_data):
+	def set_mode(self,mode,**mode_data):
 		'''
 		Use to set the station mode
 		All params that are not sent in mode_data are set to None by default
@@ -92,25 +79,13 @@ class StationPlayer(object):
 		# set mode
 		self._mode = mode
 		
-		# mode_data must be a dict
-		if mode_data is None:
-			mode_data = {}
+		# set the mode data
+		for key,val in mode_data.iteritems():
+			setattr(self, key, val)
 		
-		# mode_data must have keys for all possible keys for client communication
-		mode_data_keys = ['city','user_key','ghash','radius','radial_cities']
-		for key in mode_data_keys:
-			if key not in mode_data:
-				mode_data[key] = None
 		# if have a city but not ghash, convert city to ghash
-		if mode_data['city'] is not None:
-			mode_data['ghash'] = mode_data['city'].ghash
-			
-		
-		# assign mode data
-		self.mode_data = mode_data
-		
-		
-		
+		if self.city_entity is not None:
+			self.ghash = self.city_entity.ghash
 		
 		
 	def set_station_tags(self,station_tags = None,client_tags = None):
@@ -150,16 +125,16 @@ class StationPlayer(object):
 		'''
 		modes = {
 				self._city_mode : {
-								'func' : fetch_artist_keys_from_city,
-								'params' : ('city',)#(self.mode_data['city'],self.mode_data['radius'])
+								'func' : fetch_artist_keys_from_city_key_list,
+								'params' : self.radial_city_keys
 								},
 				self._favorites_mode : {
 								'func' : fetch_artist_keys_from_favorites,
-								'params' : ('user_key',)#(self.mode_data['user_key'])
+								'params' : self.user_key
 								},
 				self._location_mode : {
-								'func' : fetch_artist_keys_from_location,
-								'params' : ('ghash',)#(self.mode_data['city'],self.mode_data['radius'])
+								'func' : fetch_artist_keys_from_ghash,
+								'params' : self.radial_city_keys
 								},
 				self._all_mode : {
 								'func' : fetch_all_artist_keys,
@@ -169,20 +144,18 @@ class StationPlayer(object):
 		# fetch the function and its params from the dict
 		action = modes[self.mode]
 		func = action['func']
-		param_keys = action['params']
-		try:
-			params = (self.mode_data[p] for p in param_keys)
-		except TypeError:
-			# will catch exception where params is None
-			params = None
+		params = action['params']
+		
 		# fetch the artist keys using the func and params in the modes dict
 		artist_keys = func(*params) if params is not None else func()
 		
 		# filter out the hard blacklisted keys
 		blacklisted_keys = self.fetch_hard_blacklist()
 		if blacklisted_keys:
-			artist_keys = [a for a in artist_keys if a not in blacklisted_keys]
+			artist_keys = (a for a in artist_keys if a not in blacklisted_keys)
 		
+		# filter out artists that do not have a track
+		artist_keys = filter(lambda a: a.track_id is not None,artist_keys)
 		return artist_keys
 	def fetch_hard_blacklist(self):
 		'''
@@ -549,20 +522,14 @@ def fetch_all_artist_keys():
 	'''
 	artist_keys = models.Artist.query().iter(batch_size=50,keys_only=True)
 	return artist_keys
-def fetch_artist_keys_from_city(city_entity):
+def fetch_artist_keys_from_city_key_list(city_key_list):
+	'''Fetches artist keys from a list of city keys
 	'''
-	
-	@param city:
-	@type city:
-	@param radius:
-	@type radius:
-	'''
-	return fetch_artist_keys_from_location(city_entity.ghash)
-#	ghash = chop_ghash(city.ghash)
-#	ghash_list = create_ghash_list(ghash)
-#	artist_keys = fetch_artist_keys_from_ghash_list(ghash_list)
-#	return artist_keys
-def fetch_artist_keys_from_location(ghash):
+	artist_keys = models.Artist.query(
+						models.Artist.cities.city_key.IN(city_key_list)).iter(
+						keys_only=True)
+	return artist_keys
+def fetch_artist_keys_from_ghash(ghash):
 	'''
 	@param ghash: unicode ghash string of any length
 	@type ghash: str
@@ -573,8 +540,14 @@ def fetch_artist_keys_from_location(ghash):
 	ghash_list = create_ghash_list(ghash)
 	artist_keys = fetch_artist_keys_from_ghash_list(ghash_list)
 	return artist_keys
-
 def fetch_artist_keys_from_ghash_list(ghash_list):
+	'''
+	Fetches artist keys from a list of ghashes
+	@param ghash_list: a list of ghashes
+	@type ghash_list: list
+	@return: a list of artist keys
+	@rtype: list
+	'''
 	ghash_list = set(ghash_list)
 	artist_keys = set([])
 	for ghash in ghash_list:
@@ -589,11 +562,10 @@ def fetch_artist_keys_from_ghash_list(ghash_list):
 def chop_ghash(ghash,precision=4):
 	'''
 	Returns only the number of chars specified by precision
+	@return: a ghash with precision up to the precision specified
+	@rtype: str
 	'''
 	return ghash[:precision]
-	
-
-	
 def create_ghash_list(ghash,n=3):
 	'''
 	Creates a list of ghashes from the provided geo_point
@@ -618,58 +590,6 @@ def create_ghash_list(ghash,n=3):
 		# add new hashes to master list
 		ghash_list.update(new_ghashes)
 	return ghash_list
-
-def filter_artists_by_radius(center_GeoPt,radius):
-	'''
-	
-	@param center_GeoPt:
-	@type center_GeoPt:
-	@param radius:
-	@type radius:
-	'''
-	
-	
-
-def calc_bounding_box(ghash_list):
-	'''
-	Calculates a bounding box from a list of geohashes
-	@param ghash_list: a list of geo_hashes
-	@type ghash_list: list
-	
-	@return: {'bottom_left':<float>,'top_right':<float>}
-	@rtype: dict
-	'''
-	points = [geohash.decode(ghash) for ghash in ghash_list]
-	
-	# calc precision from one the ghashes
-	precision = max([ghash.__len__() for ghash in ghash_list])
-	
-	#unzip lat,lons into two separate lists
-	lat,lon = zip(*points)
-	
-	#find max lat, long
-	max_lat = max(lat)
-	max_lon = max(lon)
-	#find min lat, long
-	min_lat = min(lat)
-	min_lon = min(lon)
-	
-	# encode the corner points
-	bottom_left_hash = geohash.encode(min_lat,min_lon,precision)
-	top_right_hash = geohash.encode(max_lat, max_lon, precision)
-	
-	# get bounding boxes for the corner hashes
-	tr = geohash.bbox(top_right_hash)
-	bl = geohash.bbox(bottom_left_hash)
-	# get the corner coordinates for the two corner hashes
-	top_right = (tr['n'],tr['e'])
-	bottom_left = (bl['s'],bl['w'])
-	# compile into dict
-	bounding_box = {
-				'bottom_left'	: bottom_left,
-				'top_right'		: top_right
-				}
-	return bounding_box
 
 
 def distance_between_points((lat1, lon1), (lat2, lon2)):

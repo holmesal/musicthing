@@ -12,6 +12,7 @@ import utils
 import json
 from google.appengine.ext import ndb
 from geo import geohash
+import contest_utils as cutils
 
 #from excepts import *
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
@@ -252,7 +253,7 @@ class UserHandler(BaseHandler):
 			station = utils.StationPlayer()
 		
 		return station
-	def change_station_mode(self,mode,mode_data):
+	def change_station_mode(self,mode,**mode_data):
 		'''
 		Changes the mode of a station. If the station doesn't exist,
 		a new one is created using the mode and mode_data provided
@@ -270,7 +271,7 @@ class UserHandler(BaseHandler):
 		station = self.get_or_create_station_from_session()
 		time('get or create station')
 		# set the station mode
-		station.set_mode(mode,mode_data)
+		station.set_mode(mode,**mode_data)
 		time('set mode')
 		
 		# create the station!!
@@ -304,7 +305,7 @@ class UserHandler(BaseHandler):
 				}
 		self.response.out.write(json.dumps(to_send))
 		
-	def fetch_radial_cities(self,ghash,precision=4,n=3):
+	def fetch_radial_cities(self,ghash,precision=3,n=2):
 		'''
 		Fetches cities around the specified ghash
 		Sorts the cities by distance from the center ghash
@@ -370,4 +371,33 @@ class UserHandler(BaseHandler):
 		return to_send
 class UploadHandler(ArtistHandler,blobstore_handlers.BlobstoreUploadHandler):
 	pass
-
+class ContestHandler(BaseHandler):
+	def get_event_and_contestant(self,req_id):
+		'''
+		Takes a request id from a url, and attempts to parse it into
+		and event and a contestant.
+		@raise self.SessionError: if either event or contestant ids are invalid
+		@param req_id: request id from url: getradi.us/c/<req_id>
+		@type req_id: str
+		@return: event,contestant
+		@rtype: tuple
+		'''
+		try:
+			# make sure the provided id is of the proper length
+			total_length = cutils.event_id_length+cutils.contestant_id_length
+			assert len(req_id) == total_length,'Invalid: {}'.format(req_id)
+			# parse the id into constituents
+			event_id = req_id[:cutils.event_id_length]
+			contestant_id = req_id[cutils.event_id_length:]
+			
+			# grab the event and contestant
+			event = models.Event.get_by_id(event_id)
+			assert event is not None, \
+				'111Invalid event. {}'.format(req_id)
+			contestant = models.Contestant.get_by_id(contestant_id,parent=event.key)
+			assert contestant is not None, \
+				'222Invalid contestant. {}'.format(req_id)
+		except AssertionError,e:
+			raise self.SessionError(e)
+		else:
+			return event,contestant

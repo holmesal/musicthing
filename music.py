@@ -120,7 +120,7 @@ class FavoritesStationHandler(handlers.UserHandler):
 		
 		mode = utils.StationPlayer._favorites_mode
 		mode_data = {'user_key':user_key}
-		tracks = self.change_station_mode(mode, mode_data)
+		tracks = self.change_station_mode(mode, **mode_data)
 		packaged_artists = utils.StationPlayer.package_track_multi(tracks)
 		self.send_success(packaged_artists)
 		
@@ -131,7 +131,7 @@ class EverywhereStationHandler(handlers.UserHandler):
 		
 		mode = utils.StationPlayer._all_mode
 		mode_data = None
-		tracks = self.change_station_mode(mode, mode_data)
+		tracks = self.change_station_mode(mode, **mode_data)
 		packaged_artists = utils.StationPlayer.package_track_multi(tracks)
 		# return with the packaged artist list
 		self.send_success(packaged_artists)
@@ -145,13 +145,14 @@ class MyLocationStationHandler(handlers.UserHandler):
 		ghash = geohash.encode(lat,lon)
 		
 		# get the list of included cities
-		cities = self.request.get('cities')
+		radial_city_keys = self.request.get('city_keys')
+		
 		
 		
 		# set the mode
 		mode = utils.StationPlayer._location_mode
-		mode_data = {'ghash':ghash,'radial_cities':cities}
-		tracks = self.change_station_mode(mode, mode_data)
+		mode_data = {'ghash':ghash,'radial_city_keys':radial_city_keys}
+		tracks = self.change_station_mode(mode, **mode_data)
 		packaged_artists = utils.StationPlayer.package_track_multi(tracks)
 		# respond with the artists
 		self.send_success(packaged_artists)
@@ -171,15 +172,15 @@ class CityStationHandler(handlers.UserHandler):
 		
 		
 		# get the list of included cities
-		cities = self.request.get('cities')
+		radial_city_keys = self.request.get('city_keys')
 		
 		# fetch the city from path
 		city = utils.fetch_city_from_path(country, admin1, city_name, geo_point)
 		
 		# set the mode
 		mode = utils.StationPlayer._city_mode
-		mode_data = {'city':city,'radial_cities':cities}
-		tracks = self.change_station_mode(mode, mode_data)
+		mode_data = {'city':city,'radial_city_keys':radial_city_keys}
+		tracks = self.change_station_mode(mode, **mode_data)
 		packaged_artists = utils.StationPlayer.package_track_multi(tracks)
 		self.send_success(packaged_artists)
 class SetTagsHandler(handlers.UserHandler):

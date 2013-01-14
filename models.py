@@ -45,11 +45,9 @@ class City(ndb.Model):
 		'''
 		Package for radius list
 		'''
-		strkey = self.key.urlsafe()
-		name = self.key.id()
 		return {
-			'name' : name,
-			'key' : strkey
+			'name' : self.key.id(),
+			'key' : self.key.urlsafe()
 			}
 	def to_city_property(self):
 		'''
@@ -63,8 +61,6 @@ class City(ndb.Model):
 						ghash=self.ghash,
 						name=self.name
 						)
-class GHash(ndb.Model):
-	pass
 
 
 class TagProperty(ndb.Model):
@@ -244,5 +240,113 @@ class Station(ndb.Model):
 	def tags_dict(self):
 		return {tag.genre:tag.count for tag in self.tags_}
 		
+#===============================================================================
+# Crowdfunding Contest stuff
+#===============================================================================
+class Event(ndb.Model):
+	# venue details
+	venue_name = ndb.StringProperty()
+	venue_location = ndb.StringProperty()
+	event_date = ndb.StringProperty()
+	max_tickets = ndb.IntegerProperty()
+	min_tickets = ndb.IntegerProperty()
+	available_positions = ndb.IntegerProperty()
+	tickets_per_band = ndb.IntegerProperty()
+	
+	base_ticket_price = ndb.FloatProperty()
+	ticket_provider = ndb.StringProperty()
+	ticket_provider_url = ndb.StringProperty()
+	ticket_provider_fee = ndb.FloatProperty()
+	radius_fee = ndb.FloatProperty()
+	
+	def get_number_of_contestants(self):
+		'''Counts the number of artists competing to perform
+		'''
+		return Contestant.query(ancestor = self.key).count()
+	def package(self):
+		exclude = ('max_tickets','min_tickets','tickets_per_band')
+		event_dict = self.to_dict(exclude=exclude)
+		event_dict.update({'num_contestants':self.get_number_of_contestants()})
+		return event_dict
+	
+class Contestant(ndb.Model):
+	'''
+	A contestant is an artist.
+	'''
+	# page id is the contestant id
+	event = ndb.KeyProperty(Event)
+	artist_key = ndb.KeyProperty(Artist)
+	artist_name = ndb.StringProperty()
+	track_id = ndb.StringProperty()
+	@property
+	def page_id(self):
+		return self.key.parent().id()+self.key.id()
+	def get_ticket_count(self):
+		'''
+		Counts the number of tickets that have been sold to the contestant
+		'''
+		return TicketSale.query(ancestor = self.key).count()
+	def get_ticket_purchasers(self):
+		'''
+		@return: generator for everyone who purchased a ticket for the band
+		'''
+		purchaser_keys = TicketSale.query(ancestor = self.key).iter(keys_only = True)
+		purchaser_futures = ndb.get_multi_async(purchaser_keys)
+		purchasers = (f.get_result() for f in purchaser_futures)
+		return purchasers
+	def package(self):
+		exclude = ('event','artist_key')
+		contestant_dict = self.to_dict(exclude=exclude)
+		return contestant_dict
+	def get_ticket_purchaser_names(self):
+		'''
+		@return: list of names
+		@rtype: list
+		'''
+		purchasers = self.get_ticket_purchasers()
+		return [p.name for p in purchasers]
+		
+class TicketSale(ndb.Model):
+	'''
+	A person has reserved a ticket for the show.
+	'''
+	name = ndb.IntegerProperty()
+	email = ndb.StringProperty()
+	phone = ndb.StringProperty()
+	stripe_token = ndb.StringProperty()
+	name_on_card = ndb.StringProperty()
+
+'''
+Unique pages!!
+
+Event:
+Event location aka venue name
+Event "City,State"
+Event Date - in words
+num bands contesting
+base ticket price
+provider e.g. ticketfly
+provider url
+provider fee
+radius fee
+
+Leader information. Undefined.
+
+Artist:
+Artist name - artist entered value
+number of tickets sold (for a band)
+number of tickets required - the adjusted value (for a band)
+number of tickets remaining (for a band)
+names of people who have bought tickets
+Artist Track id
 
 
+Info from people:
+name
+email
+phone
+stripe token
+name on card
+
+
+'''
