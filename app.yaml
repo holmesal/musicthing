@@ -1,5 +1,5 @@
 application: radius-levr
-version: alonsotest2
+version: launchrock
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -20,6 +20,11 @@ handlers:
   script: test.app
 - url: /feedback
   script: feedback.app
+- url: /demo
+  script: demo.app
+- url: /shows.*
+  script: shows.app
+
 
 #tasks and cronjobs
 - url: /tasks.*

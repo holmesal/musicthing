@@ -1,0 +1,603 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Ivy Dye &middot; Jan. 29th, 2013</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Help Ivy Dye play The Middle East Upstairs in Boston, MA on Jan. 29th, 2013">
+
+    <!-- Le styles -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 20px;
+        padding-bottom: 40px;
+      }
+
+      /* Custom container */
+      
+      .container-narrow > hr {
+        margin: 30px 0;
+      }
+
+      /* Main marketing message and sign up button */
+      .jumbotron {
+        margin: 60px 0;
+        text-align: center;
+      }
+      .jumbotron h1 {
+        font-size: 72px;
+        line-height: 1;
+      }
+      .jumbotron .btn {
+        font-size: 21px;
+        padding: 14px 24px;
+      }
+
+      /* Supporting marketing content */
+      .marketing {
+        margin: 60px 0;
+      }
+      .marketing p + h4 {
+        margin-top: 28px;
+      }
+    </style>
+    
+    <style type="text/css">
+	    body{
+		    background-image: url(../img/crosses.png);
+		    padding-top: 100px;
+	    }
+	    
+	    .container-narrow {
+			margin: 0 auto;
+			max-width: 700px;
+			background-color: white;
+/* 			padding: 20px; */
+			border-radius: 5px;
+			overflow: auto;
+			box-shadow: 0px 0px 5px #c0c0c0;
+		}
+		
+		.tophalf{
+			padding: 20px;
+		}
+		
+		.adornment{
+			position: absolute;
+			background-image: url(../img/bgas2.jpg);
+			width: 30px;
+			height: 30px;
+			margin-top: -50px;
+			left: 50%;
+			margin-left: -15px;
+			background-color: red;
+		}
+		
+		.rules{
+			margin-top: 40px;
+		}
+		
+		.subrules{
+			margin-top: 10px;
+			color: #7a7a7a;
+		}
+		
+		.subrulesnum{
+			color: #3ba1d0;
+		}
+		
+		.progressbar-outer{
+			margin-top: 15px;
+			margin-bottom: 25px;
+			width: 100%;
+			height: 20px;
+			background-color: #fafafa;
+			box-shadow: inset 0px 0px 3px #d2d2d2;
+			border-radius: 15px;
+			padding:5px;
+			position: relative;
+		}
+		
+		.progressbar-inner{
+			width: 0%;
+			height: 20px;
+/* 			background-color: #2d97e8; */
+			background-color: #4eb2cd;
+			border-top-left-radius: 15px;
+			border-bottom-left-radius: 15px;
+			border-radius: 15px;
+			position: absolute;
+			z-index: 3;
+		}
+		
+		.progressbar-contribute{
+			width: 0%;
+			height: 20px;
+/* 			background-color: #2d97e8; */
+			background-color: #4eb2cd;
+			border-top-left-radius: 15px;
+			border-bottom-left-radius: 15px;
+			border-radius: 15px;
+			position: absolute;
+			z-index:2;
+		}
+		
+		.progressbar-leader{
+/* 			background-color: red; */
+			width: 0%;
+			height: 30px;
+			margin-top: -5px;
+			border-right: 1px solid #aaaaaa;
+			position: absolute;
+		}
+		
+		.leader-number{
+			float: right;
+			text-align: right;
+			margin-right: -14px;
+			margin-top: -30px;
+			color: #6d6d6d;
+		}
+		
+		.super{
+			vertical-align: super;
+			font-size: 9pt;
+		}
+		
+		.togodiv{
+			width: 200px;
+			height: 30px;
+			background-color: #fafafa;
+			border-radius: 5px;
+			box-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+			
+			margin-bottom: 20px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		
+		.smallterm{
+			margin: 0;
+			color: #a5a5a5;
+			font-size: 12pt;
+			float: left;
+		}
+		
+		.buybtn{
+			float: right;
+		}
+		
+		.bottomhalf{
+			text-align: center;
+			width: 100%;
+			margin-bottom: 40px;
+		}
+		
+		.leftpanel{
+			display: inline-block;
+			width: 400px;
+			padding: 20px;
+			padding-top: 0px;
+			margin-left: -20px;
+			vertical-align: top;
+/* 			background-color: green; */
+		}
+		
+		.album-artwork{
+/* 			background-image: url(../img/bgas2.jpg); */
+/* 			background-size: cover; */
+/* 			border-radius: 5px; */
+			width: 300px;
+			height: 300px;
+/* 			vertical-align: top; */
+		}
+		
+		.sc-player{
+			display: none;
+		}
+		
+		.playbar{
+			width: 300px;
+			margin-left: auto;
+			margin-right: auto;
+			margin-top: 10px;
+		}
+		
+		.playbtn{
+			float: left;
+		}
+		
+		.playbtn:hover{
+			cursor: pointer;
+		}
+		
+		.playtxt{
+			text-align: right;
+			font-size: 12pt;
+			padding-top: 10px;
+		}
+		
+		.findon{
+			width:300px;
+			margin-top: 50px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		
+		.extlink{
+			width: 40px;
+			margin-left: 5px;
+		}
+		
+		
+		.rightpanel{
+			vertical-align: top;
+			display: inline-block;
+			width: 250px;
+/* 			height: 400px; */
+/* 			background-color: blue; */
+			border-left: 1px solid #ebebeb;
+			text-align: left;
+			padding-left: 20px;
+		}
+		
+		.name{
+			font-size: 14pt;
+		}
+		
+		
+		.footer{
+			background: url(../img/debut_dark.png);
+			width: 100%;
+/* 			height: 200px; */
+			text-align: center;
+			color: #f7f7f7;
+			padding-top: 20px;
+			margin-bottom: 0px;
+		}
+		
+		
+		
+		
+		
+/* 		payment screen */
+		.payment-top{
+			height: 50px;
+			background-color: #eeeeee;
+		}
+		
+		.buyform{
+/* 			width: 300px; */
+			padding: 20px;
+/* 			background-color: red; */
+/*
+			margin-left: auto;
+			margin-right: auto;
+			text-align: center;
+*/
+			padding-top: 50px;
+		}
+		
+		.buy-left{
+/* 			background-color: red; */
+			width: 50%;
+			height: 300px;
+			float: left;
+		}
+		
+		.feetext{
+			font-size: 12pt;
+			line-height: 150%;
+			color: #636363;
+		}
+		
+		.feenum{
+			float: right;
+			margin-right: 50px;
+		}
+		
+		.buy-right{
+/* 			background-color: green; */
+			width: 50%;
+/* 			height: 300px; */
+			float: right;
+			padding-top: 40px;
+		}
+		
+		input{
+			font-size: 14pt !important;
+			line-height: 120% !important;
+			float: right;
+			width: 250px;
+			margin-top: 10px;
+		}
+		
+		.radiusfee{
+			width: 42px;
+			font-size: 12pt !important;
+			line-height: 100% !important;
+			height: 20px !important;
+			margin: 0px;
+			margin-top: -6px;
+			margin-right: -6px;
+			text-align: right;
+		}
+		
+		.aboutus{
+			width: 310px;
+/* 			height: 200px; */
+			background-color: white;
+			box-shadow: 0px 0px 3px dimgray;
+			position: absolute;
+			z-index: 1000;
+			opacity: 0;
+			border-radius: 5px;
+			padding: 20px;
+/* 			position: absolute; */
+		}
+		
+		.bottomlinks{
+			text-align: center;
+			margin-bottom: 20px;
+		}
+		
+		
+		
+		.poweredby{
+			text-align: center;
+			margin-top: 80px;
+			margin-bottom: 50px;
+		}
+		
+    </style>
+    
+    <style type="text/css">
+    	
+    	.showinfocontainer{
+	    	margin-top: 70px;
+	    	margin-bottom: 70px;
+    	}
+    	
+    	.showinfo{
+	    	text-align: center;
+    	}
+    	
+	    .show-left{
+/* 		    background-color: red; */
+		    float: left;
+		    width: 50%;
+		    text-align: right;
+	    }
+	    
+	    .leader{
+		    margin-right: 20px;
+		    font-weight: 500;
+	    }
+	    
+	    .show-right{
+		    width: 50%;
+		    float: right;
+/* 		    background-color: green; */
+		    text-align: left;
+	    }
+	    
+	    .trailer{
+		    margin-left: 20px;
+	    }
+	    
+	    .clearfix{
+		    clear: both;
+	    }
+	    
+	    #playdiv{
+		    text-align: center;
+	    }
+	    
+	    #playbtn{
+		    font-size: 20pt;
+		    font-weight: 200;
+		    line-height: 150%;
+		    padding-left: 50px;
+		    padding-right: 50px;
+		    margin-top: 50px;
+	    }
+	    
+	    .playtext{
+		    font-size: 12pt;
+		    margin-top: 20px;
+	    }
+	    
+	    .howitworks{
+		    margin-bottom: 40px;
+	    }
+	    
+	    .regs{
+		    margin-bottom: 10px;
+		    font-size: 14pt;
+	    }
+	    
+	    .btnlogin{
+		    margin-bottom: 30px;
+	    }
+    </style>
+    <link href="../css/bootstrap-responsive.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+                    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+                                   <link rel="shortcut icon" href="../assets/ico/favicon.png">
+  </head>
+
+  <body>
+
+    <div class="container-narrow">
+<!--     	<div class="adornment">R</div> -->
+		
+		<div class="tophalf">
+			
+			
+			
+<!-- 			<div class="collapse collap-1"> -->
+			<div class="collapse collap-1 in">
+			<h1><span class="muted">Welcome to </span>Radius.</h1>
+			<p class="lead muted">A better way to book shows.</p>
+			
+			<div class="showinfocontainer">
+				<h3 class="showinfo">The Cantab Lounge</h3>
+				<h4 class="showinfo">Thursday, February 28th, 2013</h4>
+			</div>
+			
+			<div class="show-left">
+				<p class="leader lead">Bands needed:</p>
+				<p class="leader lead">Tickets required:</p>
+				
+				<p class="leader lead">Compensation:</p>
+				<p class="leader lead">Age:</p>
+				<p class="leader lead">Genres allowed:</p>
+				<p class="leader lead">Genres not allowed:</p>
+				<p class="leader lead">City:</p>
+			</div>
+			
+			<div class="show-right">
+				<p class="trailer lead">4</p>
+				<p class="trailer lead">40 (per band)</p>
+				
+				<p class="trailer lead">$200</p>
+				<p class="trailer lead">21+ (bands and fans)</p>
+				<p class="trailer lead">Any</p>
+				<p class="trailer lead">Rap, hip-hop</p>
+				<p class="trailer lead">Cambridge, MA</p>
+			</div>
+			
+			<div id="playdiv">
+				<a id="playbtn" class="btn btn-large btn-success">Play this show</a>
+				<p class="playtext lead muted">You'll get a page <a href="http://getradi.us/demo">like this one</a> where you can pre-sell tickets.</p>
+			</div>
+			
+
+			</div>
+			
+			
+			<div class="collapse">
+				<h2 class="howitworks">Here's how Radius works:</h2>
+				<p class="lead regs">- You'll get a page where you can pre-sell tickets to your followers.</p>
+				<p class="lead regs">- The bands that sell the required number of tickets the fastest get the show.</p>
+				<p class="lead regs">- If you get the show, your followers will be charged and will get tickets via email.</p>
+				<p class="lead regs">- If you don't get the show, your followers will not be charged and will not get tickets.</p>
+				
+				<div class="loggedin" hidden>
+					<a href="/playshow" class="btn btn-success btn-large">Got it. Let's do this.</a>
+				</div>
+				
+				<div class="loggedout">
+					<h2 class="howitworks">Ready to go?</h2>
+					<p class="lead regs">If you've already got a Radius account, log in below.</p>
+					<a href="/playshow" class="btnlogin btn btn-info btn-large">Log in via SoundCloud</a>
+					<p class="lead regs">If you're new to Radius, welcome! After you connect your SoundCloud account and choose one of your tracks, you'll be taken to your ticket page.</p>
+					<a href="/playshow" class="btnlogin btn btn-warning btn-large">Sign up via SoundCloud</a>
+				</div>
+				
+				
+			</div>
+			
+			
+		</div>
+		
+		
+		
+		<hr style="opacity:0;">
+					
+		<div class="bottomlinks">
+			<a href="mailto: carl@getradi.us">Contact</a>
+			&middot
+			<a href="#" style="text-decoration: line-through;">Terms of Service</a>
+			&middot
+			<a href="#" style="text-decoration: line-through;">Fees</a>
+			&middot
+			<a href="#" style="text-decoration: line-through;">Frequently Asked Questions</a>
+		</div>
+		
+		
+		
+		
+
+    </div> <!-- /container -->
+    
+    <div class="poweredby"><p class="lead">Powered by <a href="http://www.getradi.us">Radius.</a></p></div>
+
+    <!-- Le javascript
+    ================================================== -->
+    
+    
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+	    
+	    callforbackup = function(){
+		    //loading state
+		    $("#playbtn").attr("disabled","disbled")
+		    $("#playbtn").text("Please wait a moment")
+		    
+		    //make ajax call
+		    $.getJSON("/shows/playcheck",function(){
+			    
+		    })
+		    
+		    $.ajax({
+				dataType: "json",
+				url: "/shows/playcheck",
+				success: function(result){
+					
+					if (result.loggedin == true){
+						$(".loggedin").show()
+						$(".loggedout").hide()
+					} else{
+						$(".loggedout").show()
+						$(".loggedin").hide()
+					}
+					console.log(result)
+					//on success, show the collapse
+				    $(".collapse").collapse('toggle')
+				},
+				error: function(result){
+					$("#playbtn").attr("disabled",false)
+				    $("#playbtn").text("Play this show")
+				}
+			});
+		    
+		    
+	    }
+	    
+	    $(document).ready(function() {
+		    
+		    
+		    //initialize collapse
+		    $(".collapse").collapse({
+			    toggle	:	false
+		    })
+		    
+		    //payment button listener
+		    $("#playbtn").click(function(){
+		    	callforbackup()
+/* 			    $(".collapse").collapse('toggle') */
+		    })
+		    
+		    //back button listener
+		    $(".backbtn").click(function(){
+			    $(".collapse").collapse('toggle')
+		    })
+		        
+	    });
+	</script>
+  </body>
+</html>
