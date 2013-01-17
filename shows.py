@@ -22,19 +22,27 @@ class TestHandler(handlers.BaseHandler):
 		
 		artist = {
 			"track_id"		:	53097530,
-			"artist_name"	:	"The Band"
+			"artist_name"	:	"The Band",
+			"facebook_url"	:	"facebook.com",
+			"myspace_url"	:	"myspace.com",
+			"twitter_url"	:	"@alonsoholmes",
+			"youtube_url"	:	"youtube.com",
+			"bandcamp_url"	:	"bandcamp.com",
+			"website_url"	:	"www.alonsoholmes.com"
 		}
 		
 		template_values = {
 			"tickets_total"	:	40,
-			"tickets_remaining"	:	40,
-			"tickets_sold"		:	0,
+			"tickets_remaining"	:	0,
+			"tickets_sold"		:	40,
 			"place_string"		:	"2nd",
 			"going"			:	going,
 			"artist"		:	artist,
 			"contestant_id"	:	"1x3rp",
-			"status"		:	"won",
-			"tickets_available"	:	False
+			"status"		:	"lost",
+			"purchase_allowed"	:	False,
+			"is_owner"		:	True,
+			"show_navbar"	:	True
 		}
 		
 		jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))

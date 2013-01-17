@@ -89,6 +89,10 @@
 			color: #3ba1d0;
 		}
 		
+		.wonhead{
+			color: #62c462;
+		}
+		
 		.progressbar-outer{
 			margin-top: 15px;
 			margin-bottom: 25px;
@@ -227,11 +231,16 @@
 			margin-right: auto;
 		}
 		
-		.extlink{
+		.extlink,.link-icon{
 			width: 40px;
 			margin-left: 5px;
+			margin-right: 10px;
 		}
 		
+		.links{
+			text-align: left;
+			margin-left: 50px;
+		}
 		
 		.rightpanel{
 			vertical-align: top;
@@ -382,6 +391,31 @@
 			margin-top: 0px;
 		}
 		
+		
+/* 		navbar */
+		.topper{
+			max-width: 700px;
+			height: 40px;
+			margin-left: auto;
+			margin-right: auto;
+			margin-top: -100px;
+			background-color: rgba(28,28,28,0.81);
+			margin-bottom: 20px;
+			box-shadow: 0px 0px 3px #9c9c9c;
+			border-bottom-left-radius: 5px;
+			border-bottom-right-radius: 5px;
+		}
+		
+		.logo{
+			margin-top: -12px;
+			margin-left: 10px;
+		}
+		
+		.managebtn{
+			margin-top: 4px;
+			margin-right: 10px;
+		}
+		
     </style>
     <link href="../css/bootstrap-responsive.min.css" rel="stylesheet">
 
@@ -400,10 +434,18 @@
 
   <body>
   	
+  	{% if show_navbar %}
+	  	<div class="topper">
+		  	<img class="logo" src="../img/logowhitethin.png">
+		  	<a href="/artist/manage" class="managebtn btn btn-info pull-right">Manage</a>
+	  	</div>
+  	{% endif %}
+  	
+  	{% if is_owner %}
   	<div class="container-narrow bandcontainer">
 	  	<div class="tophalf">
 		  	<h3>Welcome to your ticket page</h3>
-		  	<p class="lead">You can sell tickets directly to your followers by giving them this link:</p>
+		  	<p class="lead">You can pre-sell tickets directly to your followers by giving them this link:</p>
 		  	<p style="text-align:center;"><a class="lead sharelink" href="http://www.getradi.us/e/{{contestant_id}}">getradi.us/e/{{contestant_id}}</a></p>
 		  	
 			<h4 id="nameok">Is your band's name correct?</h4>
@@ -413,6 +455,7 @@
 			</form>
 	  	</div>
   	</div>
+  	{%endif%}
   	
     <div class="container-narrow">
 <!--     	<div class="adornment">R</div> -->
@@ -425,7 +468,7 @@
 			<div class="collapse collap-1 in">
 			<h1>{{artist.artist_name}} 
 			{% if status=='won' %}
-			<span class="bluem">is playing</span>
+			<span class="wonhead">is playing</span>
 			{% elif status=='lost' %}
 			<span class="muted">wanted to play</span>
 			{% else %}
@@ -445,29 +488,31 @@
 <!-- 			<div class="collapse collap-4 in"> -->
 			<div class="collapse collap-4">
 				<a href="#" class="btn btn-warning backbtn">Back</a>
+				{% if status == 'in_progress' %}
 				<p class="rules lead">Congratulations! <strong>{{artist.artist_name}}</strong> is about to be one ticket closer.</p>
+				{% endif %}
 			</div>
 			
 			
 			<div class="progressbar-outer">
+				{% if status=='won' %}
+				<div class="btn-success progressbar-inner"></div>
+				{% elif status=='lost' %}
+				<div class="btn-danger progressbar-inner"></div>
+				{%else%}
 				<div class="btn-info progressbar-inner"></div>
-<!-- 				<div class="btn-warning progressbar-contribute"></div> -->
-<!--
-				<div id="1" class="progressbar-leader"><span class="leader-number lead">1<span class="super">st</span></span></div>
-				<div id="2" class="progressbar-leader"><span class="leader-number lead">2<span class="super">nd</span></span></div>
-				<div id="3" class="progressbar-leader"><span class="leader-number lead">3<span class="super">rd</span></span></div>
-				<div id="4" class="progressbar-leader"><span class="leader-number lead">4<span class="super">th</span></span></div>
--->
+				{%endif%}
 			</div>
 			
 			{% if status=='won' %}
-			<p class="subrules lead">Good work - The band got the show! </br>If you bought a ticket, you'll receive it via email shortly.</p>
+			<p class="subrules lead">Good work - The band got the show! </br>If you already bought a ticket, you'll receive it via email shortly.</p>
+			{% elif status=='lost'%}
+			<p class="subrules lead">So close! {{artist.artist_name}} only had to sell {{tickets_remaining}} more tickets. Next time!</p>
 			{% else %}
 			<p class="subrules lead">{{artist.artist_name}} needs to sell <strong class="subrulesnum strong">{{tickets_remaining}}</strong> more tickets and is in <strong class="subrulesnum strong">{{place_string}}</strong> place.</p>
 			{% endif %}
 			
-<!-- 			<div class="togodiv"><p class="togotext">Only 19 tickets to go!</p></div> -->
-			
+
 			<div class="collapse collap-2 in">
 <!-- 			<div class="collapse collap-2"> -->
 			{% if purchase_allowed %}
@@ -478,9 +523,8 @@
 				<p class="smallterm">You'll get a ticket if {{artist.artist_name}} gets the show.</br>You won't be charged if they don't.</p>
 				{% endif %}
 				<a id="getticket" class="buybtn btn btn-large btn-info">Get a ticket</a>
-			{% endif %}
-				
 			</div>
+			{% endif %}
 			<div style="clear:both;"></div>
 			
 			<hr style="opacity:0;">
@@ -496,15 +540,13 @@
 					<a id="playbtn"><img class="playbtn" src="../img/play.png"></a>
 					<p class="playtxt">Listen to "Heart"</br><span class="muted">Powered by <a href="http://www.soundcloud.com">SoundCloud</a></span></p>
 				</div>
-				<p class="lead findon" style="text-align:left;">Find more from {{artist.artist_name}}</p>
+				<p class="lead findon" style="text-align:left;">Find more from {{artist.artist_name}}:</p>
 				<div class="links">
 					<a href="http://www.ivydye.bandcamp.com"><img class="extlink" style="width:43px;" src="../img/bandcamp.png"></a>
 					<a href="http://www.facebook.com/ivydyemusic"><img class="extlink" src="../img/facebook.png"></a>
 					<a href="http://www.twitter.com/ivydye/"><img class="extlink" src="../img/twitter.png"></a>
 					<a href="http://www.ivydye.com"><img class="extlink" src="../img/website.png"></a>
 					<a href="http://www.youtube.com/user/IvyDyeMusic"><img class="extlink" src="../img/youtube.png"></a>
-					
-					
 				</div>
 				<div class="sc-player">
 					<a id="sctrack" class="sc-player" target="_blank" href="http://api.soundcloud.com/tracks/{{artist.track_id}}">Player</a>
@@ -544,7 +586,7 @@
 			</div>
 -->
 			
-			
+			{% if purchase_allowed %}
 			<form class="buyform">
 				
 				<div class="buy-left">
@@ -602,7 +644,7 @@
 				
 				
 			</form>
-			
+			{% endif %}
 			
 			
 		</div>
@@ -639,7 +681,79 @@
     <script type="text/javascript">
     	
     	callsoundcloud = function(){
-	    	console.log()
+	    	url = 'http://api.soundcloud.com/tracks/'+{{artist.track_id}}+'.json?client_id=d03ca49fb6764663d0992eadc69f8bf1'
+			$.get(url,function(data){
+				console.log(data)
+				sc_url = data.permalink_url
+/* 				$('#scbtn').attr("href",sc_url) */
+/* 				$(".info-track").text(data.title) */
+				setlinks()
+				//fade stuff in
+				$(".links").animate({opacity:1},{duration:200,queue:false});
+			})
+    	}
+    	
+    	checkhttp = function(url){
+			if (url.substring(0,1) == "@"){
+				url = "http://www.twitter.com/" + url.substring(1)
+			} else{
+			
+				if (url.substring(0,7) != "http://" && url.substring(0,8) != "https://"){
+					url = "http://" + url
+				}
+			}
+			
+			
+			
+			return url
+		}
+    	
+    	setlinks = function(){
+	    	//empty the button container
+			$('.links').empty()
+			
+			bandcamp_url = '{{artist.bandcamp_url}}'
+			soundcloud_url = sc_url
+			facebook_url = '{{artist.facebook_url}}'
+			twitter_url = '{{artist.twitter_url}}'
+			myspace_url = '{{artist.myspace_url}}'
+			youtube_url = '{{artist.youtube_url}}'
+			website_url = '{{artist.website_url}}'
+			
+			//append buttons as necessary
+			if (bandcamp_url != '' && bandcamp_url != 'None' && bandcamp_url != null){
+				url = checkhttp(bandcamp_url)
+				$('.links').append('<p><a class="lead"  href="'+url+'" target="_blank"><img class="link-icon" src="/img/bandcamp.png">Download on Bandcamp</a></p>')
+			}
+			
+			$('.links').append('<a class="lead"  id="scbtn" href="'+soundcloud_url+'" target="_blank"><img class="link-icon" src="/img/soundcloud.png">Listen on SoundCloud</a></p>')
+			
+			if (facebook_url != '' && facebook_url != 'None' && facebook_url != null){
+				url = checkhttp(facebook_url)
+				$('.links').append('<p><a class="lead"  href="'+url+'" target="_blank"><img class="link-icon" src="/img/facebook.png">Find on Facebook</a></p>')
+			}
+			
+			if (twitter_url != '' && twitter_url != 'None' && twitter_url != null){
+				url = checkhttp(twitter_url)
+				$('.links').append('<p><a class="lead"  href="'+url+'" target="_blank"><img class="link-icon" src="/img/twitter.png">Follow on Twitter</a></p>')
+			}
+			
+			if (myspace_url != '' && myspace_url != 'None' && myspace_url != null){
+				url = checkhttp(myspace_url)
+				$('.links').append('<p><a class="lead"  href="'+url+'" target="_blank"><img class="link-icon" src="/img/myspace.png">Find on Myspace</a></p>')
+			}
+			
+			if (youtube_url != '' && youtube_url != 'None' && youtube_url != null){
+				url = checkhttp(youtube_url)
+				$('.links').append('<p><a class="lead"  href="'+url+'" target="_blank"><img class="link-icon" src="/img/youtube.png">Watch on YouTube</a></p>')
+			}
+			
+			if (website_url != '' && website_url != 'None' && website_url != null){
+				url = checkhttp(website_url)
+				$('.links').append('<p><a class="lead"  href="'+url+'" target="_blank"><img class="link-icon" src="/img/website.png">View website</a></p>')
+			}
+	
+
     	}
     	
     	gottoken = function(res){
@@ -738,26 +852,37 @@
 		    
 	    }
 	    
+	    resetbutton = function(){
+		    $("#getticket").hover(function(){
+			    $(".progressbar-inner").animate({"width":bump_percent+"%"},{duration:100,queue:true})
+		    },function(){
+			    $(".progressbar-inner").animate({"width":now_percent+"%"},{duration:100,queue:true})
+		    })
+		    
+		    $("#getticket").click(function(){
+		    	$("#getticket").unbind()
+		    	$(".progressbar-inner,.progressbar-contribute").animate({"width":bump_percent+"%"},300)
+			    $(".collapse").collapse('toggle')
+			    
+		    })
+	    }
+	    
 	    $(document).ready(function() {
+	    	
+	    	callsoundcloud()
 	    
 		    now_percent = {{tickets_sold}}/{{tickets_total}} * 100
-		    
+		    bump_percent = now_percent + 2
 		    if (now_percent <= 3){
 			    now_percent = 3
+			    bump_percent = 5
 		    } else if (now_percent >=98){
 			    now_percent = 98
+			    bump_percent = 98
 		    }
-		    
 			//animate progressbar
 			$(".progressbar-inner,.progressbar-contribute").animate({"width":now_percent+"%"},300)
 			
-					    
-		    //hover bump listener spoof
-		    $("#getticket").hover(function(){
-			    $(".progressbar-inner").animate({"width":"+=2%"},{duration:100,queue:true})
-		    },function(){
-			    $(".progressbar-inner").animate({"width":"-=2%"},{duration:100,queue:true})
-		    })
 		    
 		    //initialize collapse
 		    $(".collapse").collapse({
@@ -772,6 +897,8 @@
 			  	$(".sc-artwork-list").children(".active").children().attr("src")
 /* 			  	$(img[0]).prependTo(".leftPanel").css({"display":"block"}) */
 			});
+			
+			resetbutton()
 		    
 		    
 		    //hook up play button
@@ -786,15 +913,12 @@
 			    
 		    })
 		    
-		    //payment button listener
-		    $("#getticket").click(function(){
-		    	$(".progressbar-inner").css({"width":"62%"})
-			    $(".collapse").collapse('toggle')
-		    })
 		    
 		    //back button listener
 		    $(".backbtn").click(function(){
 			    $(".collapse").collapse('toggle')
+			    $(".progressbar-inner,.progressbar-contribute").animate({"width":now_percent+"%"},300)
+			    resetbutton()
 		    })
 		    
 		    
