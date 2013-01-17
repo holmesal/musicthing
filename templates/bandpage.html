@@ -3,10 +3,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Template &middot; Bootstrap</title>
+    <title>Ivy Dye &middot; Jan. 29th, 2013</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="Help Ivy Dye play The Middle East Upstairs in Boston, MA on Jan. 29th, 2013">
 
     <!-- Le styles -->
     <link href="../css/bootstrap.min.css" rel="stylesheet">
@@ -344,6 +343,14 @@
 			margin-bottom: 20px;
 		}
 		
+		
+		
+		.poweredby{
+			text-align: center;
+			margin-top: 80px;
+			margin-bottom: 50px;
+		}
+		
     </style>
     <link href="../css/bootstrap-responsive.min.css" rel="stylesheet">
 
@@ -374,7 +381,7 @@
 			<h1>Ivy Dye <span class="muted">wants to play</span></h1>
 			<h1>The Middle East Upstairs <span class="muted">in</span></h1>
 			<h1>Boston, MA <span class="muted">on</span></h1>
-			<h1>Jan. 24th, 2013</h1>
+			<h1>Jan. 29th, 2013</h1>
 			<p class="rules lead">The 4 bands that sell 50 tickets <strong>the fastest</strong> get the show.</p>
 			
 			</div>
@@ -397,7 +404,7 @@
 -->
 			</div>
 			
-			<p class="subrules lead">Ivy Dye needs to sell <strong class="subrulesnum strong">22</strong> more tickets.</p>
+			<p class="subrules lead">Ivy Dye needs to sell <strong class="subrulesnum strong">22</strong> more tickets and is in <strong class="subrulesnum strong">2nd</strong> place.</p>
 			
 <!-- 			<div class="togodiv"><p class="togotext">Only 19 tickets to go!</p></div> -->
 			
@@ -501,7 +508,7 @@
 					<p class="lead">Ticket Price</p>
 					<p class="feetext">Base ticket price<span class="feenum">$<span class="basefloat">10.00</span></span></p>
 					<p class="feetext">Ticketfly fee<span class="feenum">$<span class="ticketflyfloat">2.53</span></span></p>
-					<p class="feetext">Radius<span class="feenum"><input class="radiusfee" type="text"></span></p>
+					<p class="feetext">Radius (pay what you want)<span class="feenum"><input class="radiusfee" type="text" value="2.00"></span></p>
 					<p class="feetext"><strong>Total</strong><span id="totalcost" class="feenum"><strong>--</strong></span></p>
 					
 					
@@ -527,7 +534,7 @@
 					data-key="pk_test_SN4NViBmeNI9s4pl8kTDDgUN"
 					data-amount="1000"
 					data-name="Radius"
-					data-description="Pre-purchase a ticket to see Ivy Dye on January 24th, 2013, at the Middle East Upstairs. You will only be charged if Ivy Dye gets the show. Your card will not be charged now."
+					data-description="Pre-purchase a ticket to see Ivy Dye on January 29th, 2013, at the Middle East Upstairs. You will only be charged if Ivy Dye gets the show. Your card will not be charged now."
 					data-image="http://getradi.us/img/logobig.png">
 				</script>
 -->
@@ -569,13 +576,15 @@
 		
 
     </div> <!-- /container -->
+    
+    <div class="poweredby"><p class="lead">Powered by <a href="http://www.getradi.us">Radius.</a></p></div>
 
     <!-- Le javascript
     ================================================== -->
     
     
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../js/soundcloud.player.api.js"></script>
     <script type="text/javascript" src="../js/soundcloud-player.js"></script>
@@ -597,6 +606,7 @@
 		    //if you can't do it, show --
 		    if (isNaN(total)){
 			    $('#totalcost').text('--')
+			    $(".radiusfee").css("error")
 		    } else{
 		    	totalamount = total
 			    $('#totalcost').text('$' + total/100)
@@ -668,6 +678,9 @@
 		    
 		    
 		    $('#purchaseticket').click(function(){
+		    	
+		    	totalamounts()
+		    	
 				var token = function(res){
 					console.log('Got token ID:', res.id);
 				};
@@ -678,7 +691,7 @@
 					image:		 'http://getradi.us/img/logobigwhite.png',
 					amount:      totalamount,
 					name:        'Radius',
-					description: 'Pre-purchase a ticket to see Ivy Dye on January 24th, 2013, at the Middle East Upstairs. You will only be charged if Ivy Dye gets the show. Your card will not be charged now.',
+					description: 'Pre-purchase a ticket to see Ivy Dye on January 29th, 2013, at the Middle East Upstairs. You will only be charged if Ivy Dye gets the show. Your card will not be charged now.',
 					panelLabel:  'Checkout',
 					token:       token
 				});
@@ -688,12 +701,12 @@
 			
 			$(".radiusfee").focus(function() { 
 				
-				left = $(".radiusfee").offset().left + $(".radiusfee").width() + 40;
-				top = $(".radiusfee").offset().top - $(".aboutus").height()/2 + $(".radiusfee").height()/2;
+				left_off = $(".radiusfee").offset().left + $(".radiusfee").width() + 40;
+				top_off = $(".radiusfee").offset().top - $(".aboutus").height()/2 + $(".radiusfee").height()/2;
 				
 				$(".aboutus").css({
-					left: left,
-					top: top
+					left: left_off,
+					top: top_off
 				})
 				$(".aboutus").show()
 				$(".aboutus").animate({opacity:1})
@@ -711,6 +724,9 @@
 			$(".radiusfee").keyup(function(){
 				totalamounts()
 			})
+			
+			//total amounts, the first time
+			totalamounts()
 		    
 		    
 		    

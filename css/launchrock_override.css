@@ -1,0 +1,46 @@
+.LR-content {
+	position: relative !important;
+}
+
+.LR-site-logo,.LR-site-tagline,.LR-site-description,.LR-signup-label,.LR-video-container,.LR-lx,.LR-site-connect{
+	display: none !important;
+}
+
+.LR-box-wrapper{
+	margin-bottom: 0px !important;
+}
+
+.launchtext{
+	font-size: 11pt;
+	font-style: italic;
+}
+
+.LR-box-wrapper{
+	width: auto !important;
+	margin-top: 0px !important;
+}
+
+.LR-header{
+	height: auto !important;
+}
+
+.featurette{
+	padding-top: 20px !important;
+}
+
+.connect{
+	margin-bottom: 60px;
+}
+
+.connecto{
+	margin-bottom: 10px;
+}
+
+#connectlink{
+	margin-bottom: 50px !important;
+}
+
+.tagsmaller{
+	font-size: 13pt;
+/* 	font-weight: 600; */
+}
