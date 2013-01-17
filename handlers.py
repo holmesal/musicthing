@@ -381,7 +381,7 @@ class ContestHandler(ArtistHandler):
 		@param req_id: request id from url: getradi.us/c/<req_id>
 		@type req_id: str
 		@return: event,contestant
-		@rtype: tuple
+		@rtype: (models.Event,models.Contestant)
 		'''
 		try:
 			# make sure the provided id is of the proper length
@@ -402,3 +402,23 @@ class ContestHandler(ArtistHandler):
 			raise self.SessionError(e)
 		else:
 			return event,contestant
+	def sign_up_artist_for_event(self,artist,event_key):
+		'''
+		A band has signed up for the event. Create that action in the datastore
+		@param artist: The artist entity that is signing up for the event
+		@type artist: models.Artist
+		@param event_key: The key of the event that is being signed up for
+		@type event_key: ndb.Key
+		@return: The new contestant entity
+		@rtype: models.Contestant
+		'''
+		contestant_id = cutils.generate_contestant_id(event_key)
+		contestant = models.Contestant(
+									id = contestant_id,
+									parent = event_key,
+									artist_key = artist.key,
+									track_id = artist.track_id,
+									artist_name = artist.username
+									)
+		contestant.put()
+		return contestant

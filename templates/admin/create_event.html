@@ -12,51 +12,58 @@
 
 <body>
 	<div class="container" >
-		<div id="build-container" style="overflow: none;">
-			
-		<form method="POST">
+		<div id="build-container" style="overflow: auto;">
+		<h1>Go ahead. Create an event. I dare you.</h1>
+		<form method="post">
 			<div style="float:left; margin-left: 20pt;">
 				<h2>Event Details</h2>
-				<label for="venue_name">Venue name</label>
+				<label>Venue name</label>
 				<input type="text" name="venue_name" placeholder="Middle East Upstairs"/>
 				
-				<label for="">Venue Location</label>
+				<label>Venue Location</label>
 				<input type="text" name="venue_location" placeholder="10 Mass Ave, Cambridge"/>
 				
-				<label for="">Event Date</label>
+				<label>Event Date</label>
 				<input type="text" name="event_date" placeholder="Jan. 14, 2013"/>
+				
+				<label>Minimum Age</label>
+				<input type="number" name="min_age" placeholder="21" />
 			</div>
 			
 			<div style="float:left; margin-left: 20pt;">
 				<h2>Availability</h2>
-				<label for="">Maximum Tickets For Sale</label>
-				<input type="text" name="max_tickets" placeholder="250"/>
+				<label>Maximum Tickets For Sale</label>
+				<input type="number" name="max_tickets" placeholder="250"/>
 				
-				<label for="">Minimum Tickets To Sell</label>
-				<input type="text" name="min_tickets" placeholder="100"/>
+				<label>Minimum Tickets To Sell</label>
+				<input type="number" name="min_tickets" placeholder="100"/>
 				
-				<label for="">Number of Slots Available</label>
-				<input type="text" name="available_positions" placeholder="4" />
+				<label>Number of Slots Available</label>
+				<input type="number" name="available_positions" placeholder="4" />
 				
-				<label for="">Number of tickets for a band to win</label>
-				<input type="text" name="tickets_per_band" placeholder="50" />
+				<label>Number of tickets for a band to win</label>
+				<input type="number" name="tickets_per_band" placeholder="50" />
 			</div>
 			
 			<div style="float:left; margin-left: 20pt;">
-				<h2>Ticket Provider</h2>
-				<label for="">Base Ticket Price</label>
+				<h2>Tickets</h2>
+				<label>Base Ticket Price</label>
 				<input type="text" name="base_ticket_price" placeholder="10.00" />
 				
-				<label for="">Ticket Provider</label>
+				<!--label>Ticket Provider</label>
 				<input type="text" name="ticket_provider" value="Ticketfly" placeholder="Ticketfly"/>
 				
-				<label for="">Ticket Provider Url</label>
+				<label>Ticket Provider Url</label>
 				<input type="text" name="ticket_provider_url" value="http://www.ticketfly.com/" placeholder="http://www.ticketfly.com/"/>
 				
-				<label for="">Ticket Provider Fee</label>
-				<input type="text" name="ticket_provider_fee" value="2.53" placeholder="1.84"/>
+				<label>Ticket Provider Fee</label>
+				<input type="text" name="ticket_provider_fee" value="2.53" placeholder="1.84"/-->
+				
+				<label>Radius Nominal Fee</label>
+				<input type="text" name="radius_fee" value="2.00" placeholder="1.00" />
 			</div>
-			<input type="submit" />
+			<input type="submit" class="btn-success" />
+			
 		</form>
 		</div>
 	</div>

@@ -1,8 +1,17 @@
 from google.appengine.ext import ndb
 from google.appengine.api import images
 from geo import geohash
+import os
+import heapq
 BASEURL = 'http://local-music.appspot.com'
 DEFAULT_IMAGE_URL = '{}/img/default_artwork.jpeg'.format(BASEURL)
+
+if os.environ['SERVER_SOFTWARE'].startswith('Development') == False:
+	# not on dev server
+	BASE_URL = 'http://getradi.us'
+else:
+	# on dev server
+	BASE_URL = '0.0.0.0:8080'
 #===============================================================================
 # Location Stuff
 #===============================================================================
@@ -80,7 +89,7 @@ class CityProperty(ndb.Model):
 	
 class Artist(ndb.Model):
 	created = ndb.DateProperty(auto_now_add=True)
-	
+	proper_name = ndb.StringProperty()
 	access_token = ndb.StringProperty()
 	username = ndb.StringProperty()
 	description = ndb.StringProperty()
@@ -248,10 +257,11 @@ class Event(ndb.Model):
 	venue_name = ndb.StringProperty()
 	venue_location = ndb.StringProperty()
 	event_date = ndb.StringProperty()
-	max_tickets = ndb.IntegerProperty()
+	min_age = ndb.IntegerProperty()
+	capacity = ndb.IntegerProperty()
 	min_tickets = ndb.IntegerProperty()
-	available_positions = ndb.IntegerProperty()
-	tickets_per_band = ndb.IntegerProperty()
+	num_available_positions = ndb.IntegerProperty()
+	nominal_tpb = ndb.IntegerProperty()
 	
 	base_ticket_price = ndb.FloatProperty()
 	ticket_provider = ndb.StringProperty()
@@ -259,6 +269,13 @@ class Event(ndb.Model):
 	ticket_provider_fee = ndb.FloatProperty()
 	radius_fee = ndb.FloatProperty()
 	
+	@property
+	def extra_tickets(self):
+		'''
+		Calculates the number of surplus tickets available beyond the minimum tbp*num bands
+		'''
+		return self.capacity - self.nominal_tpb * self.num_available_positions
+		
 	def get_number_of_contestants(self):
 		'''Counts the number of artists competing to perform
 		'''
@@ -268,24 +285,47 @@ class Event(ndb.Model):
 		event_dict = self.to_dict(exclude=exclude)
 		event_dict.update({'num_contestants':self.get_number_of_contestants()})
 		return event_dict
-	
+	def get_top_ticket_sales(self):
+		'''
+		Fetches the ticket sales of the highest-selling n bands
+		n == num_available_positions
+		@return: a list of ticket sales in ints
+		@rtype: list
+		'''
+		# grab all the contestants
+		contestant_keys = Contestant.query(ancestor=self.key).fetch(None,keys_only=True)
+#		contestant_futures = ndb.get_multi_async(contestant_keys)
+#		contestants = (f.get_result() for f in contestant_futures)
+		
+		# count the tickets sold per band, and put in form that can be sorted
+		sales_count_list = ((key,Contestant.get_ticket_count(key)) for key in contestant_keys)
+		top_ticket_sales = sorted(sales_count_list,key=lambda x: x[1])[:self.num_available_positions]
+		top_bands,top_sales = zip(*top_ticket_sales)
+		return top_bands,top_sales
+		
 class Contestant(ndb.Model):
 	'''
 	A contestant is an artist.
 	'''
-	# page id is the contestant id
-	event = ndb.KeyProperty(Event)
-	artist_key = ndb.KeyProperty(Artist)
-	artist_name = ndb.StringProperty()
-	track_id = ndb.StringProperty()
+	artist_key = ndb.KeyProperty(Artist,required=True)
+#	artist_name = ndb.StringProperty(required=True)
+#	track_id = ndb.StringProperty(required=True)
 	@property
 	def page_id(self):
 		return self.key.parent().id()+self.key.id()
-	def get_ticket_count(self):
+	@property
+	def page_url(self):
+		return '{}/e/{}'.format(BASE_URL,self.page_id)
+	@staticmethod
+	def get_ticket_count(key):
 		'''
 		Counts the number of tickets that have been sold to the contestant
+		@param key: the key of a contestant
+		@type key: ndb.Key
+		@return: the number of tickets sold by that contestant
+		@rtype: int
 		'''
-		return TicketSale.query(ancestor = self.key).count()
+		return TicketSale.query(ancestor = key).count()
 	def get_ticket_purchasers(self):
 		'''
 		@return: generator for everyone who purchased a ticket for the band
@@ -294,10 +334,10 @@ class Contestant(ndb.Model):
 		purchaser_futures = ndb.get_multi_async(purchaser_keys)
 		purchasers = (f.get_result() for f in purchaser_futures)
 		return purchasers
-	def package(self):
-		exclude = ('event','artist_key')
-		contestant_dict = self.to_dict(exclude=exclude)
-		return contestant_dict
+#	def package(self):
+#		exclude = ('event','artist_key')
+#		contestant_dict = self.to_dict(exclude=exclude)
+#		return contestant_dict
 	def get_ticket_purchaser_names(self):
 		'''
 		@return: list of names
@@ -305,7 +345,8 @@ class Contestant(ndb.Model):
 		'''
 		purchasers = self.get_ticket_purchasers()
 		return [p.name for p in purchasers]
-		
+
+
 class TicketSale(ndb.Model):
 	'''
 	A person has reserved a ticket for the show.

@@ -465,7 +465,7 @@ class GetArtistInfoHandler(handlers.UserHandler):
 		
 		
 class SpoofArtistHandler(handlers.ArtistHandler):
-	def get(self):
+	def get_all(self):
 		'''
 		Spoof a lot of the data on the server
 		'''
@@ -499,7 +499,7 @@ class SpoofArtistHandler(handlers.ArtistHandler):
 			self.say(f.get_result())
 		self.say('Done!')
 		
-	def get_one(self):
+	def get(self):
 		'''
 		For creating an artist account without soundcloud handshake
 		'''

@@ -27,8 +27,11 @@ handlers:
 
 
 # namespace for contests
-- url: /e/.*
+- url: /e.*
   script: contest.app
+- url: /admin.*
+  script: admin.app
+  login: admin
 
 #tasks and cronjobs
 - url: /tasks.*

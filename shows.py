@@ -7,6 +7,7 @@ import json
 import os
 import json
 from gaesessions import get_current_session
+from google.appengine.ext import ndb
 
 
 class ShowHandler(handlers.ArtistHandler):
@@ -36,8 +37,26 @@ class PlayCheckHandler(handlers.ArtistHandler):
 			"loggedin"	:	logged_in
 		}
 		self.response.out.write(json.dumps(response))
-
-app = webapp2.WSGIApplication([	('/shows',ShowHandler),
-								('/shows/playcheck',PlayCheckHandler)])
+class SignupHandler(handlers.ContestHandler):
+	def get(self):
+		'''
+		A band is signing up for a show
+		'''
+		# do not handle the exception.
+		# If they try to go here without being signed in, FUCKEM!
+		artist = self.get_artist_from_session()
+		#=======================================================================
+		# SPOOF THE EVENT KEY FOR NOW BECAUSE WE ONLY HAVE ONE SHOW
+		event_key = ndb.Key(models.Event,'KGB')
+		#=======================================================================
+		# create the contestant
+		contestant = self.sign_up_artist_for_event(artist, event_key)
+		redirect_url = contestant.page_url
+		return self.redirect(redirect_url)
+app = webapp2.WSGIApplication([
+							('/shows',ShowHandler),
+							('/shows/playcheck',PlayCheckHandler)
+							('/shows/signup',SignupHandler)
+							])
 
 
