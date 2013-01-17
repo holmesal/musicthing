@@ -371,7 +371,7 @@
 		}
 		
 		.bandcontainer{
-			margin-bottom: 100px;
+			margin-bottom: 20px;
 		}
 		
 		.sharelink{
@@ -536,9 +536,9 @@
 			<div class="leftpanel">
 				<img class="album-artwork img-rounded" src="../img/loading_artwork.png">
 				
-				<div class="playbar">
+				<div class="playbar" hidden>
 					<a id="playbtn"><img class="playbtn" src="../img/play.png"></a>
-					<p class="playtxt">Listen to "Heart"</br><span class="muted">Powered by <a href="http://www.soundcloud.com">SoundCloud</a></span></p>
+					<p class="playtxt">Listen to "<span class="trackname"></span>"</br><span class="muted">Powered by <a href="http://www.soundcloud.com">SoundCloud</a></span></p>
 				</div>
 				<p class="lead findon" style="text-align:left;">Find more from {{artist.artist_name}}:</p>
 				<div class="links">
@@ -690,6 +690,8 @@
 				setlinks()
 				//fade stuff in
 				$(".links").animate({opacity:1},{duration:200,queue:false});
+				$(".trackname").text(data.title)
+				$(".playbar").show()
 			})
     	}
     	
