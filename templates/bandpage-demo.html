@@ -3,9 +3,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>{{artist.artist_name}} &middot; Jan. 29th, 2013</title>
+    <title>Ivy Dye &middot; Jan. 29th, 2013</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Help {{artist.artist_name}} play The Middle East Upstairs in Boston, MA on Jan. 29th, 2013">
+    <meta name="description" content="Help Ivy Dye play The Middle East Upstairs in Boston, MA on Jan. 29th, 2013">
 
     <!-- Le styles -->
     <link href="../css/bootstrap.min.css" rel="stylesheet">
@@ -84,13 +84,8 @@
 			color: #7a7a7a;
 		}
 		
-		
-		.subrulesnum,.bluem{
+		.subrulesnum{
 			color: #3ba1d0;
-		}
-		
-		.wonhead{
-			color: #62c462;
 		}
 		
 		.progressbar-outer{
@@ -231,16 +226,11 @@
 			margin-right: auto;
 		}
 		
-		.extlink,.link-icon{
+		.extlink{
 			width: 40px;
 			margin-left: 5px;
-			margin-right: 10px;
 		}
 		
-		.links{
-			text-align: left;
-			margin-left: 50px;
-		}
 		
 		.rightpanel{
 			vertical-align: top;
@@ -370,52 +360,6 @@
 			box-shadow: 0 0 6px #F8B9B7 !important;
 		}
 		
-		.bandcontainer{
-			margin-bottom: 100px;
-		}
-		
-		.sharelink{
-			font-weight: 400;
-		}
-		
-		#nameok{
-			margin-top: 50px;
-		}
-		
-		#artist_name{
-			float: none;
-		}
-		
-		#btnupdatename{
-			float: none;
-			margin-top: 0px;
-		}
-		
-		
-/* 		navbar */
-		.topper{
-			max-width: 700px;
-			height: 40px;
-			margin-left: auto;
-			margin-right: auto;
-			margin-top: -100px;
-			background-color: rgba(28,28,28,0.81);
-			margin-bottom: 20px;
-			box-shadow: 0px 0px 3px #9c9c9c;
-			border-bottom-left-radius: 5px;
-			border-bottom-right-radius: 5px;
-		}
-		
-		.logo{
-			margin-top: -12px;
-			margin-left: 10px;
-		}
-		
-		.managebtn{
-			margin-top: 4px;
-			margin-right: 10px;
-		}
-		
     </style>
     <link href="../css/bootstrap-responsive.min.css" rel="stylesheet">
 
@@ -433,30 +377,7 @@
   </head>
 
   <body>
-  	
-  	{% if show_navbar %}
-	  	<div class="topper">
-		  	<img class="logo" src="../img/logowhitethin.png">
-		  	<a href="/artist/manage" class="managebtn btn btn-info pull-right">Manage</a>
-	  	</div>
-  	{% endif %}
-  	
-  	{% if is_owner %}
-  	<div class="container-narrow bandcontainer">
-	  	<div class="tophalf">
-		  	<h3>Welcome to your ticket page</h3>
-		  	<p class="lead">You can pre-sell tickets directly to your followers by giving them this link:</p>
-		  	<p style="text-align:center;"><a class="lead sharelink" href="http://www.getradi.us/e/{{contestant_id}}">getradi.us/e/{{contestant_id}}</a></p>
-		  	
-			<h4 id="nameok">Is your band's name correct?</h4>
-			<form method="post" action="/artist/changename">
-				<input name="artist_name" id="artist_name" type="text" value="{{artist.artist_name}}">
-				<input type="submit" id="btnupdatename" class="btn btn-info" value="Update">
-			</form>
-	  	</div>
-  	</div>
-  	{%endif%}
-  	
+
     <div class="container-narrow">
 <!--     	<div class="adornment">R</div> -->
 		
@@ -466,65 +387,43 @@
 			
 <!-- 			<div class="collapse collap-1"> -->
 			<div class="collapse collap-1 in">
-			<h1>{{artist.artist_name}} 
-			{% if status=='won' %}
-			<span class="wonhead">is playing</span>
-			{% elif status=='lost' %}
-			<span class="muted">wanted to play</span>
-			{% else %}
-			<span class="muted">wants to play</span>
-			{% endif %}</h1>
-			<h1>The Cantab Lounge <span class="muted">in</span></h1>
-			<h1>Cambridge, MA <span class="muted">on</span></h1>
-			<h1>Feb. 28th, 2013</h1>
-			
-			{% if status == 'in_progress' %}
-			<p class="rules lead">The 4 bands that sell {{tickets_total}} tickets <strong>the fastest</strong> get the show.</p>
-			{%endif%}
-			
+			<h1>Ivy Dye <span class="muted">wants to play</span></h1>
+			<h1>The Middle East Upstairs <span class="muted">in</span></h1>
+			<h1>Boston, MA <span class="muted">on</span></h1>
+			<h1>Jan. 29th, 2013</h1>
+			<p class="rules lead">The 4 bands that sell 50 tickets <strong>the fastest</strong> get the show.</p>
 			
 			</div>
 			
 <!-- 			<div class="collapse collap-4 in"> -->
 			<div class="collapse collap-4">
 				<a href="#" class="btn btn-warning backbtn">Back</a>
-				{% if status == 'in_progress' %}
-				<p class="rules lead">Congratulations! <strong>{{artist.artist_name}}</strong> is about to be one ticket closer.</p>
-				{% endif %}
+				<p class="rules lead">Congratulations! <strong>Ivy Dye</strong> is about to be one ticket closer.</p>
 			</div>
 			
 			
 			<div class="progressbar-outer">
-				{% if status=='won' %}
-				<div class="btn-success progressbar-inner"></div>
-				{% elif status=='lost' %}
-				<div class="btn-danger progressbar-inner"></div>
-				{%else%}
 				<div class="btn-info progressbar-inner"></div>
-				{%endif%}
+<!-- 				<div class="btn-warning progressbar-contribute"></div> -->
+<!--
+				<div id="1" class="progressbar-leader"><span class="leader-number lead">1<span class="super">st</span></span></div>
+				<div id="2" class="progressbar-leader"><span class="leader-number lead">2<span class="super">nd</span></span></div>
+				<div id="3" class="progressbar-leader"><span class="leader-number lead">3<span class="super">rd</span></span></div>
+				<div id="4" class="progressbar-leader"><span class="leader-number lead">4<span class="super">th</span></span></div>
+-->
 			</div>
 			
-			{% if status=='won' %}
-			<p class="subrules lead">Good work - The band got the show! </br>If you already bought a ticket, you'll receive it via email shortly.</p>
-			{% elif status=='lost'%}
-			<p class="subrules lead">So close! {{artist.artist_name}} only had to sell {{tickets_remaining}} more tickets. Next time!</p>
-			{% else %}
-			<p class="subrules lead">{{artist.artist_name}} needs to sell <strong class="subrulesnum strong">{{tickets_remaining}}</strong> more tickets and is in <strong class="subrulesnum strong">{{place_string}}</strong> place.</p>
-			{% endif %}
+			<p class="subrules lead">Ivy Dye needs to sell <strong class="subrulesnum strong">22</strong> more tickets and is in <strong class="subrulesnum strong">2nd</strong> place.</p>
 			
-
+<!-- 			<div class="togodiv"><p class="togotext">Only 19 tickets to go!</p></div> -->
+			
 			<div class="collapse collap-2 in">
 <!-- 			<div class="collapse collap-2"> -->
-			{% if purchase_allowed %}
 			<div class="buyrow">
-				{% if status=='won' %}
-				<p class="smallterm">Missed out? You can still get a ticket!</p>
-				{% else %}
-				<p class="smallterm">You'll get a ticket if {{artist.artist_name}} gets the show.</br>You won't be charged if they don't.</p>
-				{% endif %}
+				<p class="smallterm">You'll get a ticket if Ivy Dye gets the show.</br>You won't be charged if they don't.</p>
 				<a id="getticket" class="buybtn btn btn-large btn-info">Get a ticket</a>
+				
 			</div>
-			{% endif %}
 			<div style="clear:both;"></div>
 			
 			<hr style="opacity:0;">
@@ -538,28 +437,53 @@
 				
 				<div class="playbar">
 					<a id="playbtn"><img class="playbtn" src="../img/play.png"></a>
-					<p class="playtxt">Listen to "Heart"</br><span class="muted">Powered by <a href="http://www.soundcloud.com">SoundCloud</a></span></p>
+					<p class="playtxt">Listen to "Heart"</p>
 				</div>
-				<p class="lead findon" style="text-align:left;">Find more from {{artist.artist_name}}:</p>
+				<p class="lead findon" style="text-align:left;">Find more from Ivy Dye</p>
 				<div class="links">
 					<a href="http://www.ivydye.bandcamp.com"><img class="extlink" style="width:43px;" src="../img/bandcamp.png"></a>
 					<a href="http://www.facebook.com/ivydyemusic"><img class="extlink" src="../img/facebook.png"></a>
 					<a href="http://www.twitter.com/ivydye/"><img class="extlink" src="../img/twitter.png"></a>
 					<a href="http://www.ivydye.com"><img class="extlink" src="../img/website.png"></a>
 					<a href="http://www.youtube.com/user/IvyDyeMusic"><img class="extlink" src="../img/youtube.png"></a>
+					
+					
 				</div>
 				<div class="sc-player">
-					<a id="sctrack" class="sc-player" target="_blank" href="http://api.soundcloud.com/tracks/{{artist.track_id}}">Player</a>
+					<a id="sctrack" class="sc-player" href="http://api.soundcloud.com/tracks/53097530">Player</a>
 				</div>
 			</div>
 			
 			<div class="rightpanel">
 				<p class="lead">Already bought</p>
-				{% for name in going %}
-				<p class="name muted">{{name}}</p>
-				{% else %}
-				<p class="name muted">None yet. Be the first!</p>
-				{% endfor %}
+				<p class="name muted">Miss Scarlet</p>
+				<p class="name muted">Colonel Mustard</p>
+				<p class="name muted">Mrs. White</p>
+				<p class="name muted">Mr. Green</p>
+				<p class="name muted">Mrs. Peacock</p>
+				<p class="name muted">Professor Plum</p>
+				<p class="name muted">Dr. Black</p>
+				<p class="name muted">Miss Peach</p>
+				<p class="name muted">Monsieur Brunette</p>
+				<p class="name muted">Madame Rose</p>
+				<p class="name muted">Sergeant Gray</p>
+				<p class="name muted">Captain Brown</p>
+				<p class="name muted">Mr. Slate-Grey</p>
+				<p class="name muted">Inspector Grey</p>
+				<p class="name muted">Hograth</p>
+				<p class="name muted">The Black Dog</p>
+				<p class="name muted">Lady Lavendar</p>
+				<p class="name muted">Mr. Meadow-Brook</p>
+				<p class="name muted">Mrs. Meadow-Brook</p>
+				<p class="name muted">Prince Azure</p>
+				<p class="name muted">Rusty Nayler</p>
+				<p class="name muted">Lord Gray</p>
+				<p class="name muted">The Butler</p>
+				<p class="name muted">The Inspector</p>
+				<p class="name muted">Yvette</p>
+				<p class="name muted">Mrs. Ho</p>
+				<p class="name muted">The Motorist</p>
+				<p class="name muted">The Singing Telegram Girl</p>
 			</div>
 		</div>
 		
@@ -586,13 +510,13 @@
 			</div>
 -->
 			
-			{% if purchase_allowed %}
+			
 			<form class="buyform">
 				
 				<div class="buy-left">
 					<p class="lead">Ticket Price</p>
 					<p class="feetext">Base ticket price<span class="feenum">$<span class="basefloat">10.00</span></span></p>
-					<p class="feetext" hidden>Ticketfly fee<span class="feenum">$<span class="ticketflyfloat">0.00</span></span></p>
+					<p class="feetext">Ticketfly fee<span class="feenum">$<span class="ticketflyfloat">2.53</span></span></p>
 					<p class="feetext">Radius (pay what you want)<span class="feenum"><input class="radiusfee" type="text" value="2.00"></span></p>
 					<p class="feetext"><strong>Total</strong><span id="totalcost" class="feenum"><strong>--</strong></span></p>
 					
@@ -621,7 +545,7 @@
 					data-key="pk_test_SN4NViBmeNI9s4pl8kTDDgUN"
 					data-amount="1000"
 					data-name="Radius"
-					data-description="Pre-purchase a ticket to see {{artist.artist_name}} on January 29th, 2013, at the Middle East Upstairs. You will only be charged if {{artist.artist_name}} gets the show. Your card will not be charged now."
+					data-description="Pre-purchase a ticket to see Ivy Dye on January 29th, 2013, at the Middle East Upstairs. You will only be charged if Ivy Dye gets the show. Your card will not be charged now."
 					data-image="http://getradi.us/img/logobig.png">
 				</script>
 -->
@@ -644,7 +568,7 @@
 				
 				
 			</form>
-			{% endif %}
+			
 			
 			
 		</div>
@@ -677,91 +601,11 @@
     <script type="text/javascript" src="../js/soundcloud-player.js"></script>
     <script src="https://checkout.stripe.com/v2/checkout.js"></script>
     <script src="../js/numeric.js"></script>
-    <script src="../js/currency.js"></script>
     <script type="text/javascript">
     	
-    	callsoundcloud = function(){
-	    	url = 'http://api.soundcloud.com/tracks/'+{{artist.track_id}}+'.json?client_id=d03ca49fb6764663d0992eadc69f8bf1'
-			$.get(url,function(data){
-				console.log(data)
-				sc_url = data.permalink_url
-/* 				$('#scbtn').attr("href",sc_url) */
-/* 				$(".info-track").text(data.title) */
-				setlinks()
-				//fade stuff in
-				$(".links").animate({opacity:1},{duration:200,queue:false});
-			})
-    	}
-    	
-    	checkhttp = function(url){
-			if (url.substring(0,1) == "@"){
-				url = "http://www.twitter.com/" + url.substring(1)
-			} else{
-			
-				if (url.substring(0,7) != "http://" && url.substring(0,8) != "https://"){
-					url = "http://" + url
-				}
-			}
-			
-			
-			
-			return url
-		}
-    	
-    	setlinks = function(){
-	    	//empty the button container
-			$('.links').empty()
-			
-			bandcamp_url = '{{artist.bandcamp_url}}'
-			soundcloud_url = sc_url
-			facebook_url = '{{artist.facebook_url}}'
-			twitter_url = '{{artist.twitter_url}}'
-			myspace_url = '{{artist.myspace_url}}'
-			youtube_url = '{{artist.youtube_url}}'
-			website_url = '{{artist.website_url}}'
-			
-			//append buttons as necessary
-			if (bandcamp_url != '' && bandcamp_url != 'None' && bandcamp_url != null){
-				url = checkhttp(bandcamp_url)
-				$('.links').append('<p><a class="lead"  href="'+url+'" target="_blank"><img class="link-icon" src="/img/bandcamp.png">Download on Bandcamp</a></p>')
-			}
-			
-			$('.links').append('<a class="lead"  id="scbtn" href="'+soundcloud_url+'" target="_blank"><img class="link-icon" src="/img/soundcloud.png">Listen on SoundCloud</a></p>')
-			
-			if (facebook_url != '' && facebook_url != 'None' && facebook_url != null){
-				url = checkhttp(facebook_url)
-				$('.links').append('<p><a class="lead"  href="'+url+'" target="_blank"><img class="link-icon" src="/img/facebook.png">Find on Facebook</a></p>')
-			}
-			
-			if (twitter_url != '' && twitter_url != 'None' && twitter_url != null){
-				url = checkhttp(twitter_url)
-				$('.links').append('<p><a class="lead"  href="'+url+'" target="_blank"><img class="link-icon" src="/img/twitter.png">Follow on Twitter</a></p>')
-			}
-			
-			if (myspace_url != '' && myspace_url != 'None' && myspace_url != null){
-				url = checkhttp(myspace_url)
-				$('.links').append('<p><a class="lead"  href="'+url+'" target="_blank"><img class="link-icon" src="/img/myspace.png">Find on Myspace</a></p>')
-			}
-			
-			if (youtube_url != '' && youtube_url != 'None' && youtube_url != null){
-				url = checkhttp(youtube_url)
-				$('.links').append('<p><a class="lead"  href="'+url+'" target="_blank"><img class="link-icon" src="/img/youtube.png">Watch on YouTube</a></p>')
-			}
-			
-			if (website_url != '' && website_url != 'None' && website_url != null){
-				url = checkhttp(website_url)
-				$('.links').append('<p><a class="lead"  href="'+url+'" target="_blank"><img class="link-icon" src="/img/website.png">View website</a></p>')
-			}
-	
-
-    	}
     	
     	gottoken = function(res){
-    		
-    		contestant_id = '{{contestant_id}}'
-    		
 			console.log('Got token ID:', res.id);
-			console.log('Contestant ID:',contestant_id)
 		};
     	
     	function isValidEmailAddress(emailAddress) {
@@ -845,44 +689,34 @@
 			    $(".radiusfee").css("error")
 		    } else{
 		    	totalamount = total
-			    $('#totalcost').text(total/100)
-			    $('#totalcost').currency()
+			    $('#totalcost').text('$' + total/100)
 		    }
 		    
 		    
-	    }
-	    
-	    resetbutton = function(){
-		    $("#getticket").hover(function(){
-			    $(".progressbar-inner").animate({"width":bump_percent+"%"},{duration:100,queue:true})
-		    },function(){
-			    $(".progressbar-inner").animate({"width":now_percent+"%"},{duration:100,queue:true})
-		    })
-		    
-		    $("#getticket").click(function(){
-		    	$("#getticket").unbind()
-		    	$(".progressbar-inner,.progressbar-contribute").animate({"width":bump_percent+"%"},300)
-			    $(".collapse").collapse('toggle')
-			    
-		    })
 	    }
 	    
 	    $(document).ready(function() {
-	    	
-	    	callsoundcloud()
-	    
-		    now_percent = {{tickets_sold}}/{{tickets_total}} * 100
-		    bump_percent = now_percent + 2
-		    if (now_percent <= 3){
-			    now_percent = 3
-			    bump_percent = 5
-		    } else if (now_percent >=98){
-			    now_percent = 98
-			    bump_percent = 98
-		    }
-			//animate progressbar
-			$(".progressbar-inner,.progressbar-contribute").animate({"width":now_percent+"%"},300)
-			
+		    
+		    //spoof animation for progressbar
+		    $(".progressbar-inner,.progressbar-contribute").animate({"width":"60%"},300)
+		    
+		    //spoof leader widths
+		    $("#1").css("width","95%")
+		    $("#2").css("width","85%")
+		    $("#3").css("width","72%")
+		    $("#4").css("width","65%")
+		    
+		    total = $(".progressbar-outer").width()
+		    div = Math.ceil(total/50)
+		    
+/* 		    inner =  */
+		    
+		    //hover bump listener spoof
+		    $("#getticket").hover(function(){
+			    $(".progressbar-inner").animate({"width":"+=2%"},{duration:100,queue:true})
+		    },function(){
+			    $(".progressbar-inner").animate({"width":"-=2%"},{duration:100,queue:true})
+		    })
 		    
 		    //initialize collapse
 		    $(".collapse").collapse({
@@ -897,8 +731,6 @@
 			  	$(".sc-artwork-list").children(".active").children().attr("src")
 /* 			  	$(img[0]).prependTo(".leftPanel").css({"display":"block"}) */
 			});
-			
-			resetbutton()
 		    
 		    
 		    //hook up play button
@@ -913,12 +745,15 @@
 			    
 		    })
 		    
+		    //payment button listener
+		    $("#getticket").click(function(){
+		    	$(".progressbar-inner").css({"width":"62%"})
+			    $(".collapse").collapse('toggle')
+		    })
 		    
 		    //back button listener
 		    $(".backbtn").click(function(){
 			    $(".collapse").collapse('toggle')
-			    $(".progressbar-inner,.progressbar-contribute").animate({"width":now_percent+"%"},300)
-			    resetbutton()
 		    })
 		    
 		    
@@ -934,7 +769,7 @@
 						image:		 'http://getradi.us/img/logobigwhite.png',
 						amount:      totalamount,
 						name:        'Radius',
-						description: 'Pre-purchase a ticket to see {{artist.artist_name}} on January 29th, 2013, at the Cantab Lounge. You will only be charged if {{artist.artist_name}} gets the show. Your card will not be charged now. This show is 21+. Persons under 21 will not be admitted.',
+						description: 'Pre-purchase a ticket to see Ivy Dye on January 29th, 2013, at the Middle East Upstairs. You will only be charged if Ivy Dye gets the show. Your card will not be charged now.',
 						panelLabel:  'Checkout',
 						token:       gottoken
 					});
