@@ -117,11 +117,10 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 							id = artist_id,
 							access_token = access_token,
 							username = current_user.username,
-							city = current_user.city
+							city = current_user.city,
+							genre = current_user.genre
 							)
 			artist.put()
-			# log in
-			self.log_in(artist_id)
 			
 			# finish mixpanel rpc call
 			self.complete_rpc(rpc)
@@ -136,8 +135,6 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 			except Exception,e:
 				logging.error(e)
 			
-			# redirect to image upload page
-			return self.redirect(CHOOSE_TRACK)
 		else:
 			# artist already exists. Login and redirect to manage
 			logging.info('artist exists')
@@ -160,15 +157,24 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 				logging.error(e)
 			else:
 				logging.info('Mixpanel rpc creation succeeded')
+				# complete mixpanel rpc
+				self.complete_rpc(rpc)
 			
-			# create a session for the artist
-			self.log_in(artist_id)
-			
-			# complete mixpanel rpc
-			self.complete_rpc(rpc)
-			
-			
-			return self.redirect(ARTIST_MANAGE)
+		# create a session for the artist
+		session = self.log_in(artist_id)
+		
+		
+		#===================================================================
+		# Determine redirect destination
+		#===================================================================
+		if artist.track_id is None:
+			redirection = CHOOSE_TRACK
+		elif session.get('redirect_url',None) is not None:
+			redirection = session['redirect_url']
+		else:
+			redirection = ARTIST_MANAGE
+		# redirect
+		return self.redirect(redirection)
 class LogOutHandler(handlers.ArtistHandler):
 	def get(self):
 		'''Logs out an artist
@@ -353,7 +359,16 @@ class StoreTrackHandler(handlers.ArtistHandler):
 		# complete mixpanel rpc
 		self.complete_rpc(rpc)
 		
-		self.redirect(ARTIST_MANAGE)
+		#=======================================================================
+		# Determine redirect location
+		#=======================================================================
+		session = get_current_session()
+		
+		if session.get('login_redirect',None) is not None:
+			redirection = session.get('login_redirect')
+		else:
+			redirection = ARTIST_MANAGE
+		self.redirect(redirection)
 class UploadUrlsHandler(handlers.ArtistHandler):
 	def get(self):
 		'''Dev handler for testing the post.

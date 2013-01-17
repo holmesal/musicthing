@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+
+	<title>Create New Event</title>
+	<link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
+	<link rel="stylesheet" href="/css/build_user.css" type="text/css">
+
+</head>
+
+<body>
+	<div class="container" >
+		<div id="build-container" style="overflow: none;">
+			
+		<form method="POST">
+			<div style="float:left; margin-left: 20pt;">
+				<h2>Event Details</h2>
+				<label for="venue_name">Venue name</label>
+				<input type="text" name="venue_name" placeholder="Middle East Upstairs"/>
+				
+				<label for="">Venue Location</label>
+				<input type="text" name="venue_location" placeholder="10 Mass Ave, Cambridge"/>
+				
+				<label for="">Event Date</label>
+				<input type="text" name="event_date" placeholder="Jan. 14, 2013"/>
+			</div>
+			
+			<div style="float:left; margin-left: 20pt;">
+				<h2>Availability</h2>
+				<label for="">Maximum Tickets For Sale</label>
+				<input type="text" name="max_tickets" placeholder="250"/>
+				
+				<label for="">Minimum Tickets To Sell</label>
+				<input type="text" name="min_tickets" placeholder="100"/>
+				
+				<label for="">Number of Slots Available</label>
+				<input type="text" name="available_positions" placeholder="4" />
+				
+				<label for="">Number of tickets for a band to win</label>
+				<input type="text" name="tickets_per_band" placeholder="50" />
+			</div>
+			
+			<div style="float:left; margin-left: 20pt;">
+				<h2>Ticket Provider</h2>
+				<label for="">Base Ticket Price</label>
+				<input type="text" name="base_ticket_price" placeholder="10.00" />
+				
+				<label for="">Ticket Provider</label>
+				<input type="text" name="ticket_provider" value="Ticketfly" placeholder="Ticketfly"/>
+				
+				<label for="">Ticket Provider Url</label>
+				<input type="text" name="ticket_provider_url" value="http://www.ticketfly.com/" placeholder="http://www.ticketfly.com/"/>
+				
+				<label for="">Ticket Provider Fee</label>
+				<input type="text" name="ticket_provider_fee" value="2.53" placeholder="1.84"/>
+			</div>
+			<input type="submit" />
+		</form>
+		</div>
+	</div>
+
+
+</body>
+
+</html>

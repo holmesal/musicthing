@@ -22,7 +22,7 @@ handlers:
   script: feedback.app
 
 # namespace for contests
-- url: /c/.*
+- url: /e/.*
   script: contest.app
 
 #tasks and cronjobs

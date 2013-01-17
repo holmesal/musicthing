@@ -5,6 +5,7 @@ import jinja2
 import os
 import models
 import webapp2
+from gaesessions import get_current_session
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
@@ -38,6 +39,32 @@ class BandPageHandler(handlers.ContestHandler):
 		template_values.update(event.package())
 		template_values.update(contestant.package())
 		self.say(template_values)
+class SignupHandler(handlers.ContestHandler):
+	def get(self):
+		'''
+		The first signup page for an event
+		'''
+		template_values = {}
+		template = jinja_environment.get_template('/contest/signup_1.html')
+		self.response.out.write(template.render(template_values))
+class SignupConfirmHandler(handlers.ContestHandler):
+	def get(self):
+		'''
+		The second signup page for an event
+		'''
+		try:
+			artist = self.get_artist_from_session() #@UnusedVariable
+		except:
+			logged_in = False
+			session = get_current_session()
+			session['login_redirect'] = 'event_signup'
+		else:
+			logged_in = True
+		template_values = {
+						'logged_id' : logged_in
+						}
+		template = jinja_environment.get_template('/contest/signup_2.html')
+		self.response.out.write(template.render(template_values))
 		
 '''
 Unique pages!!
@@ -76,6 +103,13 @@ name on card
 class TestHandler(handlers.ContestHandler):
 	def get(self):
 		'''
+		Admin page to create events
+		'''
+		template_values = {}
+		template = jinja_environment.get_template('/templates/admin/create_event.html')
+		self.response.out.write(template.render(template_values))
+	def get_(self):
+		'''
 		Spoofs an event and a contestant
 		'''
 		artist = models.Artist.query().get()
@@ -97,6 +131,6 @@ class TestHandler(handlers.ContestHandler):
 		self.say(contestant)
 		self.say(contestant.page_id)
 app = webapp2.WSGIApplication([
-							('/c/test',TestHandler),
-							('/c/(.*)',BandPageHandler),
+							('/e/test',TestHandler),
+							('/e/(.*)',BandPageHandler),
 							])

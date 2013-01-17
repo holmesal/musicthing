@@ -272,13 +272,12 @@ class RadiusHandler(handlers.UserHandler):
 		The page to adjust the radius
 		'''
 		template_values = {
-			"city"	:	""
+			'city' : ''
 		}
 		
 		template = jinja_environment.get_template('templates/station-radius.html')
 		self.response.out.write(template.render(template_values))
 
-		
 app = webapp2.WSGIApplication([
 							# music player page
 							('/music', MusicHandler),

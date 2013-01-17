@@ -155,6 +155,7 @@ class ArtistHandler(BaseHandler):
 		session = get_current_session()
 		session['logged_in'] = True
 		session['artist_id'] = str(artist_id)
+		return session
 	def get_artist_from_session(self):
 		'''
 		Assures that the artist is logged in
@@ -371,7 +372,7 @@ class UserHandler(BaseHandler):
 		return to_send
 class UploadHandler(ArtistHandler,blobstore_handlers.BlobstoreUploadHandler):
 	pass
-class ContestHandler(BaseHandler):
+class ContestHandler(ArtistHandler):
 	def get_event_and_contestant(self,req_id):
 		'''
 		Takes a request id from a url, and attempts to parse it into
