@@ -36,26 +36,26 @@ class BandPageHandler(handlers.ContestHandler):
 		total_tickets_sold = sum(top_sales)
 		self.say(total_tickets_sold)
 		num_tickets_remaining = None
-		tickets_available = None
+		purchase_allowed = None
 		status = None
 		min_tpb = None
 		
 		if datetime.now() < event.tickets_start:
 			# event hasn't started yet.
 			status = 'not_begun'
-			tickets_available = False
+			purchase_allowed = False
 			min_tpb = event.nominal_tpb
 			num_tickets_remaining = event.nominal_tpb
 			
 		elif datetime.now() > event.tickets_end:
-			tickets_available = False
+			purchase_allowed = False
 			min_tpb = 0
 			num_tickets_remaining = 0
 			status = 'won' if contestant.key in top_bands else 'lost'
 				
 		elif total_tickets_sold >= event.capacity:
 			# Contest has ended
-			tickets_available = False
+			purchase_allowed = False
 			num_tickets_remaining = 0
 			min_tpb = 0
 			status = 'won' if contestant.key in top_bands else 'lost'
@@ -82,17 +82,17 @@ class BandPageHandler(handlers.ContestHandler):
 				# the top bands have all sold the minimum tickets
 				if contestant.key in top_bands:
 					# contest has ended, and band has won, but can still sell tickets
-					tickets_available = True
+					purchase_allowed = True
 					num_tickets_remaining = event.extra_tickets - extra_tickets_sold
 					status = 'won'
 				else:
 					# contest has ended, and band has lost, and cannot sell tickets
-					tickets_available = False
+					purchase_allowed = False
 					num_tickets_remaining = 0
 					status = 'lost'
 			else:
 				# the contest is still in progress
-				tickets_available = True
+				purchase_allowed = True
 				# Calculate the number of tickets this contestant has sold
 				num_tickets_sold = ticket_purchasers.__len__()
 				# calc number of tickets remaining
@@ -124,23 +124,39 @@ class BandPageHandler(handlers.ContestHandler):
 			artist_owns_page = True if page_artist.key == current_artist.key else False
 		
 		
-		# package template
 		template_values = {
-						'artist' : page_artist,
-						'contestant_id' : contestant.page_id,
-						'contestant_url' : contestant.page_url,
-						'names' : ticket_purchasers,
-						
-						'num_tickets_remaining' : num_tickets_remaining,
-						'tickets_available' : tickets_available,
-						'status' : status,
-						
-						'show_navbar' : artist_logged_in,
-						'is_owner' : artist_owns_page
-						}
-		template_values.update(event.package())
+			'tickets_total'		: min_tpb,
+			'tickets_remaining'	: num_tickets_remaining,
+			'tickets_sold'		: num_tickets_sold,
+			'place_string'		: '2nd',
+			'going'				: ticket_purchasers,
+			'artist'			: page_artist,
+			'contestant_id'		: contestant.page_id,
+			'contestant_url'	: contestant.page_url,
+			'status'			: status,
+			'purchase_allowed'	: purchase_allowed,
+			'is_owner'			: artist_owns_page,
+			'show_navbar'		: artist_logged_in
+		}
 		
-		self.say(template_values)
+#		# package template
+#		template_values = {
+#						'artist' : page_artist,
+#						'contestant_id' : contestant.page_id,
+#						'contestant_url' : contestant.page_url,
+#						'names' : ticket_purchasers,
+#						
+#						'num_tickets_remaining' : num_tickets_remaining,
+#						'purchase_allowed' : purchase_allowed,
+#						'status' : status,
+#						
+#						'show_navbar' : artist_logged_in,
+#						'is_owner' : artist_owns_page
+#						}
+		
+		return self.say(template_values)
+		template = jinja_environment.get_template('templates/bandpage.html')
+		self.response.out.write(template.render(template_values))
 	def post(self):
 		pass
 '''

@@ -283,11 +283,6 @@ class Event(ndb.Model):
 		'''Counts the number of artists competing to perform
 		'''
 		return Contestant.query(ancestor = self.key).count()
-	def package(self):
-		exclude = ('capacity','tickets_per_band')
-		event_dict = self.to_dict(exclude=exclude)
-		event_dict.update({'num_contestants':self.get_number_of_contestants()})
-		return event_dict
 	def get_top_ticket_sales(self):
 		'''
 		Fetches the ticket sales of the highest-selling n bands
