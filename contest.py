@@ -7,6 +7,7 @@ import models
 import webapp2
 from gaesessions import get_current_session
 import math
+from datetime import datetime
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
@@ -25,36 +26,48 @@ class BandPageHandler(handlers.ContestHandler):
 			# invalid contestant id --> redirect to landing page
 			return self.redirect('/')
 		
+		# get list of names of people who have bought tickets
+		ticket_purchasers = contestant.get_ticket_purchaser_names()
+		
 		#=======================================================================
 		# # Calculate the minimum tickets per band
 		#=======================================================================
 		top_bands,top_sales = event.get_top_ticket_sales()
 		total_tickets_sold = sum(top_sales)
 		self.say(total_tickets_sold)
-		num_tickets_remaining = -999
+		num_tickets_remaining = None
 		tickets_available = None
-		status = 'FLAG!'
-		min_tpb = -888
+		status = None
+		min_tpb = None
 		
-		if total_tickets_sold >= event.capacity:
-			# tickets are not available
+		if datetime.now() < event.tickets_start:
+			# event hasn't started yet.
+			status = 'not_begun'
 			tickets_available = False
-			# check if contestant is one of the winners
-			if contestant.key in top_bands:
-				# contest has ended, and the band has won
-				status = 'won'
-			else:
-				# contest has ended, and the band has lost
-				status = 'lost'
+			min_tpb = event.nominal_tpb
+			num_tickets_remaining = event.nominal_tpb
+			
+		elif datetime.now() > event.tickets_end:
+			tickets_available = False
+			min_tpb = 0
+			num_tickets_remaining = 0
+			status = 'won' if contestant.key in top_bands else 'lost'
+				
+		elif total_tickets_sold >= event.capacity:
+			# Contest has ended
+			tickets_available = False
+			num_tickets_remaining = 0
+			min_tpb = 0
+			status = 'won' if contestant.key in top_bands else 'lost'
 		else:
 			# tickets are still available
 			# recalculate the tpb, or tickets per band to win
 			
 			# calc the number of tickets that have been sold from the extra ticket pool
-			surplus_tickets = sum([count - event.nominal_tpb
+			extra_tickets_sold = sum([count - event.nominal_tpb
 							for count in top_sales if count > event.nominal_tpb])
 			# calc the number of remaining extra tickets
-			total_oversell = surplus_tickets - event.extra_tickets
+			total_oversell = extra_tickets_sold - event.extra_tickets
 			if total_oversell < 0:
 				# no tbp adjustment, there are still extra tickets to be sold
 				min_tpb = event.nominal_tpb
@@ -70,6 +83,7 @@ class BandPageHandler(handlers.ContestHandler):
 				if contestant.key in top_bands:
 					# contest has ended, and band has won, but can still sell tickets
 					tickets_available = True
+					num_tickets_remaining = event.extra_tickets - extra_tickets_sold
 					status = 'won'
 				else:
 					# contest has ended, and band has lost, and cannot sell tickets
@@ -78,8 +92,8 @@ class BandPageHandler(handlers.ContestHandler):
 					status = 'lost'
 			else:
 				# the contest is still in progress
+				tickets_available = True
 				# Calculate the number of tickets this contestant has sold
-				ticket_purchasers = contestant.get_ticket_purchaser_names()
 				num_tickets_sold = ticket_purchasers.__len__()
 				# calc number of tickets remaining
 				num_tickets_remaining = min_tpb - num_tickets_sold
@@ -107,21 +121,20 @@ class BandPageHandler(handlers.ContestHandler):
 			# an artist is logged in
 			artist_logged_in = True
 			# Check if artist owns the page
-			if page_artist.key == current_artist.key:
-				artist_owns_page = True
-			else:
-				artist_owns_page = False
+			artist_owns_page = True if page_artist.key == current_artist.key else False
 		
 		
 		# package template
 		template_values = {
-						'num_tickets_remaining' : num_tickets_remaining,
 						'artist' : page_artist,
 						'contestant_id' : contestant.page_id,
 						'contestant_url' : contestant.page_url,
 						'names' : ticket_purchasers,
+						
+						'num_tickets_remaining' : num_tickets_remaining,
 						'tickets_available' : tickets_available,
 						'status' : status,
+						
 						'show_navbar' : artist_logged_in,
 						'is_owner' : artist_owns_page
 						}

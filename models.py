@@ -256,17 +256,20 @@ class Event(ndb.Model):
 	# venue details
 	venue_name = ndb.StringProperty()
 	venue_location = ndb.StringProperty()
-	event_date = ndb.StringProperty()
 	min_age = ndb.IntegerProperty()
+	
+	event_date = ndb.StringProperty()
+	tickets_start = ndb.DateTimeProperty()
+	tickets_end = ndb.DateTimeProperty()
+	
 	capacity = ndb.IntegerProperty()
-	min_tickets = ndb.IntegerProperty()
 	num_available_positions = ndb.IntegerProperty()
 	nominal_tpb = ndb.IntegerProperty()
 	
 	base_ticket_price = ndb.FloatProperty()
-	ticket_provider = ndb.StringProperty()
-	ticket_provider_url = ndb.StringProperty()
-	ticket_provider_fee = ndb.FloatProperty()
+#	ticket_provider = ndb.StringProperty()
+#	ticket_provider_url = ndb.StringProperty()
+#	ticket_provider_fee = ndb.FloatProperty()
 	radius_fee = ndb.FloatProperty()
 	
 	@property
@@ -281,7 +284,7 @@ class Event(ndb.Model):
 		'''
 		return Contestant.query(ancestor = self.key).count()
 	def package(self):
-		exclude = ('max_tickets','min_tickets','tickets_per_band')
+		exclude = ('capacity','tickets_per_band')
 		event_dict = self.to_dict(exclude=exclude)
 		event_dict.update({'num_contestants':self.get_number_of_contestants()})
 		return event_dict
@@ -289,8 +292,8 @@ class Event(ndb.Model):
 		'''
 		Fetches the ticket sales of the highest-selling n bands
 		n == num_available_positions
-		@return: a list of ticket sales in ints
-		@rtype: list
+		@return: a list of ticket sales in ints and list of corresponding band keys
+		@rtype: list,list
 		'''
 		# grab all the contestants
 		contestant_keys = Contestant.query(ancestor=self.key).fetch(None,keys_only=True)
