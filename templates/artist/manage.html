@@ -44,7 +44,9 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 			<div class="span6">
 				
 				<form class="well" method="post" action="/artist/upload/urls">
-					
+					<p class="updates">Notify me when a show opens up in my city.</p>
+					<p class="arow" id="email"><img class="sicon" src="/img/email.png"><input type="text" name="email" placeholder="Email" value="{{artist.email or ''}}"></p>
+					<hr>
 					{% if not artist.tags %}
 					<div id="alert-tags" class="alert alert-error">If you don't add any tags, you are less likely to be heard by the right listeners</div>
 					{% endif %}
@@ -78,10 +80,6 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 					<p class="arow"><img class="sicon" src="/img/website.png"><input type="text" name="website_url" placeholder="Website URL" value="{{artist.website_url or ''}}"></p>
 					
 					
-					<hr>
-					
-					<p class="updates">We (very) occasionally send out updates about changes and new features.</p>
-					<p class="arow" id="email"><img class="sicon" src="/img/email.png"><input type="text" name="email" placeholder="Email" value="{{artist.email or ''}}"></p>
 					<input type="submit" class="btn btn-info" value="Save Changes">
 					
 <!-- 					Hidden inputs  -->

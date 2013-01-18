@@ -1,0 +1,29 @@
+body{
+	background-size: cover;
+	background: url(../img/cantablanding.jpg);
+}
+
+.cantablead{
+	font-weight: 300;
+	font-size: 60pt;
+	line-height: 120%;
+	color: white;
+	margin-top: 20%;
+	text-align: center;
+	text-shadow: 1px 1px 1px black;
+}
+
+.cantabsupport{
+	color: white;
+	font-size: 20pt;
+	text-align: center;
+	margin-top: 50px;
+	line-height: 120%;
+	margin-bottom: 20px;
+	text-shadow: 1px 1px 1px black;
+}
+
+.cantabtext{
+	color:white;
+	text-shadow: 1px 1px 1px black;
+}

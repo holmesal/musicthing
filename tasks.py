@@ -76,6 +76,42 @@ class UserTaskHandler(webapp2.RequestHandler):
 		except:
 			logging.debug('Ah man this failed')
 			
+class CantabTaskHandler(webapp2.RequestHandler):
+	def post(self):
+		try:
+			
+			logging.info('''
+				
+				SKYNET IS TEXTING THE FOUNDERS
+				
+				''')
+			
+			payload = json.loads(self.request.body)
+			logging.info(payload['email'])
+			#twilio credentials
+			sid = 'AC4880dbd1ff355288728be2c5f5f7406b'
+			token = 'ea7cce49e3bb805b04d00f76253f9f2b'
+			twiliourl='https://api.twilio.com/2010-04-01/Accounts/AC4880dbd1ff355288728be2c5f5f7406b/SMS/Messages.json'
+			
+			auth_header = 'Basic '+base64.b64encode(sid+':'+token)
+			logging.info(auth_header)
+			
+			numbers = ['+16052610083','+16173124536']
+			
+			for number in numbers:
+				request = {'From':'+16173608582',
+							'To':number,
+							'Body':'Woohoo! New Cantab reminder request! '+payload['email']}
+			
+				result = urlfetch.fetch(url=twiliourl,
+									payload=urllib.urlencode(request),
+									method=urlfetch.POST,
+									headers={'Authorization':auth_header})
+			
+		except:
+			logging.debug('Ah man this failed')
+			
 app = webapp2.WSGIApplication([('/tasks/textTask', TextTaskHandler),
-								('/tasks/userTask', UserTaskHandler)
+								('/tasks/userTask', UserTaskHandler),
+								('/tasks/cantabTask', CantabTaskHandler)
 								],debug=True)
