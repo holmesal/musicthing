@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Feb 28th, 2013 - Make it happen</title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="Radius is Pandora for local bands.">
+    
+    <meta property="og:image" content="http://www.getradi.us/img/logobig.png"/>
+    <meta property="og:title" content="Radius"/>
+    <meta property="og:site_name" content="Radius" />
+    <meta property="og:url" content="http://www.getradi.us/boston"/>
+    <meta property="og:description" content="On 1.28.13, four Boston bands will play. Pledge to see a band, and help them get the show."/>
+
+    <!-- Le styles -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="../css/landingv3.css" rel="stylesheet">
+    <link href="../css/cantablanding.css" rel="stylesheet">
+    
+    <!-- start Mixpanel --><script type="text/javascript">(function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src=("https:"===e.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f);b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==
+typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.increment people.append people.track_charge".split(" ");for(g=0;g<i.length;g++)f(c,i[g]);b._i.push([a,e,d])};b.__SV=1.2}})(document,window.mixpanel||
+[]);
+mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
+    
+    
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../img/logobig.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../img/logobig.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../img/logobig.png">
+                    <link rel="apple-touch-icon-precomposed" href="../img/logobig.png">
+                                   <link rel="shortcut icon" href="../img/favicon.png">
+  </head>
+
+  <body>
+    <div class="container marketing">
+    
+    <div id="player-info" class="featurette">
+	  	<h1 class="featurette-heading cantablead">
+	  		FOUR BOSTON BANDS </br> WILL PLAY ON 2.28.13	
+	  	</h1>
+	  	
+	  	
+	  	
+
+	  	{% if state=="signedup" %}
+	  	<p class="cantabsupport">Great! We'll email you when you can pledge.</p>
+	  	<p class="lead cantabtext">If you've got a minute, you should help us spread the word!</p><a id="tweetbtn" target="_blank" href="https://twitter.com/intent/tweet?text=Let's%20make%20a%20show%20happen%20in%20Boston!%201.28.13&url=http%3A%2F%2Fwww.getradi.us%2fboston&via=getradius"><img src="../img/twitter-normal.png" onmouseover="this.src='../img/twitter-hover.png'" onmouseout="this.src='../img/twitter-normal.png'" onmouseclick="this.src='../img/twitter-active.png'"></a><p class="lead cantabtext" style="margin-top: 20px;">or share <a href="http://www.getradi.us" target="_blank">http://www.getradi.us/boston</a></p>
+	  </p>
+	  	{% else %}
+	  	<p class="cantabsupport">
+		  	Pledge to see a band, and help them get the show.</br>
+		  	Pledges open in 6 days.
+	  	</p>
+	  	<form id="signup_form" class="form-wrapper cf" method="post" action="/boston">
+	        <input id="emailinput" name="email" type="text" placeholder="Your Email">
+	        <button type="submit">REMIND ME</button>
+	    </form>
+	    {% endif %}
+	    
+	    <p class="poweredby">Powered by <a href="http://www.getradi.us">Radius</a></p>
+	    
+	    
+<!--
+	    <p class="lead connecto">Local artist?</p>
+		<p class="lead tagline tagsmaller">
+		  	Build your following and play more shows.
+	  	</p>
+		<a id="connectlink" href="#"><img  class="connect" src="../img/connect.png"></a>
+-->  
+	    
+  	</div>
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script type="text/javascript" src="//ignition.launchrock.com/ignition-current.min.js"></script>
+    <script src="../js/sc-sdk.min.js"></script>
+    <script type="text/javascript">
+	    $(document).ready(function() {
+			mixpanel.track("cantab landing page loaded")
+			
+			//register signup
+			mixpanel.track_forms("#signup_form", "cantab signup form submitted",{"signup_email":$("#emailinput").val()});
+			mixpanel.track_links("#connectlink","band connect link clicked");
+			mixpanel.track_links("#tweetbtn","cantab tweet button clicked");
+			
+			
+			// initialize client with app credentials
+			SC.initialize({
+			  client_id: 'd03ca49fb6764663d0992eadc69f8bf1',
+			  redirect_uri: 'http://getradi.us/artist/login/complete'
+			});
+			
+			$('#connectlink').click(function(){
+				SC.connect(function() {
+				  SC.get('/me', function(me) { 
+				    console.log(me)
+				  });
+				});
+			})
+		
+		});
+    </script>	
+  </body>
+</html>

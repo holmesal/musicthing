@@ -24,6 +24,8 @@ handlers:
   script: demo.app
 - url: /shows.*
   script: shows.app
+- url: /boston
+  script: cantab.app
 
 
 # namespace for contests

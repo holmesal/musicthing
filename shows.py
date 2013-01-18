@@ -23,8 +23,8 @@ class TestHandler(handlers.BaseHandler):
 		going = ["going person 1","going person 2","going person 3"]
 		
 		artist = {
-			"track_id"		:	53097530,
-			"artist_name"	:	"The Band",
+			"track_id"		:	71788795,
+			"artist_name"	:	"testband",
 			"facebook_url"	:	"facebook.com",
 			"myspace_url"	:	"myspace.com",
 			"twitter_url"	:	"@alonsoholmes",
