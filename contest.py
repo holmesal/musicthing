@@ -31,40 +31,72 @@ class BandPageHandler(handlers.ContestHandler):
 		top_bands,top_sales = event.get_top_ticket_sales()
 		total_tickets_sold = sum(top_sales)
 		self.say(total_tickets_sold)
+		num_tickets_remaining = -999
+		tickets_available = None
+		status = 'FLAG!'
+		min_tpb = -888
+		
 		if total_tickets_sold >= event.capacity:
 			# tickets are not available
 			tickets_available = False
 			# check if contestant is one of the winners
 			if contestant.key in top_bands:
+				# contest has ended, and the band has won
 				status = 'won'
 			else:
+				# contest has ended, and the band has lost
 				status = 'lost'
 		else:
-			# recalculate the tpb
+			# tickets are still available
+			# recalculate the tpb, or tickets per band to win
+			
+			# calc the number of tickets that have been sold from the extra ticket pool
 			surplus_tickets = sum([count - event.nominal_tpb
 							for count in top_sales if count > event.nominal_tpb])
-			total_surplus = surplus_tickets - event.extra_tickets
-			if total_surplus < 0:
-				# no tbp adjustment
+			# calc the number of remaining extra tickets
+			total_oversell = surplus_tickets - event.extra_tickets
+			if total_oversell < 0:
+				# no tbp adjustment, there are still extra tickets to be sold
 				min_tpb = event.nominal_tpb
 			else:
-				# must adjust the tpb to stay within capacity
-				tpb_reduction = int(math.ceil(float(total_surplus)/float(event.num_available_positions)))
+				# no extra tickets are left. adjust the tpb
+				# total oversell is a positive int
+				tpb_reduction = int(math.ceil(float(total_oversell)/float(event.num_available_positions)))
 				min_tpb = event.nominal_tpb - tpb_reduction
 			
-			# have min tpb
-			assert False, ''
-		
-		# calculate ticket stuff
-		ticket_purchasers = contestant.get_ticket_purchaser_names()
-		num_tickets_sold = ticket_purchasers.__len__()
-#		num_tickets_per_band = event.tickets_per_band
-		num_tickets_remaining = event.nominal_tpb - num_tickets_sold
-		if num_tickets_remaining < 0:
-			num_tickets_remaining = 0
-		
+			# check if contest has ended by comparing adjusted tpb with top sales
+			if filter(lambda x: x < min_tpb, top_sales) == []:
+				# the top bands have all sold the minimum tickets
+				if contestant.key in top_bands:
+					# contest has ended, and band has won, but can still sell tickets
+					tickets_available = True
+					status = 'won'
+				else:
+					# contest has ended, and band has lost, and cannot sell tickets
+					tickets_available = False
+					num_tickets_remaining = 0
+					status = 'lost'
+			else:
+				# the contest is still in progress
+				# Calculate the number of tickets this contestant has sold
+				ticket_purchasers = contestant.get_ticket_purchaser_names()
+				num_tickets_sold = ticket_purchasers.__len__()
+				# calc number of tickets remaining
+				num_tickets_remaining = min_tpb - num_tickets_sold
+				# check if the band has sold past the min tpb
+				if num_tickets_remaining <= 0:
+					# contest is in progress, but the band has won
+					status = 'won'
+					# don't send back a negative value for num_tickets_remaining
+					num_tickets_remaining = 0
+				else:
+					# contest is in progress, and the band has not won yet
+					status = 'in_progress'
+			
+		#=======================================================================
+		# # Check if a logged in artist is viewing the page
+		#=======================================================================
 		page_artist = contestant.artist_key.get()
-		# Check if a logged in artist is viewing the page
 		try:
 			current_artist = self.get_artist_from_session()
 		except self.SessionError:
@@ -80,20 +112,16 @@ class BandPageHandler(handlers.ContestHandler):
 			else:
 				artist_owns_page = False
 		
-		### SPOOF
-		tickets_available = True
-		contest_status = 'won'# 'lost' # 'in_progress'
-		### /SPOOF
 		
 		# package template
 		template_values = {
-						'tickets_remaining' : num_tickets_remaining,
+						'num_tickets_remaining' : num_tickets_remaining,
 						'artist' : page_artist,
 						'contestant_id' : contestant.page_id,
 						'contestant_url' : contestant.page_url,
 						'names' : ticket_purchasers,
 						'tickets_available' : tickets_available,
-						'status' : contest_status,
+						'status' : status,
 						'show_navbar' : artist_logged_in,
 						'is_owner' : artist_owns_page
 						}
