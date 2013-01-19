@@ -386,7 +386,7 @@ class ContestHandler(ArtistHandler):
 		try:
 			# make sure the provided id is of the proper length
 			total_length = cutils.event_id_length+cutils.contestant_id_length
-			assert len(req_id) == total_length,'Invalid: {}'.format(req_id)
+			assert len(req_id) == total_length,'Invalid id: {}'.format(req_id)
 			# parse the id into constituents
 			event_id = req_id[:cutils.event_id_length]
 			contestant_id = req_id[cutils.event_id_length:]
@@ -394,10 +394,10 @@ class ContestHandler(ArtistHandler):
 			# grab the event and contestant
 			event = models.Event.get_by_id(event_id)
 			assert event is not None, \
-				'111Invalid event. {}'.format(req_id)
+				'Invalid event. {}'.format(req_id)
 			contestant = models.Contestant.get_by_id(contestant_id,parent=event.key)
 			assert contestant is not None, \
-				'222Invalid contestant. {}'.format(req_id)
+				'Invalid contestant. {}'.format(req_id)
 		except AssertionError,e:
 			raise self.SessionError(e)
 		else:
@@ -417,8 +417,6 @@ class ContestHandler(ArtistHandler):
 									id = contestant_id,
 									parent = event_key,
 									artist_key = artist.key,
-									track_id = artist.track_id,
-									artist_name = artist.username
 									)
 		contestant.put()
 		return contestant

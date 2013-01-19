@@ -450,7 +450,7 @@
 		  	
 			<h4 id="nameok">Is your band's name correct?</h4>
 			<form method="post" action="/artist/changename">
-				<input name="artist_name" id="artist_name" type="text" value="{{artist.display_name}}">
+				<input name="artist_name" id="artist_name" type="text" value="{{artist.artist_name}}">
 				<input type="submit" id="btnupdatename" class="btn btn-info" value="Update">
 			</form>
 	  	</div>
@@ -479,7 +479,7 @@
 			<h1>Feb. 28th, 2013</h1>
 			
 			{% if status == 'in_progress' %}
-			<p class="rules lead">The 4 bands that sell {{tickets_total}} tickets <strong>the fastest</strong> get the show.</p>
+			<p class="rules lead">The 4 bands that sell {{tickets_per_band}} tickets <strong>the fastest</strong> get the show.</p>
 			{%endif%}
 			
 			
@@ -587,13 +587,13 @@
 -->
 			
 			{% if purchase_allowed %}
-			<form class="buyform">
+			<form class="buyform" id="buyform">
 				
 				<div class="buy-left">
 					<p class="lead">Ticket Price</p>
 					<p class="feetext">Base ticket price<span class="feenum">$<span class="basefloat">10.00</span></span></p>
 					<p class="feetext" hidden>Ticketfly fee<span class="feenum">$<span class="ticketflyfloat">0.00</span></span></p>
-					<p class="feetext">Radius (pay what you want)<span class="feenum"><input class="radiusfee" type="text" value="2.00"></span></p>
+					<p class="feetext">Radius (pay what you want)<span class="feenum"><input class="radiusfee" name="radius_fee" type="text" value="2.00"></span></p>
 					<p class="feetext"><strong>Total</strong><span id="totalcost" class="feenum"><strong>--</strong></span></p>
 					
 					
@@ -618,7 +618,7 @@
 <!--
 						<script
 					src="https://checkout.stripe.com/v2/checkout.js" class="stripe-button"
-					data-key="pk_test_SN4NViBmeNI9s4pl8kTDDgUN"
+					data-key="pk_test_KFKQuyUyUx1rbL3OaIywFppQ"//alonsos key:"pk_test_SN4NViBmeNI9s4pl8kTDDgUN"
 					data-amount="1000"
 					data-name="Radius"
 					data-description="Pre-purchase a ticket to see {{artist.artist_name}} on January 29th, 2013, at the Middle East Upstairs. You will only be charged if {{artist.artist_name}} gets the show. Your card will not be charged now."
@@ -650,7 +650,7 @@
 		</div>
 		
 		<div class="aboutus" hidden>
-			<p class="lead">We hate fees, too.</p>
+			<p class="lead">We hate fees too.</p>
 			<p class="feetext">Pay what you want - we'll give half to <a target="_blank" href="http://www.mhopus.org/">Mr. Holland's Opus</a>, a charity that helps keep music programs alive in under-funded schools.</p>
 		</div>
 		
@@ -669,7 +669,7 @@
     <!-- Le javascript
     ================================================== -->
     
-    
+    <script type="text/javascript">console.log('{{artist.track_id}}' === 'None')</script>
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
@@ -679,9 +679,15 @@
     <script src="../js/numeric.js"></script>
     <script src="../js/currency.js"></script>
     <script type="text/javascript">
-    	
-    	callsoundcloud = function(){
-	    	url = 'http://api.soundcloud.com/tracks/'+{{artist.track_id}}+'.json?client_id=d03ca49fb6764663d0992eadc69f8bf1'
+        try{
+        callsoundcloud = function(){
+    		var id = '{{artist.track_id}}'
+    		console.log(id)
+    		if(id === 'None'){
+    			id = '0'
+    		}
+    		
+	    	url = 'http://api.soundcloud.com/tracks/'+id+'.json?client_id=d03ca49fb6764663d0992eadc69f8bf1'
 			$.get(url,function(data){
 				console.log(data)
 				sc_url = data.permalink_url
@@ -693,7 +699,7 @@
 				$(".trackname").text(data.title)
 				$(".playbar").show()
 			})
-    	}
+    	}}catch(err){console.log(err)}
     	
     	checkhttp = function(url){
 			if (url.substring(0,1) == "@"){
@@ -709,7 +715,6 @@
 			
 			return url
 		}
-    	
     	setlinks = function(){
 	    	//empty the button container
 			$('.links').empty()
@@ -760,10 +765,11 @@
     	
     	gottoken = function(res){
     		
-    		contestant_id = '{{contestant_id}}'
-    		
+    		contestant_id = '{{contestant_id}}';
+    		console.log('New token: ',res);
 			console.log('Got token ID:', res.id);
 			console.log('Contestant ID:',contestant_id)
+			// post to the server
 		};
     	
     	function isValidEmailAddress(emailAddress) {
@@ -873,7 +879,7 @@
 	    	
 	    	callsoundcloud()
 	    
-		    now_percent = {{tickets_sold}}/{{tickets_total}} * 100
+		    now_percent = {{tickets_sold}}/{{tickets_per_band}} * 100
 		    bump_percent = now_percent + 2
 		    if (now_percent <= 3){
 			    now_percent = 3
@@ -931,7 +937,7 @@
 				if(checkinputs()){
 				
 					StripeCheckout.open({
-						key:         'pk_test_SN4NViBmeNI9s4pl8kTDDgUN',
+						key:         'pk_test_KFKQuyUyUx1rbL3OaIywFppQ',//alonsos key: 'pk_test_SN4NViBmeNI9s4pl8kTDDgUN',
 						address:     false,
 						image:		 'http://getradi.us/img/logobigwhite.png',
 						amount:      totalamount,

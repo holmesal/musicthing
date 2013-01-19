@@ -617,6 +617,7 @@ class ChangeNameHandler(handlers.ArtistHandler):
 		artist.proper_name = new_name
 		artist.put()
 		
+		return self.redirect(self.request.referrer)
 		
 ARTIST_LOGIN = '/artist/login'
 SC_AUTH = '/artist/scauth'

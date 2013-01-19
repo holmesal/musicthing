@@ -34,7 +34,7 @@ class TestHandler(handlers.BaseHandler):
 		}
 		
 		template_values = {
-			"tickets_total"	:	40,
+			"tickets_per_band"	:	40,
 			"tickets_remaining"	:	0,
 			"tickets_sold"		:	40,
 			"place_string"		:	"2nd",
@@ -83,15 +83,16 @@ class SignupHandler(handlers.ContestHandler):
 		artist = self.get_artist_from_session()
 		#=======================================================================
 		# SPOOF THE EVENT KEY FOR NOW BECAUSE WE ONLY HAVE ONE SHOW
-		event_key = ndb.Key(models.Event,'KGB')
+		event_key = ndb.Key(models.Event,'aaa')
 		#=======================================================================
 		# create the contestant
 		contestant = self.sign_up_artist_for_event(artist, event_key)
 		redirect_url = contestant.page_url
+		self.say(redirect_url)
 		return self.redirect(redirect_url)
 app = webapp2.WSGIApplication([
 							('/shows',ShowHandler),
-							('/shows',TestHandler),
+							('/shows/test',TestHandler),
 							('/shows/playcheck',PlayCheckHandler),
 							('/shows/signup',SignupHandler),
 							])

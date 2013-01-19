@@ -121,7 +121,7 @@ class Artist(ndb.Model):
 	image_key = ndb.BlobKeyProperty()
 	genre = ndb.StringProperty() # deprecated
 	@property
-	def display_name(self):
+	def artist_name(self):
 		'''
 		The name to display for an artist
 		@return: either the bands proper name or their username
@@ -291,7 +291,7 @@ class Event(ndb.Model):
 		'''Counts the number of artists competing to perform
 		'''
 		return Contestant.query(ancestor = self.key).count()
-	def get_top_ticket_sales(self):
+	def get_ticket_sales_per_band(self):
 		'''
 		Fetches the ticket sales of the highest-selling n bands
 		n == num_available_positions
@@ -300,15 +300,13 @@ class Event(ndb.Model):
 		'''
 		# grab all the contestants
 		contestant_keys = Contestant.query(ancestor=self.key).fetch(None,keys_only=True)
-#		contestant_futures = ndb.get_multi_async(contestant_keys)
-#		contestants = (f.get_result() for f in contestant_futures)
 		
 		# count the tickets sold per band, and put in form that can be sorted
 		sales_count_list = ((key,Contestant.get_ticket_count(key)) for key in contestant_keys)
-		top_ticket_sales = sorted(sales_count_list,key=lambda x: x[1],
-								reverse = True)[:self.num_available_positions]
-		top_bands,top_sales = zip(*top_ticket_sales)
-		return top_bands,top_sales
+		sorted_ticket_sales = sorted(sales_count_list,key=lambda x: x[1],
+								reverse = True)
+		bands,sales = zip(*sorted_ticket_sales)
+		return bands,sales
 		
 class Contestant(ndb.Model):
 	'''
@@ -322,7 +320,7 @@ class Contestant(ndb.Model):
 		return self.key.parent().id()+self.key.id()
 	@property
 	def page_url(self):
-		return '{}/e/{}'.format(BASE_URL,self.page_id)
+		return 'http://{}/e/{}'.format(BASE_URL,self.page_id)
 	@staticmethod
 	def get_ticket_count(key):
 		'''
@@ -358,11 +356,15 @@ class TicketSale(ndb.Model):
 	'''
 	A person has reserved a ticket for the show.
 	'''
-	name = ndb.StringProperty()
-	email = ndb.StringProperty()
-	phone = ndb.StringProperty()
-	stripe_token = ndb.StringProperty()
-	name_on_card = ndb.StringProperty()
+	name = ndb.StringProperty(required=True)
+	age = ndb.IntegerProperty()
+	email = ndb.StringProperty(required=True)
+	
+	stripe_id = ndb.StringProperty(required=True)
+	
+	base_ticket_price = ndb.IntegerProperty(required=True)
+	radius_fee = ndb.IntegerProperty(required=True)
+	charge_id = ndb.StringProperty()
 class Cantab(ndb.Model):
 	'''
 	A person who has signed up for the Cantab show, feb 28 2013
