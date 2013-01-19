@@ -354,7 +354,12 @@ class TicketSale(ndb.Model):
 	phone = ndb.StringProperty()
 	stripe_token = ndb.StringProperty()
 	name_on_card = ndb.StringProperty()
-
+class Cantab(ndb.Model):
+	'''
+	A person who has signed up for the Cantab show, feb 28 2013
+	'''
+	email = ndb.StringProperty()
+	
 '''
 Unique pages!!
 
