@@ -1,7 +1,7 @@
 from datetime import datetime as dt
 from gaesessions import get_current_session
 from google.appengine.api import taskqueue
-from google.appengine.ext import blobstore
+from google.appengine.ext import blobstore, ndb
 from sc_creds import sc_creds, sc_creds_test
 import handlers
 import jinja2
@@ -13,10 +13,8 @@ import os
 import random
 import soundcloud
 import urllib2
-import webapp2
-from google.appengine.ext import ndb
 import utils
-from google.appengine.ext import ndb
+import webapp2
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
@@ -413,7 +411,7 @@ class UploadUrlsHandler(handlers.ArtistHandler):
 		
 		
 		city_name = self.request.get('locality') or ' '
-		if city_name is not None:
+		if city_name is not ' ':
 			admin1 = self.request.get('administrative_area_level_1','') or ' '
 			country = self.request.get('country','') or ' '
 			lat = self.request.get('lat')
