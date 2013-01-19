@@ -7,7 +7,10 @@ import models
 import webapp2
 from gaesessions import get_current_session
 import math
-from datetime import datetime
+import datetime
+import json
+import random
+import logging
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
@@ -28,37 +31,43 @@ class BandPageHandler(handlers.ContestHandler):
 		
 		# get list of names of people who have bought tickets
 		ticket_purchasers = contestant.get_ticket_purchaser_names()
-		
+		# number of tickets this contestant has sold
+		num_tickets_sold = ticket_purchasers.__len__()
 		#=======================================================================
 		# # Calculate the minimum tickets per band
 		#=======================================================================
 		top_bands,top_sales = event.get_top_ticket_sales()
-		total_tickets_sold = sum(top_sales)
-		self.say(total_tickets_sold)
+		net_tickets_sold = sum(top_sales)
+		
 		num_tickets_remaining = None
 		purchase_allowed = None
 		status = None
 		min_tpb = None
-		
-		if datetime.now() < event.tickets_start:
+		### DEBUG
+		total_oversell = None
+		extra_tickets_sold = None
+		### DEBUG
+		if datetime.datetime.now() < event.tickets_start:
 			# event hasn't started yet.
 			status = 'not_begun'
 			purchase_allowed = False
 			min_tpb = event.nominal_tpb
 			num_tickets_remaining = event.nominal_tpb
-			
-		elif datetime.now() > event.tickets_end:
+			### DEBUG
+			condition = 'not begun'
+		elif datetime.datetime.now() > event.tickets_end:
 			purchase_allowed = False
 			min_tpb = 0
 			num_tickets_remaining = 0
 			status = 'won' if contestant.key in top_bands else 'lost'
-				
-		elif total_tickets_sold >= event.capacity:
+			condition = 'sales have closed'
+		elif net_tickets_sold >= event.capacity:
 			# Contest has ended
 			purchase_allowed = False
 			num_tickets_remaining = 0
 			min_tpb = 0
 			status = 'won' if contestant.key in top_bands else 'lost'
+			condition = 'sold out'
 		else:
 			# tickets are still available
 			# recalculate the tpb, or tickets per band to win
@@ -93,8 +102,6 @@ class BandPageHandler(handlers.ContestHandler):
 			else:
 				# the contest is still in progress
 				purchase_allowed = True
-				# Calculate the number of tickets this contestant has sold
-				num_tickets_sold = ticket_purchasers.__len__()
 				# calc number of tickets remaining
 				num_tickets_remaining = min_tpb - num_tickets_sold
 				# check if the band has sold past the min tpb
@@ -125,7 +132,7 @@ class BandPageHandler(handlers.ContestHandler):
 		
 		
 		template_values = {
-			'tickets_total'		: min_tpb,
+			'tickets_per_band'	: min_tpb,
 			'tickets_remaining'	: num_tickets_remaining,
 			'tickets_sold'		: num_tickets_sold,
 			'place_string'		: '2nd',
@@ -136,7 +143,13 @@ class BandPageHandler(handlers.ContestHandler):
 			'status'			: status,
 			'purchase_allowed'	: purchase_allowed,
 			'is_owner'			: artist_owns_page,
-			'show_navbar'		: artist_logged_in
+			'show_navbar'		: artist_logged_in,
+			
+			'total_oversell'	: total_oversell,
+			'extra_tickets_sold': extra_tickets_sold,
+			'top_bands'			: [b.id() for b in top_bands],
+			'top_sales'			: top_sales,
+			'condition'			: condition
 		}
 		
 #		# package template
@@ -153,8 +166,9 @@ class BandPageHandler(handlers.ContestHandler):
 #						'show_navbar' : artist_logged_in,
 #						'is_owner' : artist_owns_page
 #						}
-		
-		return self.say(template_values)
+		tv = {key:str(val) for key,val in template_values.iteritems() if key is not 'artist'}
+#		tv['artist'] = {key:str(val) for key,val in template_values['artist'].to_dict().iteritems()}
+		return self.say(json.dumps(tv))
 		template = jinja_environment.get_template('templates/bandpage.html')
 		self.response.out.write(template.render(template_values))
 	def post(self):
@@ -195,29 +209,68 @@ name on card
 '''
 class TestHandler(handlers.ContestHandler):
 	def get(self):
+		event = models.Event.get_by_id('aaa')
+		contestants = models.Contestant.query(ancestor = event.key).iter()
+		for c in contestants:
+			self.say('{} --> {}'.format(c.key.id(),c.get_ticket_count(c.key)))
+class ClearSpoofHandler(handlers.ContestHandler):
+	def get(self):
+		'''
+		clear the spoofed data
+		'''
+		event_key = ndb.Key(models.Event,'aaa')
+		e_fut = event_key.delete_async()
+		c_keys = models.Contestant.query(ancestor = event_key).fetch(None,keys_only = True)
+		c_futs = ndb.delete_multi_async(c_keys)
+		ticket_sales = []
+		for key in c_keys:
+			ticket_sales.extend(models.TicketSale.query(ancestor = key).iter(keys_only = True))
+		t_futs = ndb.delete_multi_async(ticket_sales)
+		self.say(e_fut.get_result())
+		self.say([f.get_result() for f in c_futs])
+		self.say([f.get_result() for f in t_futs])
+		return self.redirect('/e/spoof')
+class SpoofHandler(handlers.ContestHandler):
+	def get(self):
 		'''
 		Spoofs an event and a contestant
 		'''
 		artist = models.Artist.query().get()
-#		event_id = cutils.generate_event_id()
-		event = models.Event.query().get()
-		contestant_id = cutils.generate_contestant_id(event.key)
-#		event = models.Event(id=event_id,
-#							min_tickets = 100,
-#							max_tickets = 200,
-#							available_positions = 4,
-#							tickets_per_band = 50
-#							)
-		contestant = models.Contestant(id=contestant_id,
+		event = models.Event.get_or_insert('aaa',
+										venue_name = 'Cantab Lounge',
+										venue_location = 'Cambridge, MA',
+										min_age = 21,
+										event_date_str = 'Feb. 28, 2013',
+										event_date_time = datetime.datetime(2013,2,28),
+										tickets_start = datetime.datetime(2013,1,14,12,0,0),
+										tickets_end = datetime.datetime(2013,2,14,12,0,0),
+										capacity = 100,
+										num_available_positions = 4,
+										nominal_tpb = 25,
+										base_ticket_price = 10,
+										radius_fee = 2
+										)
+		for i in ['aa','bb','cc','dd','ee','ff','gg','hh','ii','jj','kk','ll']:
+			contestant = models.Contestant.get_or_insert(i,
 									parent=event.key,
 									artist_key = artist.key,
 									)
-#		event.put()
-		contestant.put()
+			contestant.put()
+			for n in range(1,random.choice(range(1,30))):
+				val = 't'*n
+				logging.info(val)
+				logging.info(n)
+				models.TicketSale.get_or_insert(val,parent=contestant.key,
+								name=val,email=val,
+								stripe_token=val,
+								name_on_card=val).put()
+		return self.redirect('/e/spoof/show')
 		self.say(event)
 		self.say(contestant)
 		self.say(contestant.page_id)
 app = webapp2.WSGIApplication([
-							('/e/test',TestHandler),
+							('/e/spoof',SpoofHandler),
+							('/e/spoof/show',TestHandler),
+							('/e/spoof/reset',ClearSpoofHandler),
 							('/e/(.*)',BandPageHandler)
 							])

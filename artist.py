@@ -604,13 +604,27 @@ class AddSpoofCititesHandler(handlers.UserHandler):
 			a.put()
 #			self.say(a.key)
 		self.say('Done!')
-
+class ChangeNameHandler(handlers.ArtistHandler):
+	def post(self):
+		'''
+		An artist changes their name on a contest page
+		'''
+		try:
+			artist = self.get_artist_from_session()
+		except self.SessionError:
+			self.redirect('/')
+		new_name = self.request.get('artist_name')
+		artist.proper_name = new_name
+		artist.put()
+		
+		
 ARTIST_LOGIN = '/artist/login'
 SC_AUTH = '/artist/scauth'
 ARTIST_LOGIN_COMPLETE = '/artist/login/complete'
 ARTIST_LOGOUT = '/artist/logout'
 ARTIST_MANAGE = '/artist/manage'
 ARTIST_ADDTAGS = '/artist/addtags'
+ARTIST_CHANGE_NAME = '/artist/changename'
 UPLOAD_IMAGE = '/artist/upload/image'
 # UPLOAD_AUDIO = '/artist/upload/audio'
 CHOOSE_TRACK = '/artist/choosetrack'
@@ -625,6 +639,7 @@ app = webapp2.WSGIApplication([
 							(ARTIST_LOGOUT,LogOutHandler),
 							(ARTIST_MANAGE,ManageArtistHandler),
 							(ARTIST_ADDTAGS,AddTagsHandler),
+							(ARTIST_CHANGE_NAME,ChangeNameHandler),
 							(UPLOAD_IMAGE,UploadImageHandler),
 							(UPLOAD_URLS,UploadUrlsHandler),
 							(CHOOSE_TRACK,ChooseTrackHandler),

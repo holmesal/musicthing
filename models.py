@@ -120,7 +120,14 @@ class Artist(ndb.Model):
 	external_image_url = ndb.StringProperty()
 	image_key = ndb.BlobKeyProperty()
 	genre = ndb.StringProperty() # deprecated
-	
+	@property
+	def display_name(self):
+		'''
+		The name to display for an artist
+		@return: either the bands proper name or their username
+		'''
+		return self.proper_name or self.username
+		
 	def city_dict(self):
 		'''
 		Creates a dict form of the artists city for manage page, etc...
@@ -258,7 +265,8 @@ class Event(ndb.Model):
 	venue_location = ndb.StringProperty()
 	min_age = ndb.IntegerProperty()
 	
-	event_date = ndb.StringProperty()
+	event_date_str = ndb.StringProperty()
+	event_date_time = ndb.DateTimeProperty()
 	tickets_start = ndb.DateTimeProperty()
 	tickets_end = ndb.DateTimeProperty()
 	
@@ -297,7 +305,8 @@ class Event(ndb.Model):
 		
 		# count the tickets sold per band, and put in form that can be sorted
 		sales_count_list = ((key,Contestant.get_ticket_count(key)) for key in contestant_keys)
-		top_ticket_sales = sorted(sales_count_list,key=lambda x: x[1])[:self.num_available_positions]
+		top_ticket_sales = sorted(sales_count_list,key=lambda x: x[1],
+								reverse = True)[:self.num_available_positions]
 		top_bands,top_sales = zip(*top_ticket_sales)
 		return top_bands,top_sales
 		
@@ -349,7 +358,7 @@ class TicketSale(ndb.Model):
 	'''
 	A person has reserved a ticket for the show.
 	'''
-	name = ndb.IntegerProperty()
+	name = ndb.StringProperty()
 	email = ndb.StringProperty()
 	phone = ndb.StringProperty()
 	stripe_token = ndb.StringProperty()
