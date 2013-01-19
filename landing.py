@@ -20,9 +20,9 @@ class LandingHandler(handlers.BaseHandler):
 	def post(self):
 		email = self.request.get('email')
 		
-		user = models.User.query().filter(models.User.email == email).get()
+		user = models.LandingPageSignup.query().filter(models.LandingPageSignup.email == email).get()
 		if not user:
-			models.User(email=email).put()
+			models.LandingPageSignup(email=email).put()
 		
 		template_values = {
 			"state"	:	"signedup"

@@ -368,6 +368,11 @@ class Cantab(ndb.Model):
 	A person who has signed up for the Cantab show, feb 28 2013
 	'''
 	email = ndb.StringProperty()
+class LandingPageSignup(ndb.Model):
+	'''
+	A person has left their email on the landing page
+	'''
+	email = ndb.StringProperty()
 	
 '''
 Unique pages!!
