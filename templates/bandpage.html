@@ -459,9 +459,9 @@
 		  	
 			<h4 id="nameok">Is this all correct?</h4>
 			<form method="post" action="/artist/changename">
-				<input name="artist_name" id="artist_name" type="text" placeholder="Group Name" value="{{artist.artist_name}}">
-				<input name="artist_email" id="artist_email" type="text" placeholder="Contact Email" value="{{artist.email}}">
-				<input name="artist_phone" id="artist_phone" type="text" placeholder="Contact Phone" value="{{artist.phone}}">
+				<input name="artist_name" id="artist_name" type="text" placeholder="Group Name" value="{{artist.artist_name or ''}}">
+				<input name="artist_email" id="artist_email" type="text" placeholder="Contact Email" value="{{artist.email or ''}}">
+				<input name="artist_phone" id="artist_phone" type="text" placeholder="Contact Phone" value="{{artist.phone or ''}}">
 				<input type="submit" id="btnupdatename" class="btn btn-info btn-large" value="Update" style="clear:both;">
 			</form>
 	  	</div>
