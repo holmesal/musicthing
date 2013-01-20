@@ -51,6 +51,9 @@ mixpanel.init("080da319b25d8c64555d5d599cf7eb56");</script><!-- end Mixpanel -->
 					{% endif %}
 					<p class="updates">Notify me when a show opens up in my city.</p>
 					<p class="arow" id="email"><img class="sicon" src="/img/email.png"><input type="text" name="email" placeholder="Email" value="{{artist.email or ''}}"></p>
+					{% if contestant_url %}
+					<div class="alert alert-success"><p class="explain">You're in the running to play Feb. 28th in Cambridge. <a class="btn btn-success" href="{{contestant_url}}" style="margin-top: 10px;">View your page.</a></p></div>
+					{% endif %}
 					<hr>
 					{% if not artist.tags %}
 					<div id="alert-tags" class="alert alert-error">If you don't add any tags, you are less likely to be heard by the right listeners</div>
