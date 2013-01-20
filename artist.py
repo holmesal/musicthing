@@ -615,13 +615,25 @@ class ChangeNameHandler(handlers.ArtistHandler):
 	def post(self):
 		'''
 		An artist changes their name on a contest page
+		They can also change their phone number and email
 		'''
 		try:
 			artist = self.get_artist_from_session()
 		except self.SessionError:
 			self.redirect('/')
-		new_name = self.request.get('artist_name')
-		artist.proper_name = new_name
+		# set new name
+		new_name = self.request.get('artist_name') or None
+		if new_name:
+			artist.proper_name = new_name
+		# set new email
+		new_email = self.request.get('artist_email') or None
+		if new_email:
+			artist.email = new_email
+		# set new phone
+		new_phone = self.request.get('artist_phone') or None
+		if new_phone:
+			artist.phone = new_phone
+		
 		artist.put()
 		
 		return self.redirect(self.request.referrer)

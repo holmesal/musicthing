@@ -94,6 +94,7 @@ class Artist(ndb.Model):
 	username = ndb.StringProperty()
 	description = ndb.StringProperty()
 	email = ndb.StringProperty()
+	phone = ndb.StringProperty()
 	city = ndb.StringProperty()
 	
 	cities = ndb.StructuredProperty(CityProperty,repeated = True)
