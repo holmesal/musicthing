@@ -627,12 +627,10 @@ class ChangeNameHandler(handlers.ArtistHandler):
 			artist.proper_name = new_name
 		# set new email
 		new_email = self.request.get('artist_email') or None
-		if new_email:
-			artist.email = new_email
+		artist.email = new_email
 		# set new phone
 		new_phone = self.request.get('artist_phone') or None
-		if new_phone:
-			artist.phone = new_phone
+		artist.phone = new_phone
 		
 		artist.put()
 		
