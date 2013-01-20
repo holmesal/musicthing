@@ -129,16 +129,15 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 			# finish mixpanel rpc call
 			self.complete_rpc(rpc)
 			
-			try:
-				logging.critical('NEW SIGNUP')
-#				#send a text notification
+#			try:
+#				# send a text notification
 #				task_params = {
 #					'artist_name'	:	artist.username
 #				}
 #				logging.debug(artist.username)
 #				taskqueue.add(url='/tasks/textTask',payload=json.dumps(task_params))
-			except Exception,e:
-				logging.error(e)
+#			except Exception,e:
+#				logging.error(e)
 			
 		else:
 			# artist already exists. Login and redirect to manage
@@ -174,8 +173,8 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 		#===================================================================
 		if artist.track_id is None:
 			redirection = CHOOSE_TRACK
-		elif session.get('redirect_url',None) is not None:
-			redirection = session['redirect_url']
+		elif session.get('login_redirect'):
+			redirection = session['login_redirect']
 		else:
 			redirection = ARTIST_MANAGE
 		# redirect
@@ -368,7 +367,8 @@ class StoreTrackHandler(handlers.ArtistHandler):
 		# Determine redirect location
 		#=======================================================================
 		session = get_current_session()
-		
+		logging.info('login_redirect: {}'.format(session.get('login_redirect')))
+		logging.info(session)
 		if session.get('login_redirect'):
 			redirection = session.get('login_redirect')
 		else:

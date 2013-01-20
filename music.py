@@ -156,6 +156,23 @@ class MyLocationStationHandler(handlers.UserHandler):
 		packaged_artists = utils.StationPlayer.package_track_multi(tracks)
 		# respond with the artists
 		self.send_success(packaged_artists)
+class CantabPlayerHandler(handlers.UserHandler,handlers.ContestHandler):
+	def get(self):
+		'''
+		Special classes music player for the contest
+		'''
+		event_id = 'G9b'
+		event_key = ndb.Key(models.Event,event_id)
+		mode = utils.StationPlayer._event_mode
+		mode_data = {
+					'event_key' : event_key,
+					'station_tags' : None,
+					'client_tags' : None,
+					}
+		tracks = self.change_station_mode(mode,**mode_data)
+		packaged_artists = utils.StationPlayer.package_track_multi(tracks)
+		self.send_success(packaged_artists)
+		
 class CityStationHandler(handlers.UserHandler):
 	def get(self):
 		'''A station to play music around a city
@@ -183,6 +200,7 @@ class CityStationHandler(handlers.UserHandler):
 		tracks = self.change_station_mode(mode, **mode_data)
 		packaged_artists = utils.StationPlayer.package_track_multi(tracks)
 		self.send_success(packaged_artists)
+
 class SetTagsHandler(handlers.UserHandler):
 	def get(self):
 		'''Handler to change the stations tags.

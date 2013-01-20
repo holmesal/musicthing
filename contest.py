@@ -25,10 +25,9 @@ class BandPageHandler(handlers.ContestHandler):
 		'''
 		try:
 			event,contestant = self.get_event_and_contestant(request_id)
-		except self.SessionError,e:
-			assert False, e
+		except self.SessionError:
 			# invalid contestant id --> redirect to landing page
-			return self.redirect('/')
+			return self.redirect('/shows')
 		
 		# get list of names of people who have bought tickets
 		ticket_purchasers = contestant.get_ticket_purchaser_names()
@@ -461,7 +460,7 @@ name on card
 '''
 class TestHandler(handlers.ContestHandler):
 	def get(self):
-		event = models.Event.get_by_id('aaa')
+		event = models.Event.get_by_id('G9b')
 		contestants = models.Contestant.query(ancestor = event.key).iter()
 		for c in contestants:
 			self.say('{} --> {}'.format(c.key.id(),c.get_ticket_count(c.key)))
@@ -472,7 +471,7 @@ class ClearSpoofHandler(handlers.ContestHandler):
 		'''
 		if os.environ['SERVER_SOFTWARE'].startswith('Development') == False:
 			return self.say('You cant be here.')
-		event_key = ndb.Key(models.Event,'aaa')
+		event_key = ndb.Key(models.Event,'G9b')
 		e_fut = event_key.delete_async()
 		c_keys = models.Contestant.query(ancestor = event_key).fetch(None,keys_only = True)
 		c_futs = ndb.delete_multi_async(c_keys)
@@ -492,7 +491,7 @@ class SpoofHandler(handlers.ContestHandler):
 		if os.environ['SERVER_SOFTWARE'].startswith('Development') == False:
 			return self.say('You cant be here.')
 		artist = models.Artist.query().get()
-		event = models.Event.get_or_insert('aaa',
+		event = models.Event.get_or_insert('G9b',
 										venue_name = 'Cantab Lounge',
 										venue_location = 'Cambridge, MA',
 										min_age = 21,
@@ -526,7 +525,7 @@ class SpoofHandler(handlers.ContestHandler):
 		self.say(contestant.page_id)
 class CreateCantabEventHandler(handlers.ContestHandler):
 	def get(self):
-		event = models.Event.get_or_insert('aaa',
+		event = models.Event.get_or_insert('G9b',
 										venue_name = 'Cantab Lounge',
 										venue_location = 'Cambridge, MA',
 										min_age = 21,

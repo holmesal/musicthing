@@ -40,6 +40,9 @@ class StationPlayer(object):
 		self.ghash = None
 		self.event_key = None
 		
+		self.station_tags = None
+		self.client_tags = None
+		
 		# init the station track list index variable
 		self.idx = 0
 		self.previous_idx = 0

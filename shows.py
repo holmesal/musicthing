@@ -8,6 +8,7 @@ import os
 import json
 from gaesessions import get_current_session
 from google.appengine.ext import ndb
+import utils
 
 
 class ShowHandler(handlers.ArtistHandler):
@@ -64,12 +65,11 @@ class PlayCheckHandler(handlers.ArtistHandler):
 			# create session data for after a user signs up through soundcloud
 			session = get_current_session()
 			session['login_redirect'] = '/shows/signup'
+			#respond with true if logged in, false if not
+			logging.info('SET LOGIN REDIRECT: {}'.format(session['login_redirect']))
 			
 		else:
 			logged_in = True
-		
-		#respond with true if logged in, false if not
-		
 		response = {
 			"loggedin"	:	logged_in
 		}
@@ -91,7 +91,7 @@ class SignupHandler(handlers.ContestHandler):
 			logging.error(e)
 		#=======================================================================
 		# SPOOF THE EVENT KEY FOR NOW BECAUSE WE ONLY HAVE ONE SHOW
-		event_key = ndb.Key(models.Event,'aaa')
+		event_key = ndb.Key(models.Event,'G9b')
 		#=======================================================================
 		
 		# check if artist has already signed up as a contestant
@@ -101,6 +101,9 @@ class SignupHandler(handlers.ContestHandler):
 		# Artist has not signed up for this competition yet.
 		contestant = self.sign_up_artist_for_event(artist, event_key)
 		return self.redirect(contestant.local_url)
+
+		
+		
 app = webapp2.WSGIApplication([
 							('/shows',ShowHandler),
 							('/shows/test',TestHandler),
