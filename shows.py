@@ -9,6 +9,7 @@ import json
 from gaesessions import get_current_session
 from google.appengine.ext import ndb
 import utils
+from google.appengine.api import taskqueue
 
 
 class ShowHandler(handlers.ArtistHandler):
@@ -94,12 +95,29 @@ class SignupHandler(handlers.ContestHandler):
 		event_key = ndb.Key(models.Event,'G9b')
 		#=======================================================================
 		
+		
+		
 		# check if artist has already signed up as a contestant
 		existing_contestant = models.Contestant.query(models.Contestant.artist_key == artist.key).get()
 		if existing_contestant:
 			return self.redirect(existing_contestant.local_url)
+		
+		
+		
 		# Artist has not signed up for this competition yet.
 		contestant = self.sign_up_artist_for_event(artist, event_key)
+		
+		try:
+			if os.environ['SERVER_SOFTWARE'].startswith('Development') == False:
+				#send a text notification if on deployed version
+				task_params = {
+					'artist_name' : artist.artist_name
+				}
+				logging.debug(artist.artist_name)
+				taskqueue.add(url='/tasks/showTask',payload=json.dumps(task_params))
+		except Exception,e:
+			logging.error(e)
+		
 		return self.redirect(contestant.local_url)
 
 		
