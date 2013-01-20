@@ -26,6 +26,12 @@ handlers:
   script: shows.app
 - url: /boston
   script: cantab.app
+- url: /faq
+  script: faq.app
+- url: /terms
+  script: tos.app
+- url: /fees
+  script: fees.app
 
 
 # namespace for contests
