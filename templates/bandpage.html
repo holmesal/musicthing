@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     <title>{{artist.artist_name}} &middot; Jan. 29th, 2013</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="description" content="Help {{artist.artist_name}} play The Middle East Upstairs in Boston, MA on Jan. 29th, 2013">
 
     <!-- Le styles -->
@@ -13,6 +13,7 @@
       body {
         padding-top: 20px;
         padding-bottom: 40px;
+        min-width: 400px;
       }
 
       /* Custom container */
@@ -168,6 +169,7 @@
 			color: #a5a5a5;
 			font-size: 12pt;
 			float: left;
+			margin-bottom: 20px;
 		}
 		
 		.buybtn{
@@ -293,7 +295,8 @@
 		.buy-left{
 /* 			background-color: red; */
 			width: 50%;
-			height: 300px;
+			min-width: 330px;
+/* 			height: 300px; */
 			float: left;
 		}
 		
@@ -311,6 +314,7 @@
 		.buy-right{
 /* 			background-color: green; */
 			width: 50%;
+			min-width: 330px;
 /* 			height: 300px; */
 			float: right;
 			padding-top: 40px;
@@ -414,6 +418,10 @@
 		.managebtn{
 			margin-top: 4px;
 			margin-right: 10px;
+		}
+		
+		.collap-2{
+			margin-top: 50px;
 		}
 		
     </style>
@@ -523,6 +531,11 @@
 				<p class="smallterm">You'll get a ticket if {{artist.artist_name}} gets the show.</br>You won't be charged if they don't.</p>
 				{% endif %}
 				<a id="getticket" class="buybtn btn btn-large btn-info">Get a ticket</a>
+			</div>
+			{% else %}
+			<div class="buyrow">
+				<p class="smallterm">You'll be able to get tickets on January 24th.</p>
+				<a id="" class="buybtn btn btn-large btn-info" disabled>Get a ticket</a>
 			</div>
 			{% endif %}
 			<div style="clear:both;"></div>
