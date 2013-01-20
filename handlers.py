@@ -44,9 +44,10 @@ class BaseHandler(webapp2.RequestHandler):
 		@rtype: models.Artist
 		'''
 		try:
-#			artist_id = str(artist_id)
-			artist_id = int(artist_id)
+			artist_id = str(artist_id)
+#			artist_id = int(artist_id)
 			logging.info(artist_id)
+			logging.info(type(artist_id))
 			artist = models.Artist.get_by_id(artist_id)
 			assert artist, 'Artist does not exist'
 		except AssertionError,e:

@@ -28,6 +28,7 @@ class StationPlayer(object):
 	_location_mode = 'location_mode'
 	_favorites_mode = 'favorites_mode'
 	_all_mode = 'all_mode'
+	_event_mode = 'event_mode'
 	available_modes = [_city_mode,_location_mode,_favorites_mode,_all_mode]
 	
 	def __init__(self):
@@ -37,6 +38,7 @@ class StationPlayer(object):
 		self.radial_city_keys = None
 		self.user_key = None
 		self.ghash = None
+		self.event_key = None
 		
 		# init the station track list index variable
 		self.idx = 0
@@ -139,6 +141,10 @@ class StationPlayer(object):
 				self._all_mode : {
 								'func' : fetch_all_artist_keys,
 								'params' : None,
+								},
+				self._event_mode: {
+								'func' : fetch_artist_keys_from_event,
+								'params' : self.event_key
 								}
 				}
 		# fetch the function and its params from the dict
@@ -559,6 +565,20 @@ def fetch_artist_keys_from_ghash_list(ghash_list):
 							keys_only = True)
 		artist_keys.update(keys)
 	return artist_keys
+def fetch_artist_keys_from_event(event_key):
+	'''
+	Special player for an event. Play tracks by artists that are contesting in the event.
+	@param event_key: An event key
+	@type event_key: ndb.Key
+	@return: a list of artist keys
+	@rtype: generator
+	'''
+	contestant_keys = models.Contestant.query(ancestor = event_key).iter(keys_only=True)
+	contestant_futures = ndb.get_multi_async(contestant_keys)
+	contestants = (f.get_results() for f in contestant_futures)
+	artist_keys = (c.artist_key for c in contestants)
+	return artist_keys
+	
 def chop_ghash(ghash,precision=4):
 	'''
 	Returns only the number of chars specified by precision

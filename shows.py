@@ -64,6 +64,7 @@ class PlayCheckHandler(handlers.ArtistHandler):
 			# create session data for after a user signs up through soundcloud
 			session = get_current_session()
 			session['login_redirect'] = '/shows/signup'
+			
 		else:
 			logged_in = True
 		
@@ -81,14 +82,25 @@ class SignupHandler(handlers.ContestHandler):
 		# do not handle the exception.
 		# If they try to go here without being signed in, FUCKEM!
 		artist = self.get_artist_from_session()
+		
+		session = get_current_session()
+		# destroy the redirect item in the session
+		try:
+			del session['login_redirect']
+		except KeyError,e:
+			logging.error(e)
 		#=======================================================================
 		# SPOOF THE EVENT KEY FOR NOW BECAUSE WE ONLY HAVE ONE SHOW
 		event_key = ndb.Key(models.Event,'aaa')
 		#=======================================================================
-		# create the contestant
+		
+		# check if artist has already signed up as a contestant
+		existing_contestant = models.Contestant.query(models.Contestant.artist_key == artist.key).get()
+		if existing_contestant:
+			return self.redirect(existing_contestant.local_url)
+		# Artist has not signed up for this competition yet.
 		contestant = self.sign_up_artist_for_event(artist, event_key)
-		redirect_url = contestant.local_url
-		return self.redirect(redirect_url)
+		return self.redirect(contestant.local_url)
 app = webapp2.WSGIApplication([
 							('/shows',ShowHandler),
 							('/shows/test',TestHandler),

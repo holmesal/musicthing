@@ -46,7 +46,7 @@ class ConnectSCHandler(handlers.ArtistHandler):
 class SCAuthHandler(handlers.ArtistHandler):
 	def get(self):
 		# init soundcloud client
-		client = soundcloud.Client(**sc_creds_test)
+		client = soundcloud.Client(**sc_creds)
 		# redirect to soundcloud page to perform oauth handshake
 		return self.redirect(client.authorize_url())
 	
@@ -62,7 +62,7 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 		if code is None:
 			return self.redirect(ARTIST_LOGIN)
 		# init the cloudsound client
-		client = soundcloud.Client(**sc_creds_test)
+		client = soundcloud.Client(**sc_creds)
 		# exchange the code for an access token
 		response = client.exchange_token(code)
 		# pull the access token from the response
@@ -91,7 +91,7 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 		try:
 			# will raise SessionError if artist doesnt exist in db
 			artist = self.get_artist_by_id(artist_id)
-		except self.SessionError:
+		except self.SessionError,e:
 			# artist does not exist yet. Create one
 			# log some mixpanel shiiiiit!
 			try:
@@ -130,12 +130,13 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 			self.complete_rpc(rpc)
 			
 			try:
-				#send a text notification
-				task_params = {
-					'artist_name'	:	artist.username
-				}
-				logging.debug(artist.username)
-				taskqueue.add(url='/tasks/textTask',payload=json.dumps(task_params))
+				logging.critical('NEW SIGNUP')
+#				#send a text notification
+#				task_params = {
+#					'artist_name'	:	artist.username
+#				}
+#				logging.debug(artist.username)
+#				taskqueue.add(url='/tasks/textTask',payload=json.dumps(task_params))
 			except Exception,e:
 				logging.error(e)
 			
@@ -368,7 +369,7 @@ class StoreTrackHandler(handlers.ArtistHandler):
 		#=======================================================================
 		session = get_current_session()
 		
-		if session.get('login_redirect',None) is not None:
+		if session.get('login_redirect'):
 			redirection = session.get('login_redirect')
 		else:
 			redirection = ARTIST_MANAGE
