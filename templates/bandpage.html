@@ -514,6 +514,8 @@
 			
 			{% if status=='won' %}
 			<p class="subrules lead">Good work - The band got the show! </br>If you already bought a ticket, you'll receive it via email shortly.</p>
+			{% elif status=='not_begun' %}
+			<p class="subrules lead">Pledges open January 24th.</p>
 			{% elif status=='lost'%}
 			<p class="subrules lead">So close! {{artist.artist_name}} only had to sell {{tickets_remaining}} more tickets. Next time!</p>
 			{% else %}
@@ -533,11 +535,15 @@
 				<a id="getticket" class="buybtn btn btn-large btn-info">Get a ticket</a>
 			</div>
 			{% else %}
-			<div class="buyrow">
-				<p class="smallterm">You'll be able to get tickets on January 24th.</p>
-				<a id="" class="buybtn btn btn-large btn-info" disabled>Get a ticket</a>
-			</div>
+				{% if status=='not_begun' %}
+				<div class="buyrow">
+					<p class="smallterm">Pledges are not yet open.</p>
+					<a id="" class="buybtn btn btn-large btn-info" disabled>Get a ticket</a>
+				</div>
+				{% endif %}
 			{% endif %}
+			
+			
 			<div style="clear:both;"></div>
 			
 			<hr style="opacity:0;">
