@@ -470,6 +470,8 @@ class ClearSpoofHandler(handlers.ContestHandler):
 		'''
 		clear the spoofed data
 		'''
+		if os.environ['SERVER_SOFTWARE'].startswith('Development') == False:
+			return self.say('You cant be here.')
 		event_key = ndb.Key(models.Event,'aaa')
 		e_fut = event_key.delete_async()
 		c_keys = models.Contestant.query(ancestor = event_key).fetch(None,keys_only = True)
@@ -487,6 +489,8 @@ class SpoofHandler(handlers.ContestHandler):
 		'''
 		Spoofs an event and a contestant
 		'''
+		if os.environ['SERVER_SOFTWARE'].startswith('Development') == False:
+			return self.say('You cant be here.')
 		artist = models.Artist.query().get()
 		event = models.Event.get_or_insert('aaa',
 										venue_name = 'Cantab Lounge',
@@ -520,10 +524,29 @@ class SpoofHandler(handlers.ContestHandler):
 		self.say(event)
 		self.say(contestant)
 		self.say(contestant.page_id)
+class CreateCantabEventHandler(handlers.ContestHandler):
+	def get(self):
+		event = models.Event.get_or_insert('aaa',
+										venue_name = 'Cantab Lounge',
+										venue_location = 'Cambridge, MA',
+										min_age = 21,
+										event_date_str = 'Feb. 28, 2013',
+										event_date_time = datetime.datetime(2013,2,28,20,0,0),
+										tickets_start = datetime.datetime(2013,1,24,12,0,0),
+										tickets_end = datetime.datetime(2013,2,14,12,0,0),
+										capacity = 100,
+										num_available_positions = 4,
+										nominal_tpb = 25,
+										base_ticket_price = 10,
+										radius_fee = 2
+										)
+		event.put()
+		return self.say(event)
 app = webapp2.WSGIApplication([
 							('/e/spoof',SpoofHandler),
 							('/e/spoof/show',TestHandler),
 							('/e/spoof/reset',ClearSpoofHandler),
+							('/e/spoof/cantab',CreateCantabEventHandler),
 							('/e/(.*)/test',TestBandPageHandler),
 							('/e/(.*)',BandPageHandler),
 							])

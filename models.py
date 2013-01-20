@@ -11,7 +11,7 @@ if os.environ['SERVER_SOFTWARE'].startswith('Development') == False:
 	BASE_URL = 'http://getradi.us'
 else:
 	# on dev server
-	BASE_URL = '0.0.0.0:8080'
+	BASE_URL = 'http://0.0.0.0:8080'
 #===============================================================================
 # Location Stuff
 #===============================================================================
@@ -320,7 +320,10 @@ class Contestant(ndb.Model):
 		return self.key.parent().id()+self.key.id()
 	@property
 	def page_url(self):
-		return 'http://{}/e/{}'.format(BASE_URL,self.page_id)
+		return '{}/e/{}'.format(BASE_URL,self.page_id)
+	@property
+	def local_url(self):
+		return '/e/{}'.format(self.page_id)
 	@staticmethod
 	def get_ticket_count(key):
 		'''

@@ -394,10 +394,10 @@ class ContestHandler(ArtistHandler):
 			# grab the event and contestant
 			event = models.Event.get_by_id(event_id)
 			assert event is not None, \
-				'Invalid event. {}'.format(req_id)
+				'Invalid event. {}'.format(event_id)
 			contestant = models.Contestant.get_by_id(contestant_id,parent=event.key)
 			assert contestant is not None, \
-				'Invalid contestant. {}'.format(req_id)
+				'Invalid contestant. {}'.format(contestant_id)
 		except AssertionError,e:
 			raise self.SessionError(e)
 		else:

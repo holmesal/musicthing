@@ -46,7 +46,7 @@ class ConnectSCHandler(handlers.ArtistHandler):
 class SCAuthHandler(handlers.ArtistHandler):
 	def get(self):
 		# init soundcloud client
-		client = soundcloud.Client(**sc_creds)
+		client = soundcloud.Client(**sc_creds_test)
 		# redirect to soundcloud page to perform oauth handshake
 		return self.redirect(client.authorize_url())
 	
@@ -62,7 +62,7 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 		if code is None:
 			return self.redirect(ARTIST_LOGIN)
 		# init the cloudsound client
-		client = soundcloud.Client(**sc_creds)
+		client = soundcloud.Client(**sc_creds_test)
 		# exchange the code for an access token
 		response = client.exchange_token(code)
 		# pull the access token from the response
@@ -116,8 +116,14 @@ class ConnectAccountHandler(handlers.ArtistHandler):
 							access_token = access_token,
 							username = current_user.username,
 							city = current_user.city,
-							genre = current_user.genre
+#							genre = current_user.genre
 							)
+			try:
+				artist.genre = current_user.genre
+			except AttributeError:
+				pass
+			except Exception,e:
+				logging.error(e)
 			artist.put()
 			
 			# finish mixpanel rpc call

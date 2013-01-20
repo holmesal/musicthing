@@ -63,7 +63,7 @@ class PlayCheckHandler(handlers.ArtistHandler):
 			logged_in = False
 			# create session data for after a user signs up through soundcloud
 			session = get_current_session()
-			session['login_redirect'] = 'event_signup'
+			session['login_redirect'] = '/shows/signup'
 		else:
 			logged_in = True
 		
@@ -87,8 +87,7 @@ class SignupHandler(handlers.ContestHandler):
 		#=======================================================================
 		# create the contestant
 		contestant = self.sign_up_artist_for_event(artist, event_key)
-		redirect_url = contestant.page_url
-		self.say(redirect_url)
+		redirect_url = contestant.local_url
 		return self.redirect(redirect_url)
 app = webapp2.WSGIApplication([
 							('/shows',ShowHandler),
