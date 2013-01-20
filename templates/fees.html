@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Radius &middot; The Cantab Lounge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="Help Ivy Dye play The Middle East Upstairs in Boston, MA on Jan. 29th, 2013">
+
+    <!-- Le styles -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 20px;
+        padding-bottom: 40px;
+      }
+
+      /* Custom container */
+      
+      .container-narrow > hr {
+        margin: 30px 0;
+      }
+
+      /* Main marketing message and sign up button */
+      .jumbotron {
+        margin: 60px 0;
+        text-align: center;
+      }
+      .jumbotron h1 {
+        font-size: 72px;
+        line-height: 1;
+      }
+      .jumbotron .btn {
+        font-size: 21px;
+        padding: 14px 24px;
+      }
+
+      /* Supporting marketing content */
+      .marketing {
+        margin: 60px 0;
+      }
+      .marketing p + h4 {
+        margin-top: 28px;
+      }
+    </style>
+    
+    <style type="text/css">
+	    body{
+		    background-image: url(../img/crosses.png);
+		    padding-top: 100px;
+		    min-width: 450px;
+	    }
+	    
+	    .container-narrow {
+			margin: 0 auto;
+			max-width: 700px;
+			background-color: white;
+/* 			padding: 20px; */
+			border-radius: 5px;
+			overflow: auto;
+			box-shadow: 0px 0px 5px #c0c0c0;
+		}
+		
+		.tophalf{
+			padding: 20px;
+		}
+		
+		.bottomlinks{
+			text-align: center;
+			margin-bottom: 20px;
+		}
+		
+		.poweredby{
+			text-align: center;
+			margin-top: 80px;
+			margin-bottom: 50px;
+		}
+		
+		li{
+			font-size: 12pt;
+			line-height: 150%;
+			margin-bottom: 20px;
+			font-weight: 500;
+			color: #484848;
+		}
+		
+		ul{
+			font-weight: 200;
+			color: #727272
+		}
+		
+		h1{
+			margin-bottom: 50px;
+		}
+		
+		
+
+    </style>
+    <link href="../css/bootstrap-responsive.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+                    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+                                   <link rel="shortcut icon" href="../assets/ico/favicon.png">
+  </head>
+
+  <body>
+
+    <div class="container-narrow">
+<!--     	<div class="adornment">R</div> -->
+		
+		<div class="tophalf">
+			
+			
+			
+<!-- 			<div class="collapse collap-1"> -->
+			<div class="collapse collap-1 in">
+			<h1><span class="muted">Fees</span></h1>
+			<p class="lead muted">Fees on Radius are pay-what-you-want. Half goes to <a href="http://www.mhopus.org/">The Mr. Holland's Opus Foundation</a> to help keep music education alive in schools by donating instruments to under-funded music programs.</p>
+			<ol>
+				<li>Pay what I want? Like, whatever I want?
+					<ul>Yep. Pay what you think is reasonable.</ul>
+				</li>
+				
+				<li>Can I have a hint?
+					<ul>$2.00 is a great place to start - it's about the same as normal ticket fees. $1 to charity, $1 to Radius.</ul>
+				</li>
+				
+				<li>Why do need money?
+					<ul>We're a team of 3 full-time entrepreneurs and developers. We use this revenue to pay for office space, utilities, servers and web hosting, and telecommunications.</ul>
+				</li>
+				
+				<li>I'm going to pay you $0.00! Nothing! Zero!
+					<ul><a href="http://cyberbrethren.com/wp-content/uploads/2012/10/sad_kitten.jpg" target="_blank">Sad kitten</a></ul>
+				</li>
+			</ol>
+			
+						
+		</div>
+		
+		
+		
+		<hr style="opacity:0;">
+					
+		<div class="bottomlinks">
+			<a href="mailto: hello@getradi.us">Contact</a>
+			&middot
+			<a href="/terms">Terms of Use</a>
+			&middot
+			<a href="/fees">Fees</a>
+			&middot
+			<a href="/faq">Frequently Asked Questions</a>
+		</div>
+		
+		
+		
+		
+
+    </div> <!-- /container -->
+    </div>
+    
+    <div class="poweredby"><p class="lead">Powered by <a href="http://www.getradi.us">Radius.</a></p></div>
+
+    <!-- Le javascript
+    ================================================== -->
+    
+    
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="http://connect.soundcloud.com/sdk.js"></script>
+    <script type="text/javascript">
+	    
+	    callforbackup = function(){
+		    //loading state
+		    $("#playbtn").attr("disabled","disbled")
+		    $("#playbtn").text("Please wait a moment")
+		    
+		    //make ajax call
+		    $.getJSON("/shows/playcheck",function(){
+			    
+		    })
+		    
+		    $.ajax({
+				dataType: "json",
+				url: "/shows/playcheck",
+				success: function(result){
+					
+					if (result.loggedin == true){
+						$(".loggedin").show()
+						$(".loggedout").hide()
+					} else{
+						$(".loggedout").show()
+						$(".loggedin").hide()
+					}
+					console.log(result)
+					//on success, show the collapse
+				    $(".collapse").collapse('toggle')
+				},
+				error: function(result){
+					$("#playbtn").attr("disabled",false)
+				    $("#playbtn").text("Play this show")
+				}
+			});
+		    
+		    
+	    }
+	    
+	    $(document).ready(function() {
+		    
+		    
+		    //initialize collapse
+		    $(".collapse").collapse({
+			    toggle	:	false
+		    })
+		    
+		    //play button listener
+		    $("#playbtn").click(function(){
+		    	callforbackup()
+/* 			    $(".collapse").collapse('toggle') */
+		    })
+		    
+		    //back button listener
+		    $(".backbtn").click(function(){
+			    $(".collapse").collapse('toggle')
+		    })
+		    
+		    // initialize client with app credentials
+			SC.initialize({
+			  //client_id: 'd03ca49fb6764663d0992eadc69f8bf1',
+			  //redirect_uri: 'http://getradi.us/artist/login/complete'
+			  client_id: 'f0d56e6b17ae978fc9f12aaf52d81542',
+			  redirect_uri: 'http://test.radius-levr.appspot.com/artist/login/complete'
+			});
+			
+			$('.btnlogin').click(function(){
+				SC.connect(function() {
+				  SC.get('/me', function(me) { 
+				    console.log(me)
+				  });
+				});
+			})
+		        
+	    });
+	</script>
+  </body>
+</html>

@@ -454,11 +454,14 @@
 	  	<div class="tophalf">
 		  	<h3>Welcome to your ticket page</h3>
 		  	<p class="lead">You can pre-sell tickets directly to your followers by giving them this link:</p>
+		  	<div class="alert alert-danger">Ticket pledges haven't opened yet. Your fans will be able to purchase tickets on Jan. 24th</div>
 		  	<p style="text-align:center;"><a class="lead sharelink" href="http://www.getradi.us/e/{{contestant_id}}">getradi.us/e/{{contestant_id}}</a></p>
 		  	
-			<h4 id="nameok">Is your band's name correct?</h4>
+			<h4 id="nameok">Is this all correct?</h4>
 			<form method="post" action="/artist/changename">
 				<input name="artist_name" id="artist_name" type="text" value="{{artist.artist_name}}">
+				<input name="artist_email" id="artist_email" type="text" value="{{artist.email}}">
+				<input name="artist_phone" id="artist_phone" type="text" value="{{artist.phone}}">
 				<input type="submit" id="btnupdatename" class="btn btn-info" value="Update">
 			</form>
 	  	</div>
@@ -585,13 +588,13 @@
 		<hr style="opacity:0;">
 					
 		<div class="bottomlinks">
-			<a href="mailto: carl@getradi.us">Contact</a>
+			<a href="mailto: hello@getradi.us">Contact</a>
 			&middot
-			<a href="#" style="text-decoration: line-through;">Terms of Service</a>
+			<a href="/terms">Terms of Use</a>
 			&middot
-			<a href="#" style="text-decoration: line-through;">Fees</a>
+			<a href="/fees">Fees</a>
 			&middot
-			<a href="#" style="text-decoration: line-through;">Frequently Asked Questions</a>
+			<a href="/faq">Frequently Asked Questions</a>
 		</div>
 		
 		</div> <!--end collapse-->
@@ -650,13 +653,13 @@
 					<hr style="opacity:0;">
 					
 					<div class="bottomlinks">
-						<a href="mailto: carl@getradi.us">Contact</a>
+						<a href="mailto: hello@getradi.us">Contact</a>
 						&middot
-						<a href="#" style="text-decoration: line-through;">Terms of Service</a>
+						<a href="/terms">Terms of Use</a>
 						&middot
-						<a href="#" style="text-decoration: line-through;">Fees</a>
+						<a href="/fees">Fees</a>
 						&middot
-						<a href="#" style="text-decoration: line-through;">Frequently Asked Questions</a>
+						<a href="/faq">Frequently Asked Questions</a>
 					</div>
 					
 				</div>
