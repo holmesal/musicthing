@@ -502,9 +502,9 @@
 				<div class="loggedout">
 					<h2 class="howitworks">Ready to go?</h2>
 					<p class="lead regs">If you've already got a Radius account, log in below.</p>
-					<a href="/playshow" class="btnlogin btn btn-info btn-large">Log in via SoundCloud</a>
+					<a href="#" class="btnlogin btn btn-info btn-large">Log in via SoundCloud</a>
 					<p class="lead regs">If you're new to Radius, welcome! After you connect your SoundCloud account and choose one of your tracks, you'll be taken to your ticket page.</p>
-					<a href="/playshow" class="btnlogin btn btn-warning btn-large">Sign up via SoundCloud</a>
+					<a href="#" class="btnlogin btn btn-warning btn-large">Sign up via SoundCloud</a>
 				</div>
 				
 				
@@ -542,6 +542,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
+    <script src="http://connect.soundcloud.com/sdk.js"></script>
     <script type="text/javascript">
 	    
 	    callforbackup = function(){
@@ -587,7 +588,7 @@
 			    toggle	:	false
 		    })
 		    
-		    //payment button listener
+		    //play button listener
 		    $("#playbtn").click(function(){
 		    	callforbackup()
 /* 			    $(".collapse").collapse('toggle') */
@@ -597,6 +598,20 @@
 		    $(".backbtn").click(function(){
 			    $(".collapse").collapse('toggle')
 		    })
+		    
+		    // initialize client with app credentials
+			SC.initialize({
+			  client_id: 'd03ca49fb6764663d0992eadc69f8bf1',
+			  redirect_uri: 'http://getradi.us/artist/login/complete'
+			});
+			
+			$('.btnlogin').click(function(){
+				SC.connect(function() {
+				  SC.get('/me', function(me) { 
+				    console.log(me)
+				  });
+				});
+			})
 		        
 	    });
 	</script>
