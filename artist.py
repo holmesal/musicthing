@@ -201,6 +201,12 @@ class ManageArtistHandler(handlers.ArtistHandler):
 						'artist' : artist,
 						'city' : artist.city_dict()
 		}
+		
+		# check if artist is in a contest
+		contestant = models.Contestant.query(models.Contestant.artist_key == artist.key).get()
+		if contestant:
+			template_values.update({'contestant_url' : contestant.page_url})
+		
 		logging.info(template_values)
 		template = jinja_environment.get_template('templates/artist/manage.html')
 		self.response.out.write(template.render(template_values))
