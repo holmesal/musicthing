@@ -46,7 +46,8 @@ function geolocate(){
 
 make_initial_request = function(location_enabled) {
 		
-	if (location_enabled == true) {
+	/*
+if (location_enabled == true) {
     	
     	url = "/music/everything?geo_point="+lat+","+lon+"&radius="+$("#radius-slider").val()
     	
@@ -55,6 +56,9 @@ make_initial_request = function(location_enabled) {
     	url = "/music/everything"
     	
 	}
+*/
+	
+	url = "/music/initialize"
 	
 	console.log(url)
 	
