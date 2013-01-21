@@ -28,7 +28,7 @@ class MusicHandler(handlers.UserHandler):
 		station = self.get_or_create_station_from_session()
 		mode = utils.StationPlayer._all_mode
 		mode_data = {'user_key':user_key}
-		station.set_mode(mode, mode_data)
+		station.set_mode(mode, **mode_data)
 		
 		# add the station to the session
 		station.add_to_session()
