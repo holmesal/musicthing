@@ -1,315 +1,124 @@
-from geo import geohash
+from collections import defaultdict
+from datetime import datetime as dt
+from gaesessions import get_current_session
+from google.appengine.ext import ndb
 import handlers
 import jinja2
 import json
 import logging
+import models
 import os
+import random
 import utils
 import webapp2
-from google.appengine.ext import ndb
-import models
 
-jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
+
 class MusicHandler(handlers.UserHandler):
 	'''
-	The big main music player.
+	The big main music player. Awwww yeah.
 	'''
 	def get(self):
 		'''
-		The music page. Station is created in ajax.
+		The page for playing music on. Tracks are fetched with an ajax call to another handler
 		'''
-#		lat = self.request.get('lat') or 42.3584308 
-#		lon = self.request.get('lon') or -71.0597732
-#		ghash = geohash.encode(lat,lon)
-		ghash = 'drt3nh6v'
-		# fetch the user from the session
-		user_key = self.get_user_key_from_session()
+#		self.set_plaintext()
+		station_tags,serendipity,city = self.get_station_meta_from_session()
 		
-		station = self.get_or_create_station_from_session()
-		mode = utils.StationPlayer._all_mode
-		mode_data = {'user_key':user_key}
-		station.set_mode(mode, **mode_data)
+		# format the tags for the client
+		tags = [{'name':t,'count':c} for t,c in station_tags.iteritems()]
+		tags = sorted(tags,key=lambda x: x['count'],reverse=True)
 		
-		# add the station to the session
-		station.add_to_session()
+		template_values = {
+			'city' : city,
+			'tags' : tags,
+			'serendipity' : int(serendipity*utils.StationPlayer.max_serendipity),
+			'cities' : ['Boston']
+		}
+#		self.say(template_values)
+		jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
+		template = jinja_environment.get_template('templates/music.html')
+		self.response.out.write(template.render(template_values))
 		
+	def post(self):
+		'''
+		This handler takes care of updating user preferences that are available on the player page
+		There's nothing here yet
+		'''
+		
+		pass
+class InitializeStationHandler(handlers.UserHandler):
+	def get(self):
+		'''
+		For an ajax call to create a playlist
+		Also serves the first n tracks in the playlist
+		'''
 		timer = utils.Timer()
 		time = timer.time
 		
-		# suggested cities with google places fields
-#		popular_cities = list(self.calc_major_cities())
-		popular_cities = [
-						{
-						'city_string' : 'Boston, MA',
-						'country' : 'United States',
-						'administrative_area_level_1' : 'Massachusetts',
-						'locality' : 'Boston',
-						'lat' : 42.3584308,
-						'lon' : -71.0597732
-						}
-						]
-#		time('calc popular')
-		# cities list with name, key, and distance
-#		radial_cities = list(self.fetch_radial_cities(ghash))
-		time('calc radial')
-		template_values = {
-						'mode' : station.mode,
-						'mode_data' : station.mode_data,
-						# TODO: what to template out here?
-#						'city' : station.city_dict(),
-#						'tags' : station.client_tags,
-#						'radius' : station.radius,
-#						'geo_point' : station.geo_point,
-						'popular_cities' : popular_cities,
-#						'radial_cities' : list(radial_cities),
-#						'times' : timer.get_times()
-						}
-		return self.response.out.write(json.dumps(template_values))
-		template = jinja_environment.get_template('templates/music.html')
-		self.response.out.write(template.render(template_values))
-	def post(self):
-		'''
-		Updates the station playlist with new variables
-		'''
-		# grab station variables from the client
-		mode = self.request.get('mode')
-		city = self.request.get('city')
-		lat = self.request.get('lat')
-		lon = self.request.get('lon')
-		try:
-			ghash = geohash.encode(lat,lon)
-		except Exception:
-			ghash = None
-		user_key = self.get_user_key_from_session()
-		# create mode_data from station variables
-		mode_data = {
-					'user_key' : user_key,
-					'city' : city,
-					'ghash' : ghash,
-					}
+		station_tags,serendipity,city = self.get_station_meta_from_session()
+		time('b_get_station_meta')
 		
-		# convert the client_tags to station_tags
-		try:
-			client_tags = json.loads(self.request.get("tags","{}")) #NOTE - this currently crashes if tags is empty
-			station_tags = self.convert_client_tags_to_tags_dict(client_tags)
-		except:
-			client_tags = None
-			station_tags = None
-			logging.info('empty tags')
+		# create the station!!
+		station = utils.StationPlayer(station_tags,serendipity,city)
+		session,algo_times = station.create_station()
 		
-		# create the station
-		station = utils.StationPlayer(mode,mode_data,station_tags,client_tags)
-		algo_times = station.create_station()
-		logging.info(algo_times)
-		# set the station to session to be passed on to /music
-		session = station.add_to_session()
-		return self.redirect('/music')
-class FavoritesStationHandler(handlers.UserHandler):
-	def get(self):
-		'''A station to play a users favorites
-		'''
-		try:
-			# grab the current user
-			user = self.get_user_from_session()
-		except self.SessionError:
-			# how can we play a user playlist if the user doesnt exist?
-			return self.response.out.write(json.dumps({'success':0,'message':'User not found.'}))
-		else:
-			# we only need the users key
-			user_key = user.key
+		time('d_create_station')
+		# pull the first 10 tracks
+		artists = self.fetch_next_n_artists(10,session)
+		packaged_artists = self.package_artist_multi(artists)
 		
-		mode = utils.StationPlayer._favorites_mode
-		mode_data = {'user_key':user_key}
-		tracks = self.change_station_mode(mode, **mode_data)
-		packaged_artists = utils.StationPlayer.package_track_multi(tracks)
-		self.send_success(packaged_artists)
+		time('e_package_artists')
+		global_times = timer.get_times()
 		
-class EverywhereStationHandler(handlers.UserHandler):
-	def get(self):
-		'''A station to play music everywhere
-		'''
-		
-		mode = utils.StationPlayer._all_mode
-		mode_data = None
-		tracks = self.change_station_mode(mode, **mode_data)
-		packaged_artists = utils.StationPlayer.package_track_multi(tracks)
-		# return with the packaged artist list
-		self.send_success(packaged_artists)
-class MyLocationStationHandler(handlers.UserHandler):
-	def get(self):
-		'''A station to play music near the user
-		'''
-		# get the users location
-		lat = float(self.request.get('lat'))
-		lon = float(self.request.get('lon'))
-		ghash = geohash.encode(lat,lon)
-		
-		# get the list of included cities
-		radial_city_keys = self.request.get('city_keys')
-		
-		
-		
-		# set the mode
-		mode = utils.StationPlayer._location_mode
-		mode_data = {'ghash':ghash,'radial_city_keys':radial_city_keys}
-		tracks = self.change_station_mode(mode, **mode_data)
-		packaged_artists = utils.StationPlayer.package_track_multi(tracks)
-		# respond with the artists
-		self.send_success(packaged_artists)
-class CantabPlayerHandler(handlers.UserHandler,handlers.ContestHandler):
-	def get(self):
-		'''
-		Special classes music player for the contest
-		'''
-		event_id = 'G9b'
-		event_key = ndb.Key(models.Event,event_id)
-		mode = utils.StationPlayer._event_mode
-		mode_data = {
-					'event_key' : event_key,
-					'station_tags' : None,
-					'client_tags' : None,
-					}
-		tracks = self.change_station_mode(mode,**mode_data)
-		packaged_artists = utils.StationPlayer.package_track_multi(tracks)
-		self.send_success(packaged_artists)
-		
-class CityStationHandler(handlers.UserHandler):
-	def get(self):
-		'''A station to play music around a city
-		'''
-		# city path
-		city_name = self.request.get('locality') or ' '
-		admin1 = self.request.get('administrative_area_level_1','') or ' '
-		country = self.request.get('country','') or ' '
-		
-		# geo point
-		lat = float(self.request.get('lat'))
-		lon = float(self.request.get('lon'))
-		geo_point = ndb.GeoPt('{},{}'.format(lat,lon))
-		
-		
-		# get the list of included cities
-		radial_city_keys = self.request.get('city_keys')
-		
-		# fetch the city from path
-		city = utils.fetch_city_from_path(country, admin1, city_name, geo_point)
-		
-		# set the mode
-		mode = utils.StationPlayer._city_mode
-		mode_data = {'city':city,'radial_city_keys':radial_city_keys}
-		tracks = self.change_station_mode(mode, **mode_data)
-		packaged_artists = utils.StationPlayer.package_track_multi(tracks)
-		self.send_success(packaged_artists)
-
-class SetTagsHandler(handlers.UserHandler):
-	def get(self):
-		'''Handler to change the stations tags.
-		'''
-		# grab the tags from the request
-		try:
-			client_tags = json.loads(self.request.get('tags','{}'))
-		except ValueError:
-			# json throws error if tags is empty
-			client_tags = []
-		
-		# parse the tags into a usable format
-		if client_tags:
-			station_tags = self.convert_client_tags_to_tags_dict(client_tags)
-		else:
-			# empty list if raw_tags is empty
-			station_tags = []
-		
-		# grab session
-		station = self.get_or_create_station_from_session()
-		# update the station
-		station.set_station_tags(station_tags, client_tags)
-		# recalculate the station
-		algo_times = station.create_station()
-		logging.info(json.dumps(algo_times))
-		# grab the first few tracks and package them
-		tracks = station.fetch_next_n_tracks()
-		packaged_artists = station.package_track_multi(tracks)
-		
-		# dont forget to add the station to the session
-		station.add_to_session()
-		self.send_success(packaged_artists)
+		logging.info('{} tracks in the playlist'.format(station.sorted_tracks_list.__len__()))
+		logging.info(json.dumps({'global':global_times,'algo':algo_times}))
+		self.response.out.write(json.dumps(packaged_artists))
 class GetTracksHandler(handlers.UserHandler):
 	def get(self):
 		'''
 		For an ajax call to get the next n tracks
 		'''
+		artists = self.fetch_next_n_artists(10)
+		packaged_artists = self.package_artist_multi(artists)
+		self.response.out.write(json.dumps(packaged_artists))
+class UpdateStationHandler(handlers.UserHandler):
+	def post(self):
+		'''
+		Updates the station playlist with new variables
+		'''
+		max_serendipity = utils.StationPlayer.max_serendipity
+		serendipity = self.request.get("serendipity",2)
+		serendipity = float(serendipity)/max_serendipity
 		try:
-			station = self.get_station_from_session()
-		except self.SessionError:
-			return self.response.out.write(json.dumps({'success':0}))
-		# get more tracks and package them!
-		tracks = station.fetch_next_n_tracks()
-		packaged_artists = station.package_track_multi(tracks)
-		# send the tracks!
-		self.send_success(packaged_artists)
-class ChirpHandler(handlers.UserHandler):
+			raw_tags = json.loads(self.request.get("tags","{}")) #NOTE - this currently crashes if tags is empty
+			tags = self.parse_tags(raw_tags)
+		except:
+			tags = {}
+			logging.info('empty tags')
+#			logging.error('tags are not being handled correctly when not passed in post')
+		# Clean tags
+		# preferences are only stored in the session
+		self.add_station_meta_to_session(tags,serendipity)
+		return self.redirect('/music')
+	
+class UpdateCityHandler(handlers.UserHandler):
 	def get(self):
 		'''
-		Called before fetching next set of tracks, s
+		Updates the station playlist with a new city
 		'''
-		skipped_track_ids = self.request.get_all('skipped_track_ids')
-		played_track_ids = self.request.get_all('played_track_ids')
-		try:
-			skipped_track_keys = (ndb.Key(models.Artist,i) for i in skipped_track_ids)
-			skipped_artists = ndb.get_multi(skipped_track_keys)
-			
-			station = self.get_station_from_session()
-			station.skipped_artist_keys.append(skipped_artists)
-			station.add_to_session()
-			
-		except self.SessionError,e:
-			logging.error(e)
-			logging.error('Could not find station')
-			return self.response.out.write(json.dumps({
-													'success' : 0,
-													'message' :'Could not find station'}))
-		else:
-			return self.response.out.write(json.dumps({'success' : 1,
-													'message' : 'OK'
-													}))
-class GetRadialCitiesHandler(handlers.UserHandler):
-	def get(self):
-		'''Method to return the list of cities around a point
-		'''
-		lat = float(self.request.get('lat'))
-		lon = float(self.request.get('lon'))
-		ghash = geohash.encode(lat,lon)
-		
-		radial_cities = self.fetch_radial_cities(ghash,precision=3)
-		
-		self.send_success(radial_cities)
-
-class RadiusHandler(handlers.UserHandler):
-	def get(self):
-		'''
-		The page to adjust the radius
-		'''
-		template_values = {
-			'city' : ''
-		}
-		
-		template = jinja_environment.get_template('templates/station-radius.html')
-		self.response.out.write(template.render(template_values))
+		city = self.request.get('city',None)
+		session = get_current_session()
+		if city.lower() == 'none' or city.lower() == 'all':
+			city = None
+		session['city'] = city
+		return self.redirect('/music')
 
 app = webapp2.WSGIApplication([
-							# music player page
 							('/music', MusicHandler),
-							# set mode
-							('/music/everywhere',EverywhereStationHandler),
-							('/music/city',CityStationHandler),
-							('/music/favorites',FavoritesStationHandler),
-							('/music/location',MyLocationStationHandler),
-							# playlist stuff
-							('/music/get_radial_cities',GetRadialCitiesHandler),
-							('/music/change_tags',SetTagsHandler),
 							('/music/gettracks',GetTracksHandler),
-							('/music/chirp',ChirpHandler),
-							('/music/radius',RadiusHandler)
+							('/music/updateStation',UpdateStationHandler),
+							('/music/updateCity',UpdateCityHandler),
+							('/music/initialize',InitializeStationHandler)
 							])
 
 
