@@ -183,7 +183,10 @@ class ArtistHandler(BaseHandler):
 			raise self.SessionError(e)
 		except KeyError,e:
 			raise self.SessionError(e)
-class UserHandler(BaseHandler):
+class NEWUserHandler(BaseHandler):
+	'''
+	Handler for the newest version of the music player
+	'''
 	def get_user_from_session(self):
 		try:
 			session = get_current_session()
@@ -370,6 +373,140 @@ class UserHandler(BaseHandler):
 		cities = (f.get_result() for f in city_futures)
 		
 		to_send = (c.to_dict() for c in cities)
+		return to_send
+class UserHandler(BaseHandler):
+	'''
+	This is the old user handler that is to be used while
+	the music player is in legacy mode
+	'''
+	def get_user_from_session(self):
+		try:
+			session = get_current_session()
+			assert session['logged_in'] == True, 'Not logged in'
+			# grab the users id
+			user_id = session['id']
+			user = models.User.get_by_id(user_id)
+			assert user, 'User does not exist'
+			return user
+		except AssertionError,e:
+			raise self.SessionError(e)
+		except KeyError,e:
+			raise self.SessionError(e)
+	def hash_password(self,pw):
+		'''
+		Hashes a password using a salt and hashlib
+		http://stackoverflow.com/questions/9594125/salt-and-hash-a-password-in-python
+		@param pw: the users password
+		@type pw: str
+		@return: hashed_password (str), salt (str)
+		@rtype: tuple
+		'''
+		salt = uuid.uuid4().hex
+		hashed_password = hashlib.sha512(pw + salt).hexdigest()
+		return hashed_password,salt
+	def log_in(self,uid,tags,serendipity):
+		session = get_current_session()
+		session['logged_in'] = True
+		session['id'] = uid
+		session['tags'] = tags
+		session['serendipity'] = serendipity
+	def add_station_meta_to_session(self,tags=None,serendipity=None,city=None):
+		session = get_current_session()
+		if tags is not None:
+			session['tags'] = tags
+		if serendipity is not None:
+			session['serendipity'] = serendipity
+		if city is not None:
+			session['city'] = city
+	def get_station_meta_from_session(self):
+		session = get_current_session()
+		tags = session.get('tags',{})
+		serendipity = session.get('serendipity',.4)
+		city = session.get('city',None)
+		return tags, serendipity, city
+	def get_station_from_session(self):
+		session = get_current_session()
+		try:
+			station = session['station']
+			return station
+		except KeyError,e:
+			raise self.SessionError(e)
+	def destroy_session(self):
+		session = get_current_session()
+		session.terminate()
+#		session['logged_in'] = False
+#		try:
+#			del session['id']
+#		except KeyError:
+#			pass
+#		try:
+#			del session['tags']
+#		except KeyError:
+#			logging.error('tags not in a session that is being destroyed')
+#		try:
+#			del session['serendipity']
+#		except KeyError:
+#			logging.error('serendipity not in a session that is being destroyed')
+	def save_station_meta(self,parent_key,parsed_tags,serendipity,name='default'):
+		# creates the station object
+		models.Station(id=name,
+					parent = parent_key,
+					serendipity = serendipity,
+					tags_ = self.prep_tags_for_datastore(parsed_tags)
+					).put()
+	def calc_major_cities(self,artists):
+		'''
+		@param artists: a list of artist entities
+		@type artists: list
+		@return: a list of cities with a minimum number of artists
+		@rtype: list
+		'''
+		# minumum artists in a city to qualify to be a major city
+		min_artists = 10
+		cities = [a.city.lower() for a in artists if a.city]
+		city_counts = Counter(cities).most_common()
+#		logging.info(cities)
+		cities = filter(lambda x: x[1] > min_artists,city_counts)
+		cities = [c[0].title() for c in cities]
+		logging.info(cities)
+		return cities
+	def fetch_next_n_artists(self,n,session=None):
+		if not session:
+			session = get_current_session()
+		station = session['station']
+		# index bookkeeping
+		idx = session['idx']
+		# reset station
+		logging.info('playlist length:'+str(station.sorted_tracks_list.__len__()))
+		logging.info('beginning idx: '+str(idx))
+		max_idx = station.sorted_tracks_list.__len__() -1
+		if idx == max_idx:
+			idx = 0
+		new_idx = idx+n
+		if new_idx > max_idx:
+			new_idx = max_idx
+		logging.info('new_index: '+str(new_idx))
+		session['idx'] = new_idx
+		
+		if new_idx > 0:
+			tracks = station.sorted_tracks_list[idx:new_idx]
+		elif new_idx == 0:
+			tracks = station.sorted_tracks_list
+		elif new_idx == -1:
+			tracks = []
+		
+		to_send = [t['artist'] for t in tracks]
+		# store the tracks that have been listened to
+		listened_to = [t['key'] for t in tracks]
+		session['listened_to'] = listened_to
+		
+		return to_send
+	def package_artist_multi(self,artists):
+		to_send = []
+		for artist in artists:
+			artist_dict = artist.to_dict(exclude=('created',))
+			artist_dict.update({'id':artist.strkey})
+			to_send.append(artist_dict)
 		return to_send
 class UploadHandler(ArtistHandler,blobstore_handlers.BlobstoreUploadHandler):
 	pass
