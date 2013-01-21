@@ -25,7 +25,8 @@ class BandPageHandler(handlers.ContestHandler):
 		'''
 		try:
 			event,contestant = self.get_event_and_contestant(request_id)
-		except self.SessionError:
+		except self.SessionError,e:
+			logging.info(e)
 			# invalid contestant id --> redirect to landing page
 			return self.redirect('/shows')
 		
@@ -245,185 +246,6 @@ class BandPageHandler(handlers.ContestHandler):
 		@type customer_id: str
 		'''
 		
-		
-class TestBandPageHandler(handlers.ContestHandler):
-	def get(self,request_id):
-		'''
-		THIS IS A TEST HANDLER
-		@param contestant_id: The id of the event and contestant
-		@type contestant_id: str
-		'''
-		try:
-			event,contestant = self.get_event_and_contestant(request_id)
-		except self.SessionError,e:
-			assert False, e
-			# invalid contestant id --> redirect to landing page
-			return self.redirect('/')
-		
-		# get list of names of people who have bought tickets
-		ticket_purchasers = contestant.get_ticket_purchaser_names()
-		# number of tickets this contestant has sold
-		num_tickets_sold = ticket_purchasers.__len__()
-		#=======================================================================
-		# # Calculate the minimum tickets per band
-		#=======================================================================
-		bands,sales = event.get_ticket_sales_per_band()
-		# grab top sales
-		top_sales = sales[:event.num_available_positions]
-		net_tickets_sold = sum(top_sales)
-		
-		# grab top bands
-		top_bands = bands[:event.num_available_positions]
-		
-		# get rank of this band
-		rank = bands.index(contestant.key) + 1
-		if rank%10 == 1 and rank != 11:
-			rank_str = '{}st'.format(rank)
-		elif rank%10 == 2 and rank != 12:
-			rank_str = '{}nd'.format(rank)
-		elif rank%10 == 3 and rank != 13:
-			rank_str = '{}rd'.format(rank)
-		else:
-			rank_str = '{}th'.format(rank)
-		
-		num_tickets_remaining = None
-		purchase_allowed = None
-		status = None
-		min_tpb = None
-		### DEBUG
-		total_oversell = None
-		extra_tickets_sold = None
-		### DEBUG
-		if datetime.datetime.now() < event.tickets_start:
-			# event hasn't started yet.
-			status = 'not_begun'
-			purchase_allowed = False
-			min_tpb = event.nominal_tpb
-			num_tickets_remaining = event.nominal_tpb
-			### DEBUG
-			condition = 'not begun'
-		elif datetime.datetime.now() > event.tickets_end:
-			purchase_allowed = False
-			min_tpb = 0
-			num_tickets_remaining = 0
-			status = 'won' if contestant.key in top_bands else 'lost'
-			condition = 'sales have closed'
-		elif net_tickets_sold >= event.capacity:
-			# Contest has ended
-			purchase_allowed = False
-			num_tickets_remaining = 0
-			min_tpb = 0
-			status = 'won' if contestant.key in top_bands else 'lost'
-			condition = 'sold out'
-		else:
-			# tickets are still available
-			# recalculate the tpb, or tickets per band to win
-			
-			# calc the number of tickets that have been sold from the extra ticket pool
-			extra_tickets_sold = sum([count - event.nominal_tpb
-							for count in top_sales if count > event.nominal_tpb])
-			# calc the number of remaining extra tickets
-			total_oversell = extra_tickets_sold - event.extra_tickets
-			if total_oversell < 0:
-				# no tbp adjustment, there are still extra tickets to be sold
-				min_tpb = event.nominal_tpb
-			else:
-				# no extra tickets are left. adjust the tpb
-				# total oversell is a positive int
-				tpb_reduction = int(math.ceil(float(total_oversell)/float(event.num_available_positions)))
-				min_tpb = event.nominal_tpb - tpb_reduction
-			
-			# check if contest has ended by comparing adjusted tpb with top sales
-			if filter(lambda x: x < min_tpb, top_sales) == []:
-				# the top bands have all sold the minimum tickets
-				if contestant.key in top_bands:
-					# contest has ended, and band has won, but can still sell tickets
-					purchase_allowed = True
-					num_tickets_remaining = event.extra_tickets - extra_tickets_sold
-					status = 'won'
-					condition = 'contest ended, band has won, can still sell tickets'
-				else:
-					# contest has ended, and band has lost, and cannot sell tickets
-					purchase_allowed = False
-					num_tickets_remaining = 0
-					status = 'lost'
-					condition = 'contest ended, band has lost, cant sell anymore tickets'
-			else:
-				# the contest is still in progress
-				purchase_allowed = True
-				# calc number of tickets remaining
-				num_tickets_remaining = min_tpb - num_tickets_sold
-				# check if the band has sold past the min tpb
-				if num_tickets_remaining <= 0:
-					# contest is in progress, but the band has won
-					status = 'won'
-					# don't send back a negative value for num_tickets_remaining
-					num_tickets_remaining = 0
-					condition = 'contest is in progress, but this band has already won'
-				else:
-					# contest is in progress, and the band has not won yet
-					status = 'in_progress'
-					condition = 'contest is in progress, and this band has not won yet'
-			
-		#=======================================================================
-		# # Check if a logged in artist is viewing the page
-		#=======================================================================
-		page_artist = contestant.artist_key.get()
-		try:
-			current_artist = self.get_artist_from_session()
-		except self.SessionError:
-			# no artist is logged in
-			artist_logged_in = False
-			artist_owns_page = False
-		else:
-			# an artist is logged in
-			artist_logged_in = True
-			# Check if artist owns the page
-			artist_owns_page = True if page_artist.key == current_artist.key else False
-		
-		
-		template_values = {
-			'tickets_per_band'	: min_tpb,
-			'tickets_remaining'	: num_tickets_remaining,
-			'tickets_sold'		: num_tickets_sold,
-			'place_string'		: rank_str,
-			'going'				: ticket_purchasers,
-			'artist'			: page_artist,
-			'contestant_id'		: contestant.page_id,
-			'contestant_url'	: contestant.page_url,
-			'status'			: status,
-			'purchase_allowed'	: purchase_allowed,
-			'is_owner'			: artist_owns_page,
-			'show_navbar'		: artist_logged_in,
-			
-			'total_oversell'	: total_oversell,
-			'extra_tickets_sold': extra_tickets_sold,
-			'top_bands'			: [b.id() for b in top_bands],
-			'top_sales'			: top_sales,
-			'condition'			: condition,
-			'bands'				: [b.id() for b in bands]
-		}
-		
-#		# package template
-#		template_values = {
-#						'artist' : page_artist,
-#						'contestant_id' : contestant.page_id,
-#						'contestant_url' : contestant.page_url,
-#						'names' : ticket_purchasers,
-#						
-#						'num_tickets_remaining' : num_tickets_remaining,
-#						'purchase_allowed' : purchase_allowed,
-#						'status' : status,
-#						
-#						'show_navbar' : artist_logged_in,
-#						'is_owner' : artist_owns_page
-#						}
-		exclude = ['artist','going','contest_url','show_navbar','is_owner','contestant_id','contestant_url']
-		tv = {key:str(val) for key,val in template_values.iteritems() if key not in exclude}
-#		tv['artist'] = {key:str(val) for key,val in template_values['artist'].to_dict().iteritems()}
-		return self.say(json.dumps(tv))
-	def post(self):
-		pass
 '''
 Unique pages!!
 
@@ -546,6 +368,5 @@ app = webapp2.WSGIApplication([
 							('/e/spoof/show',TestHandler),
 							('/e/spoof/reset',ClearSpoofHandler),
 							('/e/spoof/cantab',CreateCantabEventHandler),
-							('/e/(.*)/test',TestBandPageHandler),
 							('/e/(.*)',BandPageHandler),
 							])

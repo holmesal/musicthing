@@ -89,7 +89,7 @@ class SignupHandler(handlers.ContestHandler):
 		try:
 			del session['login_redirect']
 		except KeyError,e:
-			logging.error(e)
+			pass
 		#=======================================================================
 		# SPOOF THE EVENT KEY FOR NOW BECAUSE WE ONLY HAVE ONE SHOW
 		event_key = ndb.Key(models.Event,'G9b')
@@ -115,6 +115,8 @@ class SignupHandler(handlers.ContestHandler):
 				}
 				logging.debug(artist.artist_name)
 				taskqueue.add(url='/tasks/showTask',payload=json.dumps(task_params))
+			else:
+				logging.info('Do not text founders on dev server.')
 		except Exception,e:
 			logging.error(e)
 		

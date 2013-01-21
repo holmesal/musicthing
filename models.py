@@ -306,7 +306,11 @@ class Event(ndb.Model):
 		sales_count_list = ((key,Contestant.get_ticket_count(key)) for key in contestant_keys)
 		sorted_ticket_sales = sorted(sales_count_list,key=lambda x: x[1],
 								reverse = True)
-		bands,sales = zip(*sorted_ticket_sales)
+		try:
+			bands,sales = zip(*sorted_ticket_sales)
+		except ValueError:
+			bands = []
+			sales = []
 		return bands,sales
 		
 class Contestant(ndb.Model):

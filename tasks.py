@@ -108,8 +108,8 @@ class CantabTaskHandler(webapp2.RequestHandler):
 									method=urlfetch.POST,
 									headers={'Authorization':auth_header})
 			
-		except:
-			logging.debug('Ah man this failed')
+		except Exception,e:
+			logging.error('Task failed. Error: {}'.format(e))
 
 
 class ShowTaskHandler(webapp2.RequestHandler):
@@ -123,7 +123,7 @@ class ShowTaskHandler(webapp2.RequestHandler):
 				''')
 			
 			payload = json.loads(self.request.body)
-			logging.info(payload['email'])
+			logging.info(payload['artist_name'])
 			#twilio credentials
 			sid = 'AC4880dbd1ff355288728be2c5f5f7406b'
 			token = 'ea7cce49e3bb805b04d00f76253f9f2b'
@@ -144,8 +144,8 @@ class ShowTaskHandler(webapp2.RequestHandler):
 									method=urlfetch.POST,
 									headers={'Authorization':auth_header})
 			
-		except:
-			logging.debug('Ah man this failed')
+		except Exception,e:
+			logging.error('Task failed. Error: {}'.format(e))
 			
 app = webapp2.WSGIApplication([('/tasks/textTask', TextTaskHandler),
 								('/tasks/userTask', UserTaskHandler),
