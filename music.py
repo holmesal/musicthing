@@ -36,7 +36,7 @@ class MusicHandler(handlers.UserHandler):
 		}
 #		self.say(template_values)
 		jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
-		template = jinja_environment.get_template('templates/music.html')
+		template = jinja_environment.get_template('templates/musicv2.html')
 		self.response.out.write(template.render(template_values))
 		
 	def post(self):
